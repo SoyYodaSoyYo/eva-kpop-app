@@ -9,7 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
         
         :root {
-            /* URL DE TU IMAGEN */
             --bg-url: url('https://images.tcdn.com.br/img/img_prod/1129828/k_pop_hunters_volume_1_e_2_3127_1_15d868953923485f762744d567118833.jpg');
         }
 
@@ -93,7 +92,7 @@
         <main class="p-4 max-w-4xl mx-auto min-h-[60vh]">
             <div id="loader" class="flex flex-col items-center justify-center py-32 space-y-4">
                 <div class="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-sm font-bold text-pink-400 animate-pulse">CARGANDO TOUR...</p>
+                <p id="loader-text" class="text-sm font-bold text-pink-400 animate-pulse uppercase">Cargando Tour...</p>
             </div>
             <div id="content" class="hidden"></div>
         </main>
@@ -104,7 +103,7 @@
         import { getFirestore, doc, setDoc, onSnapshot, collection, query, limit } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // CONFIGURACIÓN PROPORCIONADA
+        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc",
             authDomain: "eva-kpop-tour.firebaseapp.com",
@@ -114,9 +113,7 @@
             appId: "1:49327968177:web:647c232224aa288f3c7790"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        let app, db, auth;
         const APP_ID = 'eva-tour-v1';
 
         const App = {
@@ -147,41 +144,57 @@
             ],
 
             async init() {
-                const dateEl = document.getElementById('display-date');
-                if(dateEl) dateEl.innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                try {
+                    const dateEl = document.getElementById('display-date');
+                    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        this.user = user;
-                        document.getElementById('status-text').innerText = "TOUR ONLINE";
-                        this.startListeners();
-                    } else {
-                        try {
-                            await signInAnonymously(auth);
-                        } catch (e) {
-                            console.error("Error de Auth:", e);
-                            document.getElementById('status-text').innerText = "ERROR DE CONEXIÓN";
-                            alert("ERROR: Por favor activa 'Inicio de sesión Anónimo' en tu consola de Firebase.");
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            this.user = user;
+                            document.getElementById('status-text').innerText = "TOUR ONLINE";
+                            this.startListeners();
+                        } else {
+                            try {
+                                await signInAnonymously(auth);
+                            } catch (e) {
+                                console.error("Error de Auth:", e);
+                                this.showError("Error de Conexión: Revisa tu API Key en la consola de Firebase.");
+                            }
                         }
-                    }
-                });
+                    });
+                } catch (error) {
+                    this.showError("Error de inicialización.");
+                }
+            },
+
+            showError(msg) {
+                const status = document.getElementById('status-text');
+                const loaderText = document.getElementById('loader-text');
+                if(status) status.innerText = "ERROR";
+                if(loaderText) {
+                    loaderText.innerText = msg;
+                    loaderText.classList.remove('text-pink-400');
+                    loaderText.classList.add('text-red-500');
+                }
             },
 
             startListeners() {
                 const todayId = new Date().toLocaleDateString('en-CA');
                 
-                // Escuchar puntos de hoy
                 onSnapshot(doc(db, 'artifacts', APP_ID, 'public', 'data', 'daily', todayId), (snap) => {
                     this.data.today = snap.exists() ? (snap.data().points || {}) : {};
                     this.render();
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('content').classList.remove('hidden');
+                    document.getElementById('loader')?.classList.add('hidden');
+                    document.getElementById('content')?.classList.remove('hidden');
                 }, (err) => {
                     console.error("Firestore Error:", err);
-                    alert("ERROR DE PERMISOS: Asegúrate de que Firestore esté en 'Modo de Prueba'.");
+                    this.showError("Error de permisos en la base de datos.");
                 });
 
-                // Escuchar historial
                 onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'daily'), (snap) => {
                     this.data.allHistory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     this.render();
