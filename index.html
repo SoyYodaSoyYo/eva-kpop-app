@@ -9,8 +9,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
         
         :root {
-            /* CAMBIA ESTE LINK POR TU IMAGEN */
-            --bg-image: url('https://drive.google.com/file/d/1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit/view?usp=sharing');
+            /* REEMPLAZA ESTE LINK CON TU IMAGEN DIRECTA */
+            --bg-url: url('https://images.tcdn.com.br/img/img_prod/1129828/k_pop_hunters_volume_1_e_2_3127_1_15d868953923485f762744d567118833.jpg');
         }
 
         body { 
@@ -18,23 +18,26 @@
             background-color: #0b0b0b;
             color: white;
             margin: 0;
+            padding: 0;
             user-select: none;
-            background-image: var(--bg-image);
+            /* Configuracion de fondo robusta */
+            background-image: var(--bg-url);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            background-repeat: no-repeat;
         }
 
-        /* Capa oscura para que el texto se lea bien sobre la imagen */
+        /* Capa oscura ajustable: si quieres ver mas la imagen, baja el 0.8 a 0.5 */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.75); 
             z-index: 0;
-            backdrop-filter: blur(3px);
+            pointer-events: none;
         }
 
         #app { position: relative; z-index: 1; }
@@ -42,8 +45,9 @@
         .font-header { font-family: 'Archivo Black', sans-serif; }
 
         .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
@@ -68,9 +72,9 @@
         .btn-press:active { transform: scale(0.9); }
         
         .btn-minus {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #ef4444;
+            background: rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ff4d4d;
         }
     </style>
 </head>
@@ -94,20 +98,17 @@
         <!-- Marquesina -->
         <div class="bg-white text-black py-2 overflow-hidden whitespace-nowrap border-b border-white/20">
             <div class="animate-marquee flex items-center">
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EL JUEGO DE EVA Y LAS KPOP</span>
+                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA X K-POP CHALLENGE 2024</span>
                 <span class="mx-4 text-pink-600">✦</span>
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EL JUEGO DE EVA Y LAS KPOP</span>
+                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA X K-POP CHALLENGE 2024</span>
                 <span class="mx-4 text-pink-600">✦</span>
-                <!-- Duplicate para loop -->
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EL JUEGO DE EVA Y LAS KPOP</span>
-                <span class="mx-4 text-pink-600">✦</span>
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EL JUEGO DE EVA Y LAS KPOP</span>
+                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA X K-POP CHALLENGE 2024</span>
                 <span class="mx-4 text-pink-600">✦</span>
             </div>
         </div>
 
         <!-- Navigation -->
-        <nav class="flex justify-around bg-black/60 border-b border-white/10 sticky top-[76px] z-40 backdrop-blur-md">
+        <nav class="flex justify-around bg-black/40 border-b border-white/10 sticky top-[76px] z-40 backdrop-blur-md">
             <button onclick="window.App.setTab('daily')" id="tab-daily" class="py-4 px-6 text-xs font-black uppercase tracking-widest tab-active">Misiones</button>
             <button onclick="window.App.setTab('rewards')" id="tab-rewards" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Premios</button>
             <button onclick="window.App.setTab('history')" id="tab-history" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Gira</button>
@@ -117,10 +118,7 @@
             <div id="loading-overlay" class="py-20 text-center">
                 <div class="inline-block w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-
-            <div id="content" class="hidden">
-                <!-- Inyección JS -->
-            </div>
+            <div id="content" class="hidden"></div>
         </main>
     </div>
 
@@ -141,7 +139,6 @@
             user: null,
             data: { today: {}, allHistory: [] },
             
-            // LISTA ACTUALIZADA SEGÚN SOLICITUD
             tasks: [
                 { id: 'h1', label: 'Hacer la cama', icon: '🛏️', max: 1 },
                 { id: 'h2', label: 'Dientes', icon: '🪥', max: 6 },
@@ -186,11 +183,12 @@
                     this.data.today = snap.exists() ? (snap.data().points || {}) : {};
                     this.hideLoader();
                     this.render();
-                });
+                }, (err) => console.error(err));
+
                 onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'daily'), limit(30)), (snap) => {
                     this.data.allHistory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     this.render();
-                });
+                }, (err) => console.error(err));
             },
 
             hideLoader() {
@@ -209,7 +207,7 @@
                 if (!this.user) return;
                 let current = Number(this.data.today[taskId] || 0);
                 let newVal = current + delta;
-                if (max && newVal > max) newVal = max;
+                if (max !== null && newVal > max) newVal = max;
                 if (newVal < -100) newVal = -100;
 
                 const todayId = new Date().toLocaleDateString('en-CA');
@@ -232,9 +230,9 @@
                 if (this.currentTab === 'daily') {
                     const totalToday = Object.values(this.data.today).reduce((a, b) => a + (Number(b) || 0), 0);
                     el.innerHTML = `
-                        <div class="text-center py-6 mb-4">
+                        <div class="text-center py-6 mb-4 relative z-10">
                             <p class="text-[10px] font-black tracking-widest text-pink-500 uppercase">Puntos de Hoy</p>
-                            <h2 class="text-8xl font-header italic">${totalToday}</h2>
+                            <h2 class="text-8xl font-header italic drop-shadow-lg">${totalToday}</h2>
                         </div>
                         <div class="grid gap-3 mb-8">
                             ${this.tasks.map(t => {
@@ -242,16 +240,16 @@
                                 return `
                                     <div class="glass p-4 rounded-3xl flex items-center justify-between">
                                         <div class="flex items-center gap-4">
-                                            <span class="text-3xl">${t.icon}</span>
+                                            <span class="text-3xl drop-shadow-sm">${t.icon}</span>
                                             <div>
                                                 <h4 class="font-bold text-sm uppercase italic leading-none">${t.label}</h4>
-                                                <p class="text-[9px] opacity-40 font-bold mt-1 uppercase">Máximo: ${t.max}</p>
+                                                <p class="text-[9px] opacity-60 font-bold mt-1 uppercase">Meta: ${t.max}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
-                                            <button onclick="window.App.addPoint('${t.id}', -1, ${t.max})" class="btn-press btn-minus w-10 h-10 rounded-full flex items-center justify-center font-black text-xl">-</button>
+                                            <button onclick="window.App.addPoint('${t.id}', -1, ${t.max})" class="btn-press btn-minus w-10 h-10 rounded-full flex items-center justify-center font-black text-xl shadow-inner">-</button>
                                             <span class="text-2xl font-header w-6 text-center">${p}</span>
-                                            <button onclick="window.App.addPoint('${t.id}', 1, ${t.max})" class="btn-press w-12 h-12 kpop-gradient rounded-full flex items-center justify-center font-black text-2xl shadow-lg">+</button>
+                                            <button onclick="window.App.addPoint('${t.id}', 1, ${t.max})" class="btn-press w-12 h-12 kpop-gradient rounded-full flex items-center justify-center font-black text-2xl shadow-lg border border-white/20">+</button>
                                         </div>
                                     </div>
                                 `;
@@ -259,11 +257,11 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4 pb-10">
                             <button onclick="window.App.addPoint('pen', -5, null)" class="btn-press glass border-red-500/30 p-4 rounded-3xl flex flex-col items-center">
-                                <span class="text-[9px] font-black text-red-500 uppercase">Falta Grave</span>
+                                <span class="text-[9px] font-black text-red-500 uppercase tracking-widest">Falta Grave</span>
                                 <span class="text-2xl font-header">-5</span>
                             </button>
                             <button onclick="window.App.addPoint('star', 2, null)" class="btn-press glass border-yellow-500/30 p-4 rounded-3xl flex flex-col items-center">
-                                <span class="text-[9px] font-black text-yellow-500 uppercase">Extra Star</span>
+                                <span class="text-[9px] font-black text-yellow-500 uppercase tracking-widest">Extra Star</span>
                                 <span class="text-2xl font-header">+2</span>
                             </button>
                         </div>
@@ -280,18 +278,18 @@
                                 const prog = Math.min(100, (total / r.pts) * 100);
                                 return `
                                     <div class="glass p-5 rounded-3xl flex items-center justify-between border-white/5 relative overflow-hidden">
-                                        <div class="absolute top-0 left-0 h-full bg-pink-500/5" style="width: ${prog}%"></div>
+                                        <div class="absolute top-0 left-0 h-full bg-pink-500/10" style="width: ${prog}%"></div>
                                         <div class="flex items-center gap-4 relative z-10">
-                                            <span class="text-4xl">${r.icon}</span>
+                                            <span class="text-4xl drop-shadow-md">${r.icon}</span>
                                             <div>
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-[7px] font-black uppercase px-2 py-0.5 rounded-full ${r.type === 'Semanal' ? 'bg-blue-600' : 'bg-purple-600'} text-white">${r.type}</span>
                                                     <h4 class="font-bold text-sm uppercase italic">${r.label}</h4>
                                                 </div>
-                                                <p class="text-[10px] font-bold text-pink-500 mt-1">${r.pts} PTS</p>
+                                                <p class="text-[10px] font-bold text-pink-400 mt-1">${r.pts} PTS</p>
                                             </div>
                                         </div>
-                                        <div class="relative z-10 font-header ${prog >= 100 ? 'text-green-400' : 'opacity-20'}">${Math.floor(prog)}%</div>
+                                        <div class="relative z-10 font-header ${prog >= 100 ? 'text-green-400' : 'opacity-30'} text-xl">${Math.floor(prog)}%</div>
                                     </div>
                                 `;
                             }).join('')}
@@ -300,9 +298,9 @@
                 } else {
                     el.innerHTML = `<div class="grid gap-2">
                         ${this.data.allHistory.sort((a,b)=>b.id.localeCompare(a.id)).map(day => `
-                            <div class="glass p-4 rounded-2xl flex justify-between items-center opacity-70">
-                                <span class="text-xs font-bold uppercase">${day.id}</span>
-                                <span class="font-header">${Object.values(day.points || {}).reduce((a,b)=>a+b,0)} PTS</span>
+                            <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                                <span class="text-xs font-bold uppercase tracking-widest opacity-60">${day.id}</span>
+                                <span class="font-header text-pink-500">${Object.values(day.points || {}).reduce((a,b)=>a+b,0)} PTS</span>
                             </div>
                         `).join('')}
                     </div>`;
