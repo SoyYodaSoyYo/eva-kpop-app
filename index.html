@@ -38,7 +38,7 @@
 
             <div class="px-4 max-w-md mx-auto">
                 <div class="text-center mb-6">
-                    <h1 class="text-5xl font-black italic uppercase tracking-tighter">EVA ALEMÁN</h1>
+                    <h1 class="text-5xl font-black italic uppercase tracking-tighter text-white drop-shadow-md">EVA ALEMÁN</h1>
                     <p id="current-date" class="text-pink-400 font-bold text-sm uppercase tracking-widest"></p>
                 </div>
 
@@ -47,7 +47,7 @@
                         <p class="text-[10px] font-bold text-pink-400 uppercase">Puntos Hoy</p>
                         <p id="score-today" class="text-5xl font-black">0</p>
                     </div>
-                    <div class="bg-pink-600 p-4 rounded-2xl text-center shadow-lg">
+                    <div class="bg-pink-600 p-4 rounded-2xl text-center shadow-lg border-2 border-white/20">
                         <p class="text-[10px] font-bold text-white/70 uppercase">Total Mes</p>
                         <p id="score-month" class="text-5xl font-black">0</p>
                     </div>
@@ -57,19 +57,20 @@
                     <!-- Las tareas se generarán aquí -->
                 </div>
 
-                <button id="btn-save" class="w-full mt-8 bg-white text-black p-5 rounded-2xl font-black text-2xl uppercase italic border-b-4 border-gray-400 active:translate-y-1 active:border-b-0 transition-all">
+                <button id="btn-save" class="w-full mt-8 bg-white text-black p-5 rounded-2xl font-black text-2xl uppercase italic border-b-4 border-gray-400 active:translate-y-1 active:border-b-0 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.2)]">
                     Cerrar Show
                 </button>
+                <p class="text-center text-white/30 text-[10px] mt-4 uppercase tracking-widest font-bold">Conectado a Firebase Production v1</p>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // Tus credenciales reales de la captura
+        // Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc",
             authDomain: "eva-kpop-tour.firebaseapp.com",
@@ -82,7 +83,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = 'eva-kpop-app-v1';
+        
+        // Esta ID debe coincidir exactamente con la de tus Reglas de Seguridad de Firebase
+        const appId = 'eva-kpop-prod-v1';
 
         const tasks = [
             { id: 'h1', label: 'Hacer la cama', emoji: '🛏️', max: 1 },
@@ -98,10 +101,14 @@
         let monthlyTotal = 0;
         const todayKey = new Date().toISOString().split('T')[0];
 
-        // Inicializar Auth
+        // Autenticación Anónima
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                await signInAnonymously(auth);
+                try {
+                    await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Error al entrar de forma anónima:", e);
+                }
             } else {
                 startApp();
             }
@@ -112,42 +119,72 @@
             document.getElementById('content').classList.remove('hidden');
             document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
-            // Escuchar puntos de hoy
+            // 1. Escuchar puntos de hoy en tiempo real
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey), (snap) => {
                 currentPoints = snap.exists() ? snap.data().points : {};
                 renderTasks();
+            }, (error) => {
+                console.error("Error leyendo puntos diarios:", error);
             });
 
-            // Escuchar historial para el total del mes
+            // 2. Escuchar historial para el total del mes acumulado
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history'), (snap) => {
                 monthlyTotal = 0;
-                snap.forEach(d => monthlyTotal += (d.data().total || 0));
+                snap.forEach(d => {
+                    monthlyTotal += (d.data().total || 0);
+                });
                 document.getElementById('score-month').innerText = monthlyTotal;
+            }, (error) => {
+                console.error("Error leyendo historial mensual:", error);
             });
         }
 
         async function updatePoints(id, delta, max) {
-            const val = (currentPoints[id] || 0) + delta;
-            if (val < 0 || (max && val > max)) return;
+            const currentVal = (currentPoints[id] || 0);
+            const newVal = currentVal + delta;
             
-            currentPoints[id] = val;
+            // Validaciones básicas
+            if (newVal < 0 || (max && newVal > max)) return;
+            
+            currentPoints[id] = newVal;
             const total = Object.values(currentPoints).reduce((a, b) => a + b, 0);
             
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey), {
-                points: currentPoints,
-                total: total,
-                updatedAt: new Date().toISOString()
-            });
+            try {
+                // Guardar en la sub-colección 'daily'
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey), {
+                    points: currentPoints,
+                    total: total,
+                    updatedAt: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Error al guardar puntos:", e);
+            }
         }
 
         window.saveDay = async () => {
             const total = Object.values(currentPoints).reduce((a, b) => a + b, 0);
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', todayKey), {
-                total: total,
-                details: currentPoints,
-                timestamp: new Date().toISOString()
-            });
-            alert("¡Show guardado en el historial!");
+            
+            if (total === 0) {
+                alert("¡No hay puntos registrados hoy aún!");
+                return;
+            }
+
+            try {
+                // 1. Guardar el resumen final en el historial
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', todayKey), {
+                    total: total,
+                    details: currentPoints,
+                    timestamp: new Date().toISOString()
+                });
+
+                // 2. Opcional: Limpiar los puntos temporales de hoy para el siguiente show
+                // await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey));
+                
+                alert("🎤 ¡Show cerrado con éxito! Los puntos se han sumado al Tour Mensual.");
+            } catch (e) {
+                console.error("Error al cerrar el show:", e);
+                alert("Hubo un problema al guardar. Revisa la consola.");
+            }
         };
 
         function renderTasks() {
@@ -159,21 +196,22 @@
                 const p = currentPoints[t.id] || 0;
                 const isDone = p >= t.max && t.max > 0;
                 return `
-                    <div class="glass-card p-4 rounded-2xl flex justify-between items-center border-l-4 ${isDone ? 'border-green-400' : 'border-pink-500'}">
+                    <div class="glass-card p-4 rounded-2xl flex justify-between items-center border-l-4 transition-all ${isDone ? 'border-green-400 bg-green-900/10' : 'border-pink-500'}">
                         <div class="flex items-center gap-3">
                             <span class="text-2xl">${t.emoji}</span>
-                            <span class="font-bold text-sm uppercase">${t.label}</span>
+                            <span class="font-bold text-sm uppercase tracking-tight">${t.label}</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button onclick="updatePoints('${t.id}', 1, ${t.max})" class="w-10 h-10 bg-pink-600 rounded-full font-black text-xl shadow-lg">+</button>
+                            <button onclick="updatePoints('${t.id}', 1, ${t.max})" class="w-10 h-10 bg-pink-600 rounded-full font-black text-xl shadow-lg active:scale-90 transition-transform">+</button>
                             <span class="font-black text-xl w-6 text-center">${p}</span>
-                            <button onclick="updatePoints('${t.id}', -1, ${t.max})" class="w-8 h-8 bg-white/10 rounded-full font-black text-sm opacity-50">-</button>
+                            <button onclick="updatePoints('${t.id}', -1, ${t.max})" class="w-8 h-8 bg-white/10 rounded-full font-black text-sm opacity-50 active:scale-90 transition-transform">-</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
+        // Exponer funciones al scope global para los botones onclick
         window.updatePoints = updatePoints;
         document.getElementById('btn-save').onclick = window.saveDay;
     </script>
