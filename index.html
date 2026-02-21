@@ -3,109 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eva K-Pop Tour - Control Panel</title>
+    <title>Eva K-Pop Tour - Panel de Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
         
-        :root {
-            --bg-url: url('https://images.tcdn.com.br/img/img_prod/1129828/k_pop_hunters_volume_1_e_2_3127_1_15d868953923485f762744d567118833.jpg');
-        }
-
         body { 
             font-family: 'Archivo', sans-serif; 
             background-color: #0b0b0b;
             color: white;
             margin: 0;
             padding: 0;
-            background-image: var(--bg-url);
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1546707012-c46675f12716?q=80&w=2069&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            background-repeat: no-repeat;
         }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); 
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        #app { position: relative; z-index: 1; }
         .font-header { font-family: 'Archivo Black', sans-serif; }
         .glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .kpop-gradient { background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); }
         .tab-active { border-bottom: 4px solid #ff0080; color: #ff0080; opacity: 1 !important; }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .animate-marquee { display: inline-flex; animation: marquee 20s linear infinite; }
-        .btn-press:active { transform: scale(0.92); }
-        .btn-minus { background: rgba(239, 68, 68, 0.3); border: 1px solid rgba(239, 68, 68, 0.6); color: #ff5f5f; }
+        .btn-press:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="pb-24">
-    <div class="overlay"></div>
-
     <div id="app">
+        <!-- Encabezado -->
         <header class="p-6 kpop-gradient sticky top-0 z-50 shadow-2xl">
             <div class="flex justify-between items-center max-w-4xl mx-auto">
                 <div>
                     <h1 class="font-header text-2xl italic tracking-tighter uppercase">Eva World Tour</h1>
-                    <p id="status-text" class="text-[10px] font-bold opacity-80 tracking-widest uppercase">Conectando...</p>
+                    <p id="auth-status" class="text-[10px] font-bold opacity-80 tracking-widest uppercase text-yellow-400">Iniciando sesión...</p>
                 </div>
-                <div class="text-right">
-                    <span id="display-date" class="text-xs font-black opacity-70 uppercase tracking-tighter italic">Cargando fecha...</span>
+                <div id="user-display" class="hidden text-right">
+                    <span class="text-[9px] block opacity-60 uppercase font-black">ID de Artista</span>
+                    <span id="uid-text" class="text-[10px] font-mono bg-black/30 px-2 py-1 rounded">---</span>
                 </div>
             </div>
         </header>
 
-        <div class="bg-white text-black py-2 overflow-hidden whitespace-nowrap border-b border-white/20">
-            <div class="animate-marquee flex items-center">
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA K-POP CHALLENGE 2026</span>
-                <span class="mx-4 text-pink-600">✦</span>
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA K-POP CHALLENGE 2026</span>
-                <span class="mx-4 text-pink-600">✦</span>
-                <span class="mx-4 font-black italic text-xs uppercase tracking-widest">EVA K-POP CHALLENGE 2026</span>
-                <span class="mx-4 text-pink-600">✦</span>
-            </div>
-        </div>
-
-        <nav class="flex justify-around bg-black/60 border-b border-white/10 sticky top-[76px] z-40 backdrop-blur-md">
-            <button onclick="window.App.setTab('daily')" id="tab-daily" class="py-4 px-6 text-xs font-black uppercase tracking-widest tab-active">Misiones</button>
-            <button onclick="window.App.setTab('rewards')" id="tab-rewards" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Premios</button>
-            <button onclick="window.App.setTab('history')" id="tab-history" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Historial</button>
+        <!-- Navegación -->
+        <nav class="flex justify-around bg-black/80 border-b border-white/10 sticky top-[76px] z-40 backdrop-blur-md">
+            <button onclick="setTab('daily')" id="tab-daily" class="py-4 px-6 text-xs font-black uppercase tracking-widest tab-active">Misiones</button>
+            <button onclick="setTab('rewards')" id="tab-rewards" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Premios</button>
+            <button onclick="setTab('history')" id="tab-history" class="py-4 px-6 text-xs font-black uppercase tracking-widest opacity-50">Historial</button>
         </nav>
 
         <main class="p-4 max-w-4xl mx-auto min-h-[60vh]">
+            <!-- Mensajes de Error/Diagnóstico -->
+            <div id="error-console" class="hidden mb-6 p-4 bg-red-900/40 border border-red-500 rounded-2xl">
+                <h3 class="text-red-400 font-bold text-xs uppercase mb-2">Error de Conexión Detectado</h3>
+                <p id="error-message" class="text-sm opacity-90"></p>
+                <button onclick="location.reload()" class="mt-3 text-[10px] font-bold underline uppercase">Reintentar Conexión</button>
+            </div>
+
             <div id="loader" class="flex flex-col items-center justify-center py-32 space-y-4">
                 <div class="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-                <p id="loader-text" class="text-sm font-bold text-pink-400 animate-pulse uppercase">Cargando Tour...</p>
+                <p class="text-sm font-bold text-pink-400 animate-pulse uppercase">Cargando Datos de la Gira...</p>
             </div>
+
             <div id="content" class="hidden"></div>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, limit } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE FIREBASE
+        // CONFIGURACIÓN (Asegúrate de que el API Key sea el de tu consola)
         const firebaseConfig = {
-            apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc",
+            apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc", 
             authDomain: "eva-kpop-tour.firebaseapp.com",
             projectId: "eva-kpop-tour",
             storageBucket: "eva-kpop-tour.firebasestorage.app",
@@ -113,196 +86,134 @@
             appId: "1:49327968177:web:647c232224aa288f3c7790"
         };
 
-        let app, db, auth;
-        const APP_ID = 'eva-tour-v1';
+        // Variables de entorno proporcionadas por la plataforma
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-tour-v2';
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        const App = {
-            currentTab: 'daily',
-            user: null,
-            data: { today: {}, allHistory: [] },
-            
-            tasks: [
-                { id: 't1', label: 'Hacer la cama', icon: '🛏️', max: 1 },
-                { id: 't2', label: 'Dientes', icon: '🪥', max: 6 },
-                { id: 't3', label: 'Dormir sola', icon: '🌙', max: 1 },
-                { id: 't4', label: 'Bañarse sola', icon: '🚿', max: 1 },
-                { id: 't5', label: 'Vestirse sola', icon: '👗', max: 1 },
-                { id: 't6', label: 'Leer', icon: '📚', max: 6 },
-                { id: 't7', label: 'Tarea', icon: '📝', max: 4 },
-                { id: 't8', label: 'Comida Balanceada', icon: '🍎', max: 5 },
-                { id: 'v1', label: 'No engañar', icon: '😇', max: 10 },
-                { id: 'v2', label: 'No gritar / imponerse', icon: '🤫', max: 3 },
-                { id: 'v3', label: 'Respetar mayores', icon: '🤝', max: 6 }
-            ],
+        let db, auth, currentUser = null;
+        let localData = { today: {}, history: [] };
 
-            rewards: [
-                { id: 'r1', label: 'Postre a elección', pts: 150, icon: '🍨', type: 'Semanal' },
-                { id: 'r2', label: '30 min Tecnología', pts: 250, icon: '📱', type: 'Semanal' },
-                { id: 'r3', label: 'Regalo Sorpresa', pts: 800, icon: '🎁', type: 'Mensual' },
-                { id: 'r4', label: 'Salida Especial', pts: 1200, icon: '🎡', type: 'Mensual' },
-                { id: 'r5', label: 'Paseo + Regalo', pts: 2000, icon: '💎', type: 'Mensual' }
-            ],
+        const tasks = [
+            { id: 't1', label: 'Hacer la cama', icon: '🛏️', max: 1 },
+            { id: 't2', label: 'Dientes', icon: '🪥', max: 6 },
+            { id: 't3', label: 'Dormir sola', icon: '🌙', max: 1 },
+            { id: 't4', label: 'Bañarse sola', icon: '🚿', max: 1 },
+            { id: 't5', label: 'Vestirse sola', icon: '👗', max: 1 },
+            { id: 'v1', label: 'No engañar', icon: '😇', max: 10 },
+            { id: 'v2', label: 'No gritar', icon: '🤫', max: 3 }
+        ];
 
-            async init() {
-                try {
-                    const dateEl = document.getElementById('display-date');
-                    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-
-                    onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            this.user = user;
-                            document.getElementById('status-text').innerText = "TOUR ONLINE";
-                            this.startListeners();
-                        } else {
-                            try {
-                                await signInAnonymously(auth);
-                            } catch (e) {
-                                console.error("Error de Auth:", e);
-                                this.showError("Error de Conexión: Revisa tu API Key en la consola de Firebase.");
-                            }
-                        }
-                    });
-                } catch (error) {
-                    this.showError("Error de inicialización.");
-                }
-            },
-
-            showError(msg) {
-                const status = document.getElementById('status-text');
-                const loaderText = document.getElementById('loader-text');
-                if(status) status.innerText = "ERROR";
-                if(loaderText) {
-                    loaderText.innerText = msg;
-                    loaderText.classList.remove('text-pink-400');
-                    loaderText.classList.add('text-red-500');
-                }
-            },
-
-            startListeners() {
-                const todayId = new Date().toLocaleDateString('en-CA');
-                
-                onSnapshot(doc(db, 'artifacts', APP_ID, 'public', 'data', 'daily', todayId), (snap) => {
-                    this.data.today = snap.exists() ? (snap.data().points || {}) : {};
-                    this.render();
-                    document.getElementById('loader')?.classList.add('hidden');
-                    document.getElementById('content')?.classList.remove('hidden');
-                }, (err) => {
-                    console.error("Firestore Error:", err);
-                    this.showError("Error de permisos en la base de datos.");
-                });
-
-                onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'daily'), (snap) => {
-                    this.data.allHistory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    this.render();
-                });
-            },
-
-            setTab(tab) {
-                this.currentTab = tab;
-                document.querySelectorAll('nav button').forEach(b => {
-                    b.classList.toggle('tab-active', b.id === `tab-${tab}`);
-                    b.classList.toggle('opacity-50', b.id !== `tab-${tab}`);
-                });
-                this.render();
-            },
-
-            async addPoint(taskId, delta, max) {
-                if (!this.user) return;
-                let current = Number(this.data.today[taskId] || 0);
-                let newVal = current + delta;
-                if (max !== null && newVal > max) newVal = max;
-                if (newVal < -50) newVal = -50;
-
-                const todayId = new Date().toLocaleDateString('en-CA');
-                try {
-                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'daily', todayId), { 
-                        points: { ...this.data.today, [taskId]: newVal },
-                        date: todayId
-                    }, { merge: true });
-                } catch (e) {
-                    console.error("Error guardando:", e);
-                }
-            },
-
-            render() {
-                const el = document.getElementById('content');
-                if (!el) return;
-
-                if (this.currentTab === 'daily') {
-                    const totalToday = Object.values(this.data.today).reduce((a, b) => a + (Number(b) || 0), 0);
-                    el.innerHTML = `
-                        <div class="text-center py-8 mb-4">
-                            <p class="text-[10px] font-black tracking-[0.3em] text-pink-500 uppercase">Puntos del Show</p>
-                            <h2 class="text-8xl font-header italic drop-shadow-2xl">${totalToday}</h2>
-                        </div>
-                        <div class="grid gap-3 mb-10">
-                            ${this.tasks.map(t => {
-                                const p = this.data.today[t.id] || 0;
-                                return `
-                                    <div class="glass p-4 rounded-[2rem] flex items-center justify-between">
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-3xl">${t.icon}</span>
-                                            <div>
-                                                <h4 class="font-bold text-sm uppercase italic leading-none">${t.label}</h4>
-                                                <p class="text-[9px] opacity-60 font-bold mt-1 uppercase">Meta: ${t.max}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <button onclick="window.App.addPoint('${t.id}', -1, ${t.max})" class="btn-press btn-minus w-10 h-10 rounded-full flex items-center justify-center font-black text-xl">-</button>
-                                            <span class="text-2xl font-header w-6 text-center">${p}</span>
-                                            <button onclick="window.App.addPoint('${t.id}', 1, ${t.max})" class="btn-press w-12 h-12 kpop-gradient rounded-full flex items-center justify-center font-black text-2xl shadow-lg">+</button>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
-                } else if (this.currentTab === 'rewards') {
-                    const total = this.data.allHistory.reduce((sum, day) => sum + Object.values(day.points || {}).reduce((a, b) => a + (Number(b) || 0), 0), 0);
-                    el.innerHTML = `
-                        <div class="glass rounded-[2.5rem] p-8 mb-8 text-center border-pink-500/30">
-                            <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mb-2">Total de la Gira</p>
-                            <h2 class="text-7xl font-header italic">${total}</h2>
-                        </div>
-                        <div class="grid gap-4 pb-10">
-                            ${this.rewards.map(r => {
-                                const prog = Math.min(100, (total / r.pts) * 100);
-                                return `
-                                    <div class="glass p-5 rounded-3xl flex items-center justify-between border-white/10 relative overflow-hidden">
-                                        <div class="absolute top-0 left-0 h-full bg-pink-500/10" style="width: ${prog}%"></div>
-                                        <div class="flex items-center gap-4 relative z-10">
-                                            <span class="text-4xl">${r.icon}</span>
-                                            <div>
-                                                <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${r.type === 'Semanal' ? 'bg-blue-600' : 'bg-purple-600'} text-white">${r.type}</span>
-                                                <h4 class="font-bold text-sm uppercase italic mt-1">${r.label}</h4>
-                                                <p class="text-[10px] font-bold text-pink-400">${r.pts} PTS</p>
-                                            </div>
-                                        </div>
-                                        <div class="relative z-10 font-header ${prog >= 100 ? 'text-green-400' : 'opacity-30'} text-xl">${Math.floor(prog)}%</div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
+                // 1. Autenticación (Prioridad según Regla 3)
+                if (initialToken) {
+                    await signInWithCustomToken(auth, initialToken);
                 } else {
-                    el.innerHTML = `<div class="grid gap-3">
-                        ${this.data.allHistory.sort((a,b)=>b.id.localeCompare(a.id)).map(day => `
-                            <div class="glass p-5 rounded-2xl flex justify-between items-center">
-                                <span class="text-xs font-black uppercase opacity-60 italic">${day.id}</span>
-                                <span class="font-header text-pink-500">${Object.values(day.points || {}).reduce((a,b)=>a+b,0)} PTS</span>
-                            </div>
-                        `).join('')}
-                    </div>`;
+                    await signInAnonymously(auth);
                 }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        document.getElementById('auth-status').innerText = "SHOW EN VIVO";
+                        document.getElementById('auth-status').classList.replace('text-yellow-400', 'text-green-400');
+                        document.getElementById('user-display').classList.remove('hidden');
+                        document.getElementById('uid-text').innerText = user.uid;
+                        startSync();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase Init Error:", error);
+                document.getElementById('error-console').classList.remove('hidden');
+                document.getElementById('error-message').innerText = `Error de API Key: ${error.message}. Verifica que el dominio esté autorizado en Firebase Console.`;
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        function startSync() {
+            if (!currentUser) return;
+            const todayId = new Date().toLocaleDateString('en-CA');
+            
+            // Ruta pública según Regla 1
+            const dailyDoc = doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayId);
+
+            onSnapshot(dailyDoc, (snap) => {
+                localData.today = snap.exists() ? (snap.data().points || {}) : {};
+                render();
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
+            }, (err) => {
+                document.getElementById('error-console').classList.remove('hidden');
+                document.getElementById('error-message').innerText = `Error de Firestore: ${err.message}. Revisa las reglas de seguridad.`;
+            });
+        }
+
+        window.addPoint = async (taskId, delta, max) => {
+            if (!currentUser) return;
+            const todayId = new Date().toLocaleDateString('en-CA');
+            let current = Number(localData.today[taskId] || 0);
+            let newVal = Math.max(0, Math.min(max, current + delta));
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayId), {
+                    points: { ...localData.today, [taskId]: newVal },
+                    lastUpdate: new Date().toISOString()
+                }, { merge: true });
+            } catch (e) {
+                console.error("Error al guardar:", e);
             }
         };
 
-        window.App = App;
-        window.onload = () => App.init();
+        window.setTab = (tab) => {
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.toggle('tab-active', b.id === `tab-${tab}`);
+                b.classList.toggle('opacity-50', b.id !== `tab-${tab}`);
+            });
+            render(tab);
+        };
+
+        function render(tab = 'daily') {
+            const el = document.getElementById('content');
+            if (tab === 'daily') {
+                const total = Object.values(localData.today).reduce((a, b) => a + b, 0);
+                el.innerHTML = `
+                    <div class="text-center py-8 mb-4">
+                        <p class="text-[10px] font-black tracking-[0.3em] text-pink-500 uppercase">Puntos de Hoy</p>
+                        <h2 class="text-8xl font-header italic">${total}</h2>
+                    </div>
+                    <div class="grid gap-3">
+                        ${tasks.map(t => {
+                            const p = localData.today[t.id] || 0;
+                            return `
+                                <div class="glass p-4 rounded-[2rem] flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-3xl">${t.icon}</span>
+                                        <div>
+                                            <h4 class="font-bold text-sm uppercase italic leading-none">${t.label}</h4>
+                                            <p class="text-[9px] opacity-60 font-bold mt-1 uppercase">Máximo: ${t.max}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <button onclick="addPoint('${t.id}', -1, ${t.max})" class="btn-press w-10 h-10 rounded-full flex items-center justify-center bg-white/10 font-black">-</button>
+                                        <span class="text-2xl font-header w-6 text-center">${p}</span>
+                                        <button onclick="addPoint('${t.id}', 1, ${t.max})" class="btn-press w-12 h-12 kpop-gradient rounded-full flex items-center justify-center font-black text-2xl shadow-lg">+</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } else if (tab === 'rewards') {
+                el.innerHTML = `<div class="py-20 text-center opacity-40 uppercase font-black tracking-widest italic">Próximamente en la gira...</div>`;
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
