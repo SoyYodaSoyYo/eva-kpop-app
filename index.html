@@ -70,7 +70,7 @@
         import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // Configuración de Firebase
+        // Configuración de Firebase - Asegúrate de que coincida con tu consola
         const firebaseConfig = {
             apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc",
             authDomain: "eva-kpop-tour.firebaseapp.com",
@@ -84,7 +84,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // Esta ID debe coincidir exactamente con la de tus Reglas de Seguridad de Firebase
+        // Esta ID vincula el código con las reglas de seguridad
         const appId = 'eva-kpop-prod-v1';
 
         const tasks = [
@@ -101,7 +101,7 @@
         let monthlyTotal = 0;
         const todayKey = new Date().toISOString().split('T')[0];
 
-        // Autenticación Anónima
+        // Autenticación Anónima para persistencia
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 try {
@@ -119,12 +119,12 @@
             document.getElementById('content').classList.remove('hidden');
             document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
-            // 1. Escuchar puntos de hoy en tiempo real
+            // 1. Escuchar puntos de hoy en tiempo real desde Firestore
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey), (snap) => {
                 currentPoints = snap.exists() ? snap.data().points : {};
                 renderTasks();
             }, (error) => {
-                console.error("Error leyendo puntos diarios:", error);
+                console.error("Error leyendo puntos diarios. Revisa las reglas de Firebase:", error);
             });
 
             // 2. Escuchar historial para el total del mes acumulado
@@ -143,21 +143,19 @@
             const currentVal = (currentPoints[id] || 0);
             const newVal = currentVal + delta;
             
-            // Validaciones básicas
             if (newVal < 0 || (max && newVal > max)) return;
             
             currentPoints[id] = newVal;
             const total = Object.values(currentPoints).reduce((a, b) => a + b, 0);
             
             try {
-                // Guardar en la sub-colección 'daily'
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey), {
                     points: currentPoints,
                     total: total,
                     updatedAt: new Date().toISOString()
                 });
             } catch (e) {
-                console.error("Error al guardar puntos:", e);
+                console.error("Error al guardar puntos. ¿Publicaste las reglas?", e);
             }
         }
 
@@ -170,15 +168,12 @@
             }
 
             try {
-                // 1. Guardar el resumen final en el historial
+                // Guardar el resumen final en el historial
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', todayKey), {
                     total: total,
                     details: currentPoints,
                     timestamp: new Date().toISOString()
                 });
-
-                // 2. Opcional: Limpiar los puntos temporales de hoy para el siguiente show
-                // await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayKey));
                 
                 alert("🎤 ¡Show cerrado con éxito! Los puntos se han sumado al Tour Mensual.");
             } catch (e) {
@@ -211,7 +206,6 @@
             }).join('');
         }
 
-        // Exponer funciones al scope global para los botones onclick
         window.updatePoints = updatePoints;
         document.getElementById('btn-save').onclick = window.saveDay;
     </script>
