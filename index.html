@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,8 @@
             color: #fff;
             margin: 0;
             overflow-x: hidden;
-            /* Configuración del Background */
+            /* Subida de fuente base en un 10% (aprox 17.6px de 16px estándar) */
+            font-size: 1.1rem;
             background-image: url('https://drive.google.com/uc?export=view&id=1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit');
             background-size: cover;
             background-position: center;
@@ -22,7 +23,7 @@
             background-repeat: no-repeat;
         }
 
-        /* Capa de oscurecimiento para mantener legibilidad */
+        /* Capa de oscurecimiento */
         body::before {
             content: "";
             position: fixed;
@@ -30,7 +31,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Oscurece la foto de fondo */
+            background: rgba(0, 0, 0, 0.85);
             z-index: -1;
         }
 
@@ -51,7 +52,7 @@
             font-family: 'Syne', sans-serif;
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 1.2rem;
+            font-size: 1.32rem; /* +10% de 1.2rem */
             color: #fff;
         }
 
@@ -88,13 +89,11 @@
             font-weight: 900;
         }
 
-        /* Estilo específico para la sección de dinero solicitado */
-        .money-label {
-            font-size: 11px; 
-        }
-        .money-amount {
-            font-size: 1.25rem; 
-        }
+        /* Ajuste de fuentes específicas +10% */
+        .money-label { font-size: 12.1px; }
+        .money-amount { font-size: 1.375rem; }
+        .task-label { font-size: 0.825rem; }
+        .task-pts { font-size: 10px; }
     </style>
 </head>
 <body class="pb-40">
@@ -109,15 +108,15 @@
         <h1 class="font-header text-4xl italic tracking-tighter neon-text mb-4">EVA K-POP</h1>
         <div class="inline-block glass-card px-8 py-4 rounded-3xl">
             <span id="total-pts" class="font-header text-6xl italic">0</span>
-            <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
+            <p class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
         </div>
     </header>
 
     <main class="max-w-md mx-auto p-4 mt-4 relative z-10">
         <nav class="flex mb-8 gap-1.5 bg-white/10 p-1 rounded-2xl border border-white/10 backdrop-blur-xl">
-            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] tab-active">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-60">Premios/Dinero</button>
-            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-60">Historial</button>
+            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active">Misiones</button>
+            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Premios</button>
+            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Historial</button>
         </nav>
 
         <div id="main-content" class="space-y-3"></div>
@@ -143,24 +142,26 @@
                 tab: 'tasks'
             },
 
-            // RECONVERSIÓN: Cada punto vale 10 pesos chilenos
             POINT_VALUE: 10,
 
             financeConfig: [
-                { id: 'gastar', label: 'Gastar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
+                { id: 'gastar', label: 'Libres para usar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
                 { id: 'gastos', label: 'Gastos', pct: 0.40, color: 'text-pink-300', desc: 'Necesidades' },
                 { id: 'ahorro', label: 'Ahorro', pct: 0.10, color: 'text-white', desc: 'Para el futuro' },
                 { id: 'compartir', label: 'Compartir', pct: 0.10, color: 'text-white/60', desc: 'Ayudar/Regalar' }
             ],
 
             tasks: [
-                { id: 'dientes', label: 'Lavar los dientes', pts: 1, limit: 3, icon: '🪥' },
-                { id: 'leer', label: 'Leer', pts: 2, limit: 2, icon: '📖' },
+                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🚿' },
+                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
+                { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
+                { id: 'vestirse', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '👗' },
+                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: '✏️' },
+                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '📖' },
+                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '🎨' },
                 { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥦' },
-                { id: 'crear', label: 'Crear algo', pts: 3, limit: 1, icon: '🎨' },
-                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' },
-                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
-                { id: 'tarea', label: 'Tarea terminada', pts: 2, limit: 1, icon: '✏️' }
+                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '😇' },
+                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' }
             ],
 
             goals: {
@@ -218,7 +219,6 @@
                 this.render();
             },
 
-            // Formateador de moneda para Peso Chileno
             formatCLP(val) {
                 return new Intl.NumberFormat('es-CL', { 
                     style: 'currency', 
@@ -235,8 +235,8 @@
                 ['tasks', 'rewards', 'history'].forEach(t => {
                     const btn = document.getElementById(`tab-${t}`);
                     if (btn) btn.className = this.data.tab === t 
-                        ? 'flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] tab-active' 
-                        : 'flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-60';
+                        ? 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active' 
+                        : 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60';
                 });
 
                 if (this.data.tab === 'tasks') {
@@ -247,22 +247,22 @@
                         div.className = `glass-card p-4 rounded-2xl flex justify-between items-center ${isMaxed ? 'task-done' : ''}`;
                         div.innerHTML = `
                             <div class="flex items-center gap-3">
-                                <span class="text-2xl">${t.icon}</span>
+                                <span class="text-3xl">${t.icon}</span>
                                 <div>
-                                    <h3 class="font-bold uppercase italic text-xs tracking-tight">${t.label}</h3>
-                                    <span class="text-pink-500 font-black text-[9px] uppercase">${count} / ${t.limit} • ${t.pts} pts</span>
+                                    <h3 class="font-bold uppercase italic task-label tracking-tight">${t.label}</h3>
+                                    <span class="text-pink-500 font-black task-pts uppercase">${count} / ${t.limit} • ${t.pts} pts</span>
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="App.adjustPoints('${t.id}', -1)" class="w-10 h-10 bg-white/10 rounded-xl border border-white/10">-</button>
-                                <button onclick="App.adjustPoints('${t.id}', 1)" class="w-10 h-10 bg-pink-600 rounded-xl font-bold">+</button>
+                                <button onclick="App.adjustPoints('${t.id}', -1)" class="w-11 h-11 bg-white/10 rounded-xl border border-white/10">-</button>
+                                <button onclick="App.adjustPoints('${t.id}', 1)" class="w-11 h-11 bg-pink-600 rounded-xl font-bold">+</button>
                             </div>
                         `;
                         el.appendChild(div);
                     });
                 } 
                 else if (this.data.tab === 'rewards') {
-                    const sectionTitle = (txt) => `<h3 class="text-[11px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
+                    const sectionTitle = (txt) => `<h3 class="text-[12.1px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
                     
                     el.innerHTML += sectionTitle('Premios Semanales');
                     this.goals.weekly.forEach(g => {
@@ -270,40 +270,23 @@
                         el.innerHTML += `
                             <div class="glass-card p-4 rounded-2xl mb-2 reward-card">
                                 <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold uppercase italic text-[11px]">${g.label}</span>
-                                    <span class="font-black text-xs text-yellow-400">${g.points} PTS</span>
+                                    <span class="font-bold uppercase italic text-[12.1px]">${g.label}</span>
+                                    <span class="font-black text-sm text-yellow-400">${g.points} PTS</span>
                                 </div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                                     <div class="bg-yellow-400 h-full" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         `;
                     });
 
-                    el.innerHTML += sectionTitle('Metas Mensuales');
-                    this.goals.monthly.forEach(g => {
-                        const progress = Math.min(100, (this.data.total / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-white/40">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold uppercase italic text-[11px]">${g.label}</span>
-                                    <span class="font-black text-xs opacity-50">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-white/40 h-full" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    // Calculando dinero en Pesos Chilenos (Puntos * 10)
                     const totalMoney = this.data.total * this.POINT_VALUE;
-                    el.innerHTML += `<h3 class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Desglose de Ganancias (CLP)</h3>`;
+                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Ganancias (CLP)</h3>`;
                     
                     const moneyBox = document.createElement('div');
                     moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/20 mb-6 text-center';
                     moneyBox.innerHTML = `
-                        <p class="text-[10px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p>
+                        <p class="text-[11px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p>
                         <h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>
                     `;
                     el.appendChild(moneyBox);
@@ -316,7 +299,7 @@
                             <div class="glass-card px-5 py-5 rounded-2xl flex justify-between items-center border-white/5">
                                 <div>
                                     <h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4>
-                                    <p class="text-[9px] text-white/30 uppercase tracking-tight">${conf.desc}</p>
+                                    <p class="text-[10px] text-white/30 uppercase tracking-tight">${conf.desc}</p>
                                 </div>
                                 <span class="font-header money-amount italic text-white">${this.formatCLP(amount)}</span>
                             </div>
@@ -326,16 +309,16 @@
                 } 
                 else if (this.data.tab === 'history') {
                     const hist = [...this.data.allHistory].reverse();
-                    el.innerHTML += `<h3 class="text-[11px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>`;
+                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>`;
                     
                     el.innerHTML += `
                         <div class="glass-card p-5 rounded-3xl border-pink-500/30 mb-4 bg-pink-500/10">
                             <div class="flex justify-between items-end">
                                 <div>
-                                    <span class="bg-pink-500 text-[8px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span>
-                                    <h4 class="font-bold italic uppercase text-sm">${this.data.today.id}</h4>
+                                    <span class="bg-pink-500 text-[9px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span>
+                                    <h4 class="font-bold italic uppercase text-base">${this.data.today.id}</h4>
                                 </div>
-                                <span class="font-header text-2xl text-white">${this.data.today.totalDay} <span class="text-[10px]">PTS</span></span>
+                                <span class="font-header text-3xl text-white">${this.data.today.totalDay} <span class="text-[11px]">PTS</span></span>
                             </div>
                         </div>
                     `;
@@ -343,8 +326,8 @@
                     hist.forEach(day => {
                         el.innerHTML += `
                             <div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-2 opacity-70">
-                                <span class="text-[10px] font-bold uppercase italic">${day.id}</span>
-                                <span class="font-header text-lg text-white/80">${day.totalDay} PTS</span>
+                                <span class="text-[11px] font-bold uppercase italic">${day.id}</span>
+                                <span class="font-header text-xl text-white/80">${day.totalDay} PTS</span>
                             </div>
                         `;
                     });
