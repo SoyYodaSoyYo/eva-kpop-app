@@ -3,270 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eva K-Pop Tour - Official Management</title>
+    <title>EL JUEGO DE EVA KPOP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
         
-        :root {
-            --neon-pink: #ff007f;
-            --neon-blue: #00f2ff;
-            --glass: rgba(15, 15, 15, 0.8);
-        }
-
         body { 
             font-family: 'Archivo', sans-serif; 
-            background-color: #050505;
-            color: white;
+            background: #000;
+            color: #fff;
             margin: 0;
-            background-image: radial-gradient(circle at 50% 50%, #1a0b1a 0%, #050505 100%);
-            min-height: 100vh;
+            overflow-x: hidden;
+            /* Tamaño base reducido un 20% respecto a la versión anterior */
+            font-size: 1rem; 
         }
 
         .font-header { font-family: 'Archivo Black', sans-serif; }
+        .font-syne { font-family: 'Syne', sans-serif; }
 
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
+        .marquee-container {
+            background: #ff007f;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 12px 0;
+            border-bottom: 4px solid #fff;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.8rem; /* Reducido */
+            letter-spacing: 0.1em;
+            color: #ffffff;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-stage {
+            background: linear-gradient(180deg, #000 0%, #1a001a 100%);
+            min-height: 100vh;
+        }
+
+        .neon-text {
+            color: #ff007f;
+            text-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        .kpop-card {
-            transition: all 0.2s ease;
+        .task-done {
+            border-left: 8px solid #ff007f !important;
+            background: rgba(255, 0, 127, 0.1) !important;
         }
 
-        .kpop-card:active { transform: scale(0.97); }
+        .btn-plus {
+            background: #ff007f;
+        }
+        
+        .btn-plus:disabled {
+            background: #333;
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
 
         .tab-active {
-            border-bottom: 3px solid var(--neon-pink);
-            color: var(--neon-pink);
-            text-shadow: 0 0 10px var(--neon-pink);
+            background: #fff;
+            color: #000;
+            font-weight: 900;
         }
 
-        .progress-bar-fill {
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px var(--neon-pink);
+        .big-number {
+            font-size: 6rem; /* Reducido de 8rem */
+            line-height: 1;
+            letter-spacing: -0.05em;
+        }
+
+        .label-lg {
+            font-size: 1.25rem; /* Ajustado */
+            line-height: 1.2;
+        }
+
+        .btn-control {
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+        }
+
+        /* Estilo para el botón amarillo de bono */
+        .btn-perfect-day {
+            background: #ffea00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
         }
     </style>
 </head>
-<body class="pb-28">
+<body class="main-stage pb-48">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 glass border-b border-pink-900/30 p-4">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="font-header italic text-xl tracking-tighter uppercase leading-none">
-                    Eva <span class="text-pink-500">World Tour</span>
-                </h1>
-                <p id="current-date" class="text-[10px] uppercase font-bold opacity-50 tracking-widest mt-1"></p>
-            </div>
-            <div class="text-right">
-                <div id="total-score" class="font-header text-3xl text-pink-500 drop-shadow-md">0</div>
-                <div class="text-[8px] uppercase font-black opacity-40">Puntos Totales</div>
+    <div class="marquee-container sticky top-0 z-[60]">
+        <div class="marquee-text">
+            EVA K-POP TOUR • DÍA PERFECTO • RECIBES LO QUE DAS • CREA ALGO • LEE • TERMINA LO QUE EMPIECES •
+        </div>
+    </div>
+
+    <header class="p-8 border-b border-white/10 bg-black/50">
+        <div class="max-w-md mx-auto flex flex-col items-center text-center">
+            <h1 class="font-header text-4xl italic tracking-tighter neon-text mb-4">MI DI A DIA</h1>
+            
+            <div class="flex flex-col items-center">
+                <span id="total-pts" class="font-header big-number italic">0</span>
+                <span class="text-lg font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto px-4 mt-6">
-        
-        <!-- Tabs -->
-        <nav class="flex justify-around mb-8 text-xs font-black uppercase tracking-widest border-b border-white/5">
-            <button onclick="App.setTab('missions')" id="tab-missions" class="tab-active py-3 px-4">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="py-3 px-4">Premios</button>
-            <button onclick="App.setTab('history')" id="tab-history" class="py-3 px-4">Tour Log</button>
+    <main class="max-w-md mx-auto p-4 mt-6">
+        <nav class="flex mb-8 gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
+            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest tab-active">Misiones</button>
+            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest opacity-40">Premios</button>
         </nav>
 
-        <!-- Dynamic Content -->
-        <div id="view-container" class="space-y-3"></div>
-
+        <div id="main-content" class="space-y-4"></div>
     </main>
 
-    <!-- Admin Controls -->
-    <div class="fixed bottom-0 left-0 w-full p-4 glass border-t border-white/10 z-50 flex gap-4 justify-center">
-        <button onclick="App.quickAdjust(10, 'Backstage Bonus')" class="flex-1 bg-blue-600/20 border border-blue-500 text-blue-400 font-black py-4 rounded-2xl uppercase text-xs tracking-tighter active:bg-blue-600/40">
-            ⭐ Bono (+10)
-        </button>
-        <button onclick="App.quickAdjust(-10, 'Ticket Warning')" class="flex-1 bg-red-600/20 border border-red-500 text-red-400 font-black py-4 rounded-2xl uppercase text-xs tracking-tighter active:bg-red-600/40">
-            ⚠️ Multa (-10)
-        </button>
+    <!-- Botones de acción inferior más pequeños -->
+    <div class="fixed bottom-0 left-0 w-full p-6 bg-black/95 border-t-2 border-pink-500 z-[100]">
+        <div class="max-w-md mx-auto grid grid-cols-2 gap-3">
+            <button onclick="App.quickAdjust(20, 'Bono + 20')" class="btn-perfect-day font-black py-4 rounded-2xl uppercase text-base italic flex items-center justify-center gap-2">
+                <span>🥳</span> Bono +20
+            </button>
+            <button onclick="App.quickAdjust(-5, 'Falta -5')" class="bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-base italic">
+                Falta -5
+            </button>
+        </div>
     </div>
 
     <script>
-        const CONFIG = {
-            missions: [
-                { id: 'cama', label: 'Hacer la cama', pts: 5, max: 1, icon: '🛏️' },
-                { id: 'dientes', label: 'Lavar Dientes', pts: 2, max: 3, icon: '🪥' },
-                { id: 'dormir', label: 'Dormir sola', pts: 10, max: 1, icon: '🌙' },
-                { id: 'baño', label: 'Bañarse sola', pts: 5, max: 1, icon: '🚿' },
-                { id: 'vestir', label: 'Vestirse sola', pts: 5, max: 1, icon: '👗' },
-                { id: 'leer', label: 'Leer Libro', pts: 4, max: 2, icon: '📖' },
-                { id: 'tarea', label: 'Tarea / Dibujo', pts: 3, max: 2, icon: '🎨' },
-                { id: 'comida', label: 'Comida Sana', pts: 2, max: 3, icon: '🥦' },
-                { id: 'sincera', label: 'Sinceridad', pts: 5, max: 1, icon: '🤝' },
-                { id: 'suave', label: 'Hablar suave', pts: 3, max: 3, icon: '🤫' }
-            ],
-            rewards: [
-                { id: 'w1', label: 'Álbum Digital / Stickers', type: 'Semanal', pts: 175 },
-                { id: 'w2', label: 'Cena Favorita / Merch', type: 'Semanal', pts: 350 },
-                { id: 'm1', label: 'Lightstick / Ropa K-Pop', type: 'Mensual', pts: 700 },
-                { id: 'm2', label: 'Evento Especial / VIP', type: 'Mensual', pts: 1400 }
-            ]
-        };
-
         const App = {
-            currentTab: 'missions',
-            state: {
+            data: {
                 total: 0,
-                dailyCounts: {},
-                history: [],
-                lastDate: ''
+                today: {},
+                tab: 'tasks'
             },
+
+            tasks: [
+                { id: 'dientes', label: 'Lavar los dientes', pts: 1, limit: 6, icon: '🪥' },
+                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '📖' },
+                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥦' },
+                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '🎨' },
+                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' },
+                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '🤝' },
+                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
+                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
+                { id: 'baño', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
+                { id: 'vestir', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '👗' },
+                { id: 'tarea', label: 'Tarea', pts: 1, limit: 1, icon: '✏️' }
+            ],
+
+            rewards: [
+                { label: 'Película Extra', pts: 100 },
+                { label: 'Helado Especial', pts: 180 },
+                { label: 'Regalo Sorpresa', pts: 400 },
+                { label: 'Paseo + Regalo', pts: 800 }
+            ],
 
             init() {
-                this.load();
-                this.checkDateReset();
-                this.updateUI();
+                const saved = localStorage.getItem('eva_kpop_v7');
+                if (saved) this.data = JSON.parse(saved);
                 
-                const options = { weekday: 'long', day: 'numeric', month: 'long' };
-                document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', options);
-            },
-
-            load() {
-                const saved = localStorage.getItem('eva_tour_manager_v3');
-                if (saved) {
-                    this.state = JSON.parse(saved);
+                const dateKey = new Date().toLocaleDateString();
+                if (!this.data.today || this.data.today.date !== dateKey) {
+                    this.data.today = { date: dateKey, completed: {} };
                 }
-            },
-
-            save() {
-                localStorage.setItem('eva_tour_manager_v3', JSON.stringify(this.state));
-                this.updateUI();
-            },
-
-            checkDateReset() {
-                const today = new Date().toLocaleDateString();
-                if (this.state.lastDate !== today) {
-                    this.state.dailyCounts = {};
-                    this.state.lastDate = today;
-                    this.save();
-                }
-            },
-
-            setTab(tab) {
-                this.currentTab = tab;
-                document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
-                document.getElementById(`tab-${tab}`).classList.add('tab-active');
                 this.render();
             },
 
-            addPoint(id) {
-                const mission = CONFIG.missions.find(m => m.id === id);
-                const count = this.state.dailyCounts[id] || 0;
-                
-                if (count < mission.max) {
-                    this.state.dailyCounts[id] = count + 1;
-                    this.state.history.push({
-                        id: Date.now(),
-                        label: mission.label,
-                        pts: mission.pts,
-                        date: new Date().toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                        fullDate: new Date().toLocaleDateString()
-                    });
-                    this.calculateTotal();
-                    this.save();
-                }
+            save() {
+                localStorage.setItem('eva_kpop_v7', JSON.stringify(this.data));
+                this.render();
             },
 
-            quickAdjust(pts, label) {
-                this.state.history.push({
-                    id: Date.now(),
-                    label: label,
-                    pts: pts,
-                    date: new Date().toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                    fullDate: new Date().toLocaleDateString()
-                });
-                this.calculateTotal();
+            adjustPoints(taskId, amount) {
+                const task = this.tasks.find(t => t.id === taskId);
+                const currentCount = this.data.today.completed[taskId] || 0;
+                
+                if (amount > 0 && currentCount >= task.limit) return;
+                if (amount < 0 && currentCount <= 0) return;
+
+                this.data.today.completed[taskId] = currentCount + (amount > 0 ? 1 : -1);
+                this.data.total += (amount > 0 ? task.pts : -task.pts);
                 this.save();
             },
 
-            calculateTotal() {
-                this.state.total = this.state.history.reduce((acc, curr) => acc + curr.pts, 0);
+            quickAdjust(pts, label) {
+                this.data.total += pts;
+                this.save();
             },
 
-            updateUI() {
-                document.getElementById('total-score').innerText = this.state.total;
+            setTab(t) {
+                this.data.tab = t;
                 this.render();
             },
 
             render() {
-                const container = document.getElementById('view-container');
-                container.innerHTML = '';
+                document.getElementById('total-pts').innerText = this.data.total;
+                const el = document.getElementById('main-content');
+                el.innerHTML = '';
 
-                if (this.currentTab === 'missions') {
-                    CONFIG.missions.forEach(m => {
-                        const count = this.state.dailyCounts[m.id] || 0;
-                        const done = count >= m.max;
-                        
+                ['tasks', 'rewards'].forEach(t => {
+                    const tabBtn = document.getElementById(`tab-${t}`);
+                    if (tabBtn) {
+                        tabBtn.className = this.data.tab === t 
+                            ? 'flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest tab-active' 
+                            : 'flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest opacity-40';
+                    }
+                });
+
+                if (this.data.tab === 'tasks') {
+                    this.tasks.forEach(t => {
+                        const count = this.data.today.completed[t.id] || 0;
+                        const isMaxed = count >= t.limit;
                         const div = document.createElement('div');
-                        div.className = `kpop-card glass p-4 rounded-2xl flex items-center justify-between border-l-4 ${done ? 'border-green-500 opacity-50' : 'border-pink-500'}`;
+                        div.className = `glass-card p-5 rounded-[1.5rem] flex justify-between items-center ${isMaxed ? 'task-done' : ''}`;
                         div.innerHTML = `
                             <div class="flex items-center gap-4">
-                                <span class="text-2xl">${m.icon}</span>
+                                <span class="text-3xl">${t.icon}</span>
                                 <div>
-                                    <h3 class="font-bold text-sm uppercase italic leading-tight">${m.label}</h3>
-                                    <p class="text-[10px] font-black text-pink-400 tracking-wider">${m.pts} PUNTOS</p>
+                                    <h3 class="font-bold uppercase italic label-lg">${t.label}</h3>
+                                    <span class="text-pink-500 font-black uppercase text-xs tracking-tighter">${count} / ${t.limit} COMPLETADO</span>
                                 </div>
                             </div>
-                            <button onclick="App.addPoint('${m.id}')" ${done ? 'disabled' : ''} 
-                                    class="w-12 h-12 rounded-full font-header text-xl flex items-center justify-center ${done ? 'bg-gray-800 text-gray-500' : 'bg-pink-600 text-white shadow-lg shadow-pink-900/50'}">
-                                ${done ? '✓' : '+'}
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="App.adjustPoints('${t.id}', -1)" class="btn-control bg-white/10 rounded-xl font-bold">-</button>
+                                <button onclick="App.adjustPoints('${t.id}', 1)" ${isMaxed ? 'disabled' : ''} class="btn-control btn-plus rounded-xl font-bold text-white">+</button>
+                            </div>
                         `;
-                        container.appendChild(div);
+                        el.appendChild(div);
                     });
-                } else if (this.currentTab === 'rewards') {
-                    CONFIG.rewards.forEach(r => {
-                        const progress = Math.min(100, (this.state.total / r.pts) * 100);
-                        const unlocked = progress >= 100;
-                        
+                } else if (this.data.tab === 'rewards') {
+                    this.rewards.forEach(r => {
+                        const prog = Math.min(100, (this.data.total / r.pts) * 100);
                         const div = document.createElement('div');
-                        div.className = `glass p-4 rounded-2xl border ${unlocked ? 'border-green-500' : 'border-white/10'}`;
+                        div.className = `glass-card p-6 rounded-[1.2rem] relative overflow-hidden`;
                         div.innerHTML = `
-                            <div class="flex justify-between items-start mb-3">
+                            <div class="absolute top-0 left-0 h-full bg-pink-500/10" style="width: ${prog}%"></div>
+                            <div class="relative z-10 flex justify-between items-center">
                                 <div>
-                                    <span class="text-[8px] font-black px-2 py-0.5 rounded-full ${r.type === 'Semanal' ? 'bg-blue-600' : 'bg-purple-600'} uppercase">${r.type}</span>
-                                    <h4 class="font-bold text-sm uppercase italic mt-1">${r.label}</h4>
+                                    <h4 class="font-bold label-lg uppercase italic">${r.label}</h4>
+                                    <p class="text-base font-black text-pink-500">${r.pts} PUNTOS</p>
                                 </div>
-                                <div class="text-right">
-                                    <span class="font-header text-lg ${unlocked ? 'text-green-400' : 'opacity-40'}">${r.pts}</span>
-                                    <p class="text-[8px] font-black opacity-30 uppercase">Meta</p>
-                                </div>
-                            </div>
-                            <div class="w-full h-2 bg-black rounded-full overflow-hidden">
-                                <div class="progress-bar-fill h-full bg-pink-500" style="width: ${progress}%"></div>
+                                <div class="font-header text-2xl opacity-40">${Math.floor(prog)}%</div>
                             </div>
                         `;
-                        container.appendChild(div);
-                    });
-                } else {
-                    const recent = [...this.state.history].reverse().slice(0, 20);
-                    if (recent.length === 0) {
-                        container.innerHTML = `<p class="text-center opacity-30 italic py-10">Sin actividad registrada aún...</p>`;
-                        return;
-                    }
-                    recent.forEach(h => {
-                        const div = document.createElement('div');
-                        div.className = "flex justify-between items-center py-3 border-b border-white/5 px-2";
-                        div.innerHTML = `
-                            <div>
-                                <p class="text-xs font-bold uppercase italic">${h.label}</p>
-                                <p class="text-[9px] opacity-40 uppercase font-bold">${h.date} - ${h.fullDate}</p>
-                            </div>
-                            <span class="font-header ${h.pts >= 0 ? 'text-green-400' : 'text-red-400'}">
-                                ${h.pts >= 0 ? '+' : ''}${h.pts}
-                            </span>
-                        `;
-                        container.appendChild(div);
+                        el.appendChild(div);
                     });
                 }
             }
