@@ -2,355 +2,330 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eva Alemán - K-Pop Hunters World Tour</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eva K-Pop Tour - Official App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@300;500;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
         
         :root {
-            --kpop-pink: #ec4899;
-            --kpop-purple: #7c3aed;
+            --bg-url: url('https://images.tcdn.com.br/img/img_prod/1129828/k_pop_hunters_volume_1_e_2_3127_1_15d868953923485f762744d567118833.jpg');
+            --kpop-pink: #ff0080;
+            --kpop-purple: #7928ca;
         }
 
         body { 
-            font-family: 'Archivo Black', sans-serif; 
-            background-color: #000;
+            font-family: 'Archivo', sans-serif; 
+            background-color: #0b0b0b;
             color: white;
             margin: 0;
-            overflow-x: hidden;
+            background-image: var(--bg-url);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
-        .font-archivo { font-family: 'Archivo', sans-serif; }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.92));
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #app { position: relative; z-index: 1; }
+        .font-header { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-style: italic; }
         
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .kpop-gradient { 
+            background: linear-gradient(135deg, var(--kpop-pink) 0%, var(--kpop-purple) 100%); 
+        }
+
+        .tab-active { 
+            border-bottom: 4px solid var(--kpop-pink); 
+            color: var(--kpop-pink); 
+            opacity: 1 !important; 
+        }
+
         @keyframes marquee {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-
-        .animate-marquee {
-            display: inline-flex;
-            animation: marquee 25s linear infinite;
-        }
-
-        .glass-card {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(12px);
-            border: 4px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-action {
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            cursor: pointer;
-        }
-
-        .btn-action:active {
-            transform: scale(0.95);
-        }
-
-        .shadow-kpop {
-            box-shadow: 0 0 40px rgba(236, 72, 153, 0.4);
-        }
+        .animate-marquee { display: inline-flex; animation: marquee 15s linear infinite; }
+        
+        .btn-press:active { transform: scale(0.9); }
     </style>
 </head>
-<body>
-    <!-- FONDO DE PANTALLA -->
-    <div class="fixed inset-0 z-0 bg-cover bg-center" style="background-image: url('https://images.tcdn.com.br/img/img_prod/1129828/k_pop_hunters_volume_1_e_2_3127_1_15d868953923485f762744d567118833.jpg')"></div>
-    <div id="bg-overlay" class="fixed inset-0 z-0 backdrop-blur-[4px] bg-black/75 transition-colors duration-700"></div>
+<body class="pb-20">
+    <div class="overlay"></div>
 
-    <div id="app-root" class="relative z-10 min-h-screen pb-20">
-        <!-- Loader inicial -->
-        <div class="flex flex-col items-center justify-center h-screen gap-6">
-            <div class="animate-spin rounded-full h-24 w-24 border-t-4 border-pink-500"></div>
-            <p class="text-2xl font-black italic animate-pulse text-pink-500">CONECTANDO AL TOUR...</p>
+    <div id="app">
+        <!-- HEADER -->
+        <header class="p-6 kpop-gradient sticky top-0 z-50 shadow-2xl">
+            <div class="flex justify-between items-end max-w-4xl mx-auto">
+                <div>
+                    <h1 class="font-header text-3xl italic tracking-tighter leading-none">Eva World Tour</h1>
+                    <p id="status-text" class="text-[10px] font-black opacity-80 tracking-[0.3em] uppercase mt-1">Sincronizando Staff...</p>
+                </div>
+                <div id="display-date" class="text-xs font-black opacity-90 uppercase italic border-l border-white/30 pl-3"></div>
+            </div>
+        </header>
+
+        <!-- MARQUEE -->
+        <div class="bg-white text-black py-1 overflow-hidden whitespace-nowrap z-40 relative">
+            <div class="animate-marquee flex items-center">
+                <span class="mx-4 font-black italic text-[10px] uppercase tracking-widest">WORLD TOUR 2026</span>
+                <span class="text-pink-600">✦</span>
+                <span class="mx-4 font-black italic text-[10px] uppercase tracking-widest">LIVE IN SEOUL</span>
+                <span class="text-pink-600">✦</span>
+                <span class="mx-4 font-black italic text-[10px] uppercase tracking-widest">EVA K-POP CHALLENGE</span>
+                <span class="text-pink-600">✦</span>
+                <span class="mx-4 font-black italic text-[10px] uppercase tracking-widest">WORLD TOUR 2026</span>
+                <span class="text-pink-600">✦</span>
+            </div>
         </div>
+
+        <!-- NAVIGATION -->
+        <nav class="flex justify-around bg-black/80 border-b border-white/10 sticky top-[84px] z-40 backdrop-blur-md">
+            <button onclick="window.App.setTab('daily')" id="tab-daily" class="py-4 px-4 text-[11px] font-black uppercase tracking-widest tab-active transition-all">Misiones</button>
+            <button onclick="window.App.setTab('rewards')" id="tab-rewards" class="py-4 px-4 text-[11px] font-black uppercase tracking-widest opacity-40 transition-all">Premios</button>
+            <button onclick="window.App.setTab('history')" id="tab-history" class="py-4 px-4 text-[11px] font-black uppercase tracking-widest opacity-40 transition-all">Historial</button>
+        </nav>
+
+        <main class="p-4 max-w-xl mx-auto">
+            <!-- PANTALLA DE CARGA -->
+            <div id="loader" class="flex flex-col items-center justify-center py-32 space-y-4">
+                <div class="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em]">Cargando Datos del Tour...</p>
+            </div>
+            
+            <div id="content" class="hidden"></div>
+        </main>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // CONFIGURACIÓN REAL DE TUS FOTOS
-        const firebaseConfig = {
-            apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrCllQc",
-            authDomain: "eva-kpop-tour.firebaseapp.com",
-            projectId: "eva-kpop-tour",
-            storageBucket: "eva-kpop-tour.firebasestorage.app",
-            messagingSenderId: "49327968177",
-            appId: "1:49327968177:web:647c232224aa288f3c7790"
-        };
-
+        // CONFIGURACIÓN DINÁMICA DEL ENTORNO
+        const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = 'eva-kpop-tour-prod'; // ID único para tu base de datos
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-v2';
 
-        window.KPopApp = {
-            state: {
-                taskPoints: {},
-                history: {},
-                user: null,
-                viewingDate: null,
-                today: new Date().toISOString().split('T')[0]
-            },
-
+        const App = {
+            currentTab: 'daily',
+            user: null,
+            data: { today: {}, allHistory: [] },
+            
             tasks: [
-                { id: 'h1', label: 'Hacer la cama', emoji: '🛏️', max: 1 },
-                { id: 'h2', label: 'Dientes (x6)', emoji: '🪥', max: 6 },
-                { id: 'h3', label: 'Dormir sola', emoji: '🌙', max: 1 },
-                { id: 'h4', label: 'Bañarse sola', emoji: '🚿', max: 1 },
-                { id: 'h5', label: 'Vestirse sola', emoji: '👗', max: 1 },
-                { id: 'h6', label: 'Espacio ordenado', emoji: '🧸', max: 1 },
-                { id: 'h7', label: 'Crear algo', emoji: '🎨', max: 4 },
-                { id: 'h8', label: 'Leer', emoji: '📚', max: 5 },
-                { id: 'h9', label: 'Tarea', emoji: '📝', max: 10 },
-                { id: 's1', label: 'Balance con comida', emoji: '🍎', max: 5 },
-                { id: 's2', label: 'Tiempo de pantalla', emoji: '📱', max: 5 },
-                { id: 'v1', label: 'No engañar', emoji: '😇', max: 30 },
-                { id: 'v2', label: 'No gritar', emoji: '🤫', max: 10 },
-                { id: 'v3', label: 'Respetar a mayores', emoji: '🤝', max: 20 }
+                { id: 't1', label: 'Hacer la cama', icon: '🛏️', max: 1, pts: 5 },
+                { id: 't2', label: 'Lavar Dientes', icon: '🪥', max: 6, pts: 2 },
+                { id: 't3', label: 'Dormir sola', icon: '🌙', max: 1, pts: 10 },
+                { id: 't4', label: 'Bañarse sola', icon: '🚿', max: 1, pts: 5 },
+                { id: 't5', label: 'Vestirse sola', icon: '👗', max: 1, pts: 5 },
+                { id: 't6', label: 'Leer Libro', icon: '📚', max: 6, pts: 4 },
+                { id: 't7', label: 'Tarea / Dibujo', icon: '🎨', max: 4, pts: 3 },
+                { id: 't8', label: 'Comida Sana', icon: '🍎', max: 5, pts: 2 },
+                { id: 'v1', label: 'Sinceridad', icon: '😇', max: 1, pts: 5 },
+                { id: 'v2', label: 'Hablar suave', icon: '🤫', max: 5, pts: 3 }
+            ],
+
+            rewards: [
+                { id: 'r1', label: 'Stickers K-Pop', pts: 50, icon: '🏷️' },
+                { id: 'r2', label: '30 min Tablet', pts: 150, icon: '📱' },
+                { id: 'r3', label: 'Cromos Blackpink', pts: 400, icon: '📸' },
+                { id: 'r4', label: 'Álbum NewJeans', pts: 1000, icon: '💿' },
+                { id: 'r5', label: 'Lightstick Oficial', pts: 2500, icon: '🪄' }
             ],
 
             async init() {
-                onAuthStateChanged(auth, async (user) => {
-                    if (!user) {
-                        try {
-                            await signInAnonymously(auth);
-                        } catch (e) {
-                            console.error("Error Auth:", e);
-                            document.getElementById('app-root').innerHTML = `<div class="p-10 text-center text-red-500 font-black">ERROR: ACTIVA ACCESO ANÓNIMO EN FIREBASE</div>`;
-                            return;
-                        }
-                    }
-                    this.state.user = auth.currentUser;
-                    this.syncData();
+                // Reloj
+                document.getElementById('display-date').innerText = new Date().toLocaleDateString('es-ES', { 
+                    weekday: 'short', day: 'numeric', month: 'short' 
                 });
-            },
 
-            syncData() {
-                // Escuchar puntos de hoy
-                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'daily', this.state.today), (snap) => {
-                    if (snap.exists()) {
-                        this.state.taskPoints = snap.data().points || {};
+                // Autenticación obligatoria antes de cualquier consulta (Regla 3)
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
                     } else {
-                        this.state.taskPoints = {};
+                        await signInAnonymously(auth);
                     }
-                    this.render();
-                });
+                } catch (err) {
+                    console.error("Auth Error:", err);
+                    document.getElementById('status-text').innerText = "ERROR DE ACCESO";
+                }
 
-                // Escuchar historial completo para el total mensual
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history'), (snap) => {
-                    const newHistory = {};
-                    snap.forEach(doc => { newHistory[doc.id] = doc.data(); });
-                    this.state.history = newHistory;
-                    this.render();
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        this.user = user;
+                        document.getElementById('status-text').innerText = "STAFF AUTORIZADO";
+                        this.startListeners();
+                    }
                 });
             },
 
-            async updatePoints(taskId, delta, max) {
-                if (this.state.viewingDate && this.state.viewingDate !== this.state.today) return;
+            startListeners() {
+                if (!this.user) return;
+                const todayId = new Date().toLocaleDateString('en-CA'); 
                 
-                const current = (this.state.taskPoints[taskId] || 0);
-                let next = current + delta;
-                
-                if (max && next > max) next = max;
-                if (next < -100) next = -100;
+                // Ruta estricta de Firestore (Regla 1)
+                const todayRef = doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayId);
+                const histRef = collection(db, 'artifacts', appId, 'public', 'data', 'daily');
 
-                this.state.taskPoints[taskId] = next;
-                const total = Object.values(this.state.taskPoints).reduce((a, b) => a + (b || 0), 0);
+                // Listener Hoy
+                onSnapshot(todayRef, (snap) => {
+                    this.data.today = snap.exists() ? (snap.data().points || {}) : {};
+                    this.render();
+                    document.getElementById('loader').classList.add('hidden');
+                    document.getElementById('content').classList.remove('hidden');
+                }, (err) => console.error("Error Hoy:", err));
 
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'daily', this.state.today), {
-                        points: this.state.taskPoints,
-                        total: total,
-                        updatedAt: new Date().toISOString()
-                    });
-                } catch (e) { console.error("Error guardando:", e); }
+                // Listener Historial
+                onSnapshot(histRef, (snap) => {
+                    this.data.allHistory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    this.render();
+                }, (err) => console.error("Error Historial:", err));
             },
 
-            async saveDay() {
-                const total = Object.values(this.state.taskPoints).reduce((a, b) => a + (b || 0), 0);
-                if (total === 0 && !confirm("¿Cerrar show con 0 puntos?")) return;
+            setTab(tab) {
+                this.currentTab = tab;
+                document.querySelectorAll('nav button').forEach(b => {
+                    const isActive = b.id === `tab-${tab}`;
+                    b.classList.toggle('tab-active', isActive);
+                    b.classList.toggle('opacity-40', !isActive);
+                });
+                this.render();
+            },
+
+            async updatePoint(taskId, delta, max) {
+                if (!this.user) return;
+                
+                let current = Number(this.data.today[taskId] || 0);
+                let newVal = Math.max(0, Math.min(max, current + delta));
+                
+                const todayId = new Date().toLocaleDateString('en-CA');
+                const todayRef = doc(db, 'artifacts', appId, 'public', 'data', 'daily', todayId);
 
                 try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', this.state.today), {
-                        total,
-                        details: { ...this.state.taskPoints },
-                        timestamp: new Date().toISOString()
-                    });
-                    alert("✨ ¡SHOW COMPLETADO! Los puntos se han guardado en el historial del tour.");
-                } catch (e) { console.error("Error al cerrar:", e); }
+                    await setDoc(todayRef, {
+                        points: { ...this.data.today, [taskId]: newVal },
+                        date: todayId,
+                        lastUpdate: Date.now()
+                    }, { merge: true });
+                } catch (err) {
+                    console.error("Save Error:", err);
+                }
             },
 
             render() {
-                const root = document.getElementById('app-root');
-                if (!root) return;
+                const el = document.getElementById('content');
+                if (!el) return;
 
-                const activeDateStr = this.state.viewingDate || this.state.today;
-                const isHistory = activeDateStr !== this.state.today;
-                
-                const activePoints = isHistory ? (this.state.history[activeDateStr]?.details || {}) : this.state.taskPoints;
-                const currentTotal = Object.values(activePoints).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
-                const monthlyTotal = Object.values(this.state.history).reduce((a, b) => a + (b.total || 0), 0);
-                const money = monthlyTotal * 100;
+                // Cálculo de puntos acumulados totales
+                const totalPoints = this.data.allHistory.reduce((sum, day) => {
+                    const ptsMap = day.points || {};
+                    return sum + Object.entries(ptsMap).reduce((dSum, [tid, count]) => {
+                        const task = this.tasks.find(t => t.id === tid);
+                        return dSum + (count * (task ? task.pts : 0));
+                    }, 0);
+                }, 0);
 
-                root.innerHTML = this.template(currentTotal, monthlyTotal, money, activePoints, isHistory, activeDateStr);
-                if (window.lucide) window.lucide.createIcons();
-            },
+                if (this.currentTab === 'daily') {
+                    const todayPoints = Object.entries(this.data.today).reduce((acc, [tid, count]) => {
+                        const task = this.tasks.find(t => t.id === tid);
+                        return acc + (count * (task ? task.pts : 0));
+                    }, 0);
 
-            template(current, monthly, money, points, isHistory, activeDateStr) {
-                const dayNum = activeDateStr.split('-')[2];
-                
-                return `
-                    <!-- MARQUESINA SUPERIOR -->
-                    <div class="relative z-20 w-full border-y-4 border-white py-4 overflow-hidden shadow-2xl transition-colors ${isHistory ? 'bg-indigo-600' : 'bg-pink-600'}">
-                        <div class="animate-marquee">
-                            ${Array(10).fill(`<span class="text-4xl font-black italic uppercase tracking-tighter mx-8 flex items-center gap-4 text-white">
-                                <i data-lucide="${isHistory ? 'history' : 'zap'}"></i> ${isHistory ? 'REVISANDO SHOW PASADO' : 'EVA ALEMÁN K-POP TOUR'} <i data-lucide="star" class="fill-white text-white"></i>
-                            </span>`).join('')}
+                    el.innerHTML = `
+                        <div class="text-center py-8 mb-4">
+                            <p class="text-[10px] font-black tracking-[0.4em] text-pink-500 uppercase italic mb-1">Puntos de Hoy</p>
+                            <h2 class="text-8xl font-header italic tracking-tighter drop-shadow-lg leading-none">${todayPoints}</h2>
                         </div>
-                    </div>
-
-                    <div class="p-4 md:p-12 max-w-[1400px] mx-auto">
-                        <div class="text-center mb-12 mt-4 relative">
-                            ${isHistory ? `
-                                <button onclick="window.KPopApp.state.viewingDate = null; window.KPopApp.render()" 
-                                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-white text-black px-6 py-3 rounded-full font-black flex items-center gap-2 hover:scale-110 transition-transform shadow-xl z-50">
-                                    <i data-lucide="arrow-left"></i> VOLVER
-                                </button>` : ''}
-                            <h1 class="text-7xl md:text-9xl font-black italic tracking-tighter leading-none uppercase text-white drop-shadow-[0_0_30px_rgba(236,72,153,0.8)]">
-                                ${isHistory ? 'RECUERDO' : 'EVA ALEMÁN'}
-                            </h1>
-                            <p class="text-xl font-black tracking-[0.5em] text-pink-400 uppercase italic">
-                                DÍA DEL TOUR: ${dayNum}
-                            </p>
-                        </div>
-
-                        <!-- DASHBOARD DE PUNTOS Y DINERO -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-                            <section class="glass-card rounded-[3rem] p-8 border-4 ${isHistory ? 'border-indigo-400' : 'border-pink-500 shadow-kpop'}">
-                                <div class="flex items-center gap-4 mb-6 border-b border-white/10 pb-4">
-                                    <i data-lucide="crown" class="text-yellow-400"></i>
-                                    <h2 class="text-4xl font-black uppercase italic tracking-tighter">PUNTOS</h2>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-white/5 p-6 rounded-[2rem] text-center border border-white/10">
-                                        <p class="text-[10px] font-black text-pink-400 uppercase">Hoy</p>
-                                        <p class="text-6xl font-black">${current}</p>
-                                    </div>
-                                    <div class="bg-pink-600 p-6 rounded-[2rem] text-center shadow-lg">
-                                        <p class="text-[10px] font-black text-white/70 uppercase">Acumulado</p>
-                                        <p class="text-6xl font-black">${monthly}</p>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section class="bg-gradient-to-br from-indigo-900 via-purple-900 to-black rounded-[3rem] p-8 shadow-2xl border-4 border-indigo-500">
-                                <div class="flex items-center gap-4 mb-6 border-b border-indigo-500/30 pb-4">
-                                    <i data-lucide="trophy" class="text-yellow-400"></i>
-                                    <h2 class="text-4xl font-black uppercase italic tracking-tighter text-white">GANANCIAS</h2>
-                                </div>
-                                <div class="text-center mb-6">
-                                    <p class="text-7xl font-black text-white tracking-tighter">$${money.toLocaleString('es-CL')}</p>
-                                </div>
-                                <div class="grid grid-cols-3 gap-3">
-                                    <div class="bg-black/40 p-3 rounded-2xl text-center border border-white/10">
-                                        <p class="text-[9px] font-black text-pink-300">GASTOS</p>
-                                        <p class="text-sm font-black">$${(money * 0.5).toLocaleString('es-CL')}</p>
-                                    </div>
-                                    <div class="bg-black/40 p-3 rounded-2xl text-center border border-white/10">
-                                        <p class="text-[9px] font-black text-blue-300">AHORRO</p>
-                                        <p class="text-sm font-black">$${(money * 0.4).toLocaleString('es-CL')}</p>
-                                    </div>
-                                    <div class="bg-black/40 p-3 rounded-2xl text-center border border-white/10">
-                                        <p class="text-[9px] font-black text-yellow-300">REGALO</p>
-                                        <p class="text-sm font-black">$${(money * 0.1).toLocaleString('es-CL')}</p>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-
-                        <!-- LISTA DE TAREAS -->
-                        <section class="mb-16">
-                            <h2 class="text-5xl font-black uppercase italic tracking-tighter mb-8 text-white">
-                                SETLIST DIARIO
-                            </h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                ${this.tasks.map(t => {
-                                    const p = points[t.id] || 0;
-                                    const isMaxed = p >= t.max && t.max > 0;
-                                    return `
-                                        <div class="p-6 rounded-[2.5rem] border-2 transition-all ${isMaxed ? 'bg-pink-600 border-white shadow-lg' : 'bg-black/60 border-white/10'}">
-                                            <div class="flex justify-between items-center">
-                                                <div class="flex items-center gap-4">
-                                                    <span class="text-5xl drop-shadow-lg">${t.emoji}</span>
-                                                    <h3 class="font-black text-xl uppercase italic leading-tight">${t.label}</h3>
-                                                </div>
-                                                <div class="flex items-center gap-3">
-                                                    ${!isHistory ? `<button onclick="window.KPopApp.updatePoints('${t.id}', 1, ${t.max})" class="btn-action w-12 h-12 bg-yellow-400 text-black rounded-full font-black text-2xl shadow-md">+</button>` : ''}
-                                                    <span class="text-3xl font-black w-8 text-center">${p}</span>
-                                                    ${!isHistory ? `<button onclick="window.KPopApp.updatePoints('${t.id}', -1, ${t.max})" class="btn-action w-8 h-8 bg-white/10 rounded-full font-black text-sm">-</button>` : ''}
-                                                </div>
+                        <div class="grid gap-3 pb-24">
+                            ${this.tasks.map(t => {
+                                const count = this.data.today[t.id] || 0;
+                                return `
+                                    <div class="glass p-4 rounded-[2rem] flex items-center justify-between transition-all active:bg-white/10">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-2xl">${t.icon}</div>
+                                            <div>
+                                                <h4 class="font-black text-sm uppercase italic leading-none">${t.label}</h4>
+                                                <p class="text-[9px] font-bold text-pink-400 mt-1 uppercase tracking-widest">${t.pts} PTS</p>
                                             </div>
                                         </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </section>
-
-                        <!-- BOTONES DE DISCIPLINA -->
-                        ${!isHistory ? `
-                        <div class="grid grid-cols-2 gap-6 mb-16">
-                            <button onclick="window.KPopApp.updatePoints('penalty', -5, 0)" class="btn-action bg-red-600 p-8 rounded-[2.5rem] flex justify-between items-center border-b-4 border-red-900">
-                                <span class="font-black text-2xl italic">FALTA</span>
-                                <span class="text-5xl font-black">-5</span>
-                            </button>
-                            <button onclick="window.KPopApp.updatePoints('bonus', 2, 100)" class="btn-action bg-yellow-400 text-black p-8 rounded-[2.5rem] flex justify-between items-center border-b-4 border-yellow-600">
-                                <span class="font-black text-2xl italic">STAR</span>
-                                <span class="text-5xl font-black">+2</span>
-                            </button>
+                                        <div class="flex items-center gap-3">
+                                            <button onclick="window.App.updatePoint('${t.id}', -1, ${t.max})" class="btn-press w-10 h-10 rounded-full glass flex items-center justify-center font-black text-xl">-</button>
+                                            <span class="text-2xl font-header italic w-6 text-center">${count}</span>
+                                            <button onclick="window.App.updatePoint('${t.id}', 1, ${t.max})" class="btn-press w-12 h-12 kpop-gradient rounded-full flex items-center justify-center font-black text-2xl shadow-lg">+</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
-
-                        <button onclick="window.KPopApp.saveDay()" class="btn-action w-full bg-pink-600 p-10 rounded-[3rem] font-black text-5xl uppercase italic tracking-tighter text-white border-4 border-white shadow-kpop mb-16">
-                            CERRAR SHOW
-                        </button>` : ''}
-
-                        <!-- CALENDARIO -->
-                        <section class="bg-black/80 p-8 rounded-[3rem] border-2 border-pink-500/30 mb-10">
-                            <h2 class="text-3xl font-black uppercase italic mb-6 flex items-center gap-3">
-                                <i data-lucide="calendar"></i> TOUR MAP
-                            </h2>
-                            <div class="grid grid-cols-7 gap-2">
-                                ${Array.from({length: 31}, (_, i) => {
-                                    const day = i + 1;
-                                    const dKey = `${this.state.today.substring(0, 8)}${String(day).padStart(2, '0')}`;
-                                    const hasData = this.state.history[dKey];
-                                    const isToday = dKey === this.state.today;
-                                    const isSelected = this.state.viewingDate === dKey;
-
-                                    return `
-                                        <button onclick="if('${hasData || isToday}' === 'true') { window.KPopApp.state.viewingDate = '${dKey}'; window.KPopApp.render(); }"
-                                            class="aspect-square flex flex-col items-center justify-center rounded-xl transition-all border
-                                            ${isSelected ? 'bg-yellow-400 text-black border-white scale-110 z-10' : 
-                                              isToday ? 'bg-white text-black border-pink-500' :
-                                              hasData ? 'bg-white/10 border-pink-500/40 text-white' : 'bg-white/5 border-transparent opacity-20'}">
-                                            <span class="text-lg font-black">${day}</span>
-                                            ${hasData ? `<div class="text-[8px] font-black">${hasData.total}</div>` : ''}
-                                        </button>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </section>
-                    </div>
-                `;
+                    `;
+                } else if (this.currentTab === 'rewards') {
+                    el.innerHTML = `
+                        <div class="glass rounded-[2rem] p-8 mb-8 text-center border-pink-500/30">
+                            <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] mb-1 italic">Tour Total</p>
+                            <h2 class="text-7xl font-header italic tracking-tighter">${totalPoints}</h2>
+                        </div>
+                        <div class="grid gap-4 pb-24">
+                            ${this.rewards.map(r => {
+                                const prog = Math.min(100, (totalPoints / r.pts) * 100);
+                                return `
+                                    <div class="glass p-5 rounded-3xl flex items-center justify-between relative overflow-hidden">
+                                        <div class="absolute top-0 left-0 h-full bg-pink-500/20 transition-all duration-1000" style="width: ${prog}%"></div>
+                                        <div class="flex items-center gap-4 relative z-10">
+                                            <span class="text-4xl filter drop-shadow-md">${r.icon}</span>
+                                            <div>
+                                                <h4 class="font-black text-sm uppercase italic leading-none">${r.label}</h4>
+                                                <p class="text-[10px] font-black text-pink-400 mt-1 tracking-widest">${r.pts} PTS</p>
+                                            </div>
+                                        </div>
+                                        <div class="relative z-10 font-header italic text-xl ${prog >= 100 ? 'text-green-400' : 'opacity-30'}">
+                                            ${Math.floor(prog)}%
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    el.innerHTML = `
+                        <div class="space-y-3 py-4 pb-24">
+                            ${this.data.allHistory.sort((a,b)=>b.id.localeCompare(a.id)).map(day => {
+                                const dayTotal = Object.entries(day.points || {}).reduce((acc, [tid, count]) => {
+                                    const task = this.tasks.find(t => t.id === tid);
+                                    return acc + (count * (task ? task.pts : 0));
+                                }, 0);
+                                return `
+                                    <div class="glass p-5 rounded-2xl flex justify-between items-center border-l-4 border-pink-500">
+                                        <span class="text-[10px] font-black uppercase opacity-60 tracking-widest">${day.id}</span>
+                                        <span class="font-header text-pink-500 italic text-xl">${dayTotal} PTS</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
             }
         };
 
-        window.onload = () => window.KPopApp.init();
+        window.App = App;
+        window.onload = () => App.init();
     </script>
 </body>
 </html>
