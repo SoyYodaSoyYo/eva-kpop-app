@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eva K-Pop Tour - Management</title>
+    <title>Eva K-Pop Tour - Official Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;800&display=swap');
@@ -11,7 +11,7 @@
         :root {
             --neon-pink: #ff007f;
             --neon-blue: #00f2ff;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(15, 15, 15, 0.8);
         }
 
         body { 
@@ -19,46 +19,40 @@
             background-color: #050505;
             color: white;
             margin: 0;
-            overflow-x: hidden;
             background-image: radial-gradient(circle at 50% 50%, #1a0b1a 0%, #050505 100%);
+            min-height: 100vh;
         }
 
         .font-header { font-family: 'Archivo Black', sans-serif; }
 
         .glass {
             background: var(--glass);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .kpop-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s ease;
         }
 
-        .kpop-card:active { transform: scale(0.95); }
-
-        .progress-glow {
-            box-shadow: 0 0 15px var(--neon-pink);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-pink); border-radius: 10px; }
+        .kpop-card:active { transform: scale(0.97); }
 
         .tab-active {
             border-bottom: 3px solid var(--neon-pink);
             color: var(--neon-pink);
             text-shadow: 0 0 10px var(--neon-pink);
         }
+
+        .progress-bar-fill {
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <!-- Header & Score -->
-    <header class="sticky top-0 z-50 glass border-b border-pink-900/30 p-4 mb-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass border-b border-pink-900/30 p-4">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
                 <h1 class="font-header italic text-xl tracking-tighter uppercase leading-none">
@@ -68,107 +62,94 @@
             </div>
             <div class="text-right">
                 <div id="total-score" class="font-header text-3xl text-pink-500 drop-shadow-md">0</div>
-                <div class="text-[8px] uppercase font-black opacity-40">Total Points</div>
+                <div class="text-[8px] uppercase font-black opacity-40">Puntos Totales</div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto px-4 pb-12">
+    <main class="max-w-md mx-auto px-4 mt-6">
         
-        <!-- Navigation Tabs -->
-        <nav class="flex justify-around mb-6 text-xs font-black uppercase tracking-widest border-b border-white/5 pb-2">
-            <button onclick="App.setTab('missions')" id="tab-missions" class="tab-active py-2 px-2">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="py-2 px-2">Premios</button>
-            <button onclick="App.setTab('history')" id="tab-history" class="py-2 px-2">Historial</button>
+        <!-- Tabs -->
+        <nav class="flex justify-around mb-8 text-xs font-black uppercase tracking-widest border-b border-white/5">
+            <button onclick="App.setTab('missions')" id="tab-missions" class="tab-active py-3 px-4">Misiones</button>
+            <button onclick="App.setTab('rewards')" id="tab-rewards" class="py-3 px-4">Premios</button>
+            <button onclick="App.setTab('history')" id="tab-history" class="py-3 px-4">Tour Log</button>
         </nav>
 
-        <!-- Content Area -->
-        <div id="view-container" class="space-y-4">
-            <!-- Dynamically populated -->
-        </div>
+        <!-- Dynamic Content -->
+        <div id="view-container" class="space-y-3"></div>
 
     </main>
 
-    <!-- Navigation Fixed Buttons (Bonus & Penalty) -->
-    <div id="admin-controls" class="fixed bottom-0 left-0 w-full p-4 glass border-t border-white/10 z-50 flex gap-4 justify-center">
-        <button onclick="App.quickAdjust(10, 'Bono VIP')" class="flex-1 bg-blue-600/20 border border-blue-500 text-blue-400 font-black py-3 rounded-xl uppercase text-xs tracking-tighter active:scale-95 transition-all">
+    <!-- Admin Controls -->
+    <div class="fixed bottom-0 left-0 w-full p-4 glass border-t border-white/10 z-50 flex gap-4 justify-center">
+        <button onclick="App.quickAdjust(10, 'Backstage Bonus')" class="flex-1 bg-blue-600/20 border border-blue-500 text-blue-400 font-black py-4 rounded-2xl uppercase text-xs tracking-tighter active:bg-blue-600/40">
             ⭐ Bono (+10)
         </button>
-        <button onclick="App.quickAdjust(-10, 'Penalidad')" class="flex-1 bg-red-600/20 border border-red-500 text-red-400 font-black py-3 rounded-xl uppercase text-xs tracking-tighter active:scale-95 transition-all">
-            ⚠️ Penalidad (-10)
+        <button onclick="App.quickAdjust(-10, 'Ticket Warning')" class="flex-1 bg-red-600/20 border border-red-500 text-red-400 font-black py-4 rounded-2xl uppercase text-xs tracking-tighter active:bg-red-600/40">
+            ⚠️ Multa (-10)
         </button>
     </div>
 
     <script>
         const CONFIG = {
             missions: [
-                { id: 'bed', label: 'Hacer la cama', pts: 5, max: 1, icon: '🛏️' },
-                { id: 'teeth', label: 'Lavar Dientes', pts: 2, max: 3, icon: '🪥' },
-                { id: 'sleep', label: 'Dormir sola', pts: 10, max: 1, icon: '🌙' },
-                { id: 'bath', label: 'Bañarse sola', pts: 5, max: 1, icon: '🚿' },
-                { id: 'dress', label: 'Vestirse sola', pts: 5, max: 1, icon: '👗' },
-                { id: 'read', label: 'Leer Libro', pts: 4, max: 2, icon: '📖' },
-                { id: 'homework', label: 'Tarea / Dibujo', pts: 3, max: 2, icon: '🎨' },
-                { id: 'food', label: 'Comida Sana', pts: 2, max: 3, icon: '🥦' },
-                { id: 'truth', label: 'Sinceridad', pts: 5, max: 1, icon: '🤝' },
-                { id: 'voice', label: 'Hablar suave', pts: 3, max: 3, icon: '🤫' }
+                { id: 'cama', label: 'Hacer la cama', pts: 5, max: 1, icon: '🛏️' },
+                { id: 'dientes', label: 'Lavar Dientes', pts: 2, max: 3, icon: '🪥' },
+                { id: 'dormir', label: 'Dormir sola', pts: 10, max: 1, icon: '🌙' },
+                { id: 'baño', label: 'Bañarse sola', pts: 5, max: 1, icon: '🚿' },
+                { id: 'vestir', label: 'Vestirse sola', pts: 5, max: 1, icon: '👗' },
+                { id: 'leer', label: 'Leer Libro', pts: 4, max: 2, icon: '📖' },
+                { id: 'tarea', label: 'Tarea / Dibujo', pts: 3, max: 2, icon: '🎨' },
+                { id: 'comida', label: 'Comida Sana', pts: 2, max: 3, icon: '🥦' },
+                { id: 'sincera', label: 'Sinceridad', pts: 5, max: 1, icon: '🤝' },
+                { id: 'suave', label: 'Hablar suave', pts: 3, max: 3, icon: '🤫' }
             ],
             rewards: [
-                { id: 'sw1', label: 'Álbum Digital / Stickers', type: 'Semanal', pts: 175, progress: 0 },
-                { id: 'sw2', label: 'Cena Favorita / Merch', type: 'Semanal', pts: 350, progress: 0 },
-                { id: 'mw1', label: 'Lightstick / Ropa K-Pop', type: 'Mensual', pts: 700, progress: 0 },
-                { id: 'mw2', label: 'Evento Especial VIP', type: 'Mensual', pts: 1400, progress: 0 }
+                { id: 'w1', label: 'Álbum Digital / Stickers', type: 'Semanal', pts: 175 },
+                { id: 'w2', label: 'Cena Favorita / Merch', type: 'Semanal', pts: 350 },
+                { id: 'm1', label: 'Lightstick / Ropa K-Pop', type: 'Mensual', pts: 700 },
+                { id: 'm2', label: 'Evento Especial / VIP', type: 'Mensual', pts: 1400 }
             ]
         };
 
         const App = {
             currentTab: 'missions',
-            data: {
-                totalPoints: 0,
-                daily: {}, // { id: count }
-                history: [], // { date, pts, label }
-                allDays: {} // { dateStr: totalPts }
+            state: {
+                total: 0,
+                dailyCounts: {},
+                history: [],
+                lastDate: ''
             },
 
             init() {
-                this.loadData();
-                this.updateDateDisplay();
-                this.render();
+                this.load();
+                this.checkDateReset();
+                this.updateUI();
+                
+                const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', options);
             },
 
-            loadData() {
-                const saved = localStorage.getItem('eva_kpop_data_v2');
+            load() {
+                const saved = localStorage.getItem('eva_tour_manager_v3');
                 if (saved) {
-                    const parsed = JSON.parse(saved);
-                    // Reset daily if date changed
-                    const today = new Date().toLocaleDateString();
-                    if (parsed.lastDate !== today) {
-                        parsed.daily = {};
-                        parsed.lastDate = today;
-                    }
-                    this.data = parsed;
-                } else {
-                    this.data.lastDate = new Date().toLocaleDateString();
+                    this.state = JSON.parse(saved);
                 }
-                this.calculateTotalPoints();
             },
 
             save() {
-                localStorage.setItem('eva_kpop_data_v2', JSON.stringify(this.data));
-                this.calculateTotalPoints();
-                this.render();
+                localStorage.setItem('eva_tour_manager_v3', JSON.stringify(this.state));
+                this.updateUI();
             },
 
-            calculateTotalPoints() {
-                // Sum from history and daily log
-                const historyTotal = this.data.history.reduce((acc, curr) => acc + curr.pts, 0);
-                this.data.totalPoints = historyTotal;
-                document.getElementById('total-score').innerText = this.data.totalPoints;
-            },
-
-            updateDateDisplay() {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', options);
+            checkDateReset() {
+                const today = new Date().toLocaleDateString();
+                if (this.state.lastDate !== today) {
+                    this.state.dailyCounts = {};
+                    this.state.lastDate = today;
+                    this.save();
+                }
             },
 
             setTab(tab) {
@@ -178,30 +159,43 @@
                 this.render();
             },
 
-            addPoint(missionId) {
-                const mission = CONFIG.missions.find(m => m.id === missionId);
-                const currentCount = this.data.daily[missionId] || 0;
-
-                if (currentCount < mission.max) {
-                    this.data.daily[missionId] = currentCount + 1;
-                    this.data.history.push({
-                        date: new Date().toISOString(),
-                        dateStr: new Date().toLocaleDateString(),
+            addPoint(id) {
+                const mission = CONFIG.missions.find(m => m.id === id);
+                const count = this.state.dailyCounts[id] || 0;
+                
+                if (count < mission.max) {
+                    this.state.dailyCounts[id] = count + 1;
+                    this.state.history.push({
+                        id: Date.now(),
+                        label: mission.label,
                         pts: mission.pts,
-                        label: mission.label
+                        date: new Date().toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                        fullDate: new Date().toLocaleDateString()
                     });
+                    this.calculateTotal();
                     this.save();
                 }
             },
 
             quickAdjust(pts, label) {
-                this.data.history.push({
-                    date: new Date().toISOString(),
-                    dateStr: new Date().toLocaleDateString(),
+                this.state.history.push({
+                    id: Date.now(),
+                    label: label,
                     pts: pts,
-                    label: label
+                    date: new Date().toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                    fullDate: new Date().toLocaleDateString()
                 });
+                this.calculateTotal();
                 this.save();
+            },
+
+            calculateTotal() {
+                this.state.total = this.state.history.reduce((acc, curr) => acc + curr.pts, 0);
+            },
+
+            updateUI() {
+                document.getElementById('total-score').innerText = this.state.total;
+                this.render();
             },
 
             render() {
@@ -209,134 +203,72 @@
                 container.innerHTML = '';
 
                 if (this.currentTab === 'missions') {
-                    this.renderMissions(container);
-                } else if (this.currentTab === 'rewards') {
-                    this.renderRewards(container);
-                } else {
-                    this.renderHistory(container);
-                }
-            },
-
-            renderMissions(container) {
-                CONFIG.missions.forEach(m => {
-                    const count = this.data.daily[m.id] || 0;
-                    const isMax = count >= m.max;
-                    
-                    const card = document.createElement('div');
-                    card.className = `kpop-card glass p-4 rounded-2xl flex items-center justify-between border-l-4 ${isMax ? 'border-green-500 opacity-60' : 'border-pink-500'}`;
-                    card.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <span class="text-2xl">${m.icon}</span>
-                            <div>
-                                <h3 class="font-bold text-sm uppercase italic">${m.label}</h3>
-                                <p class="text-[10px] font-bold text-pink-400 tracking-widest">${m.pts} PTS</p>
+                    CONFIG.missions.forEach(m => {
+                        const count = this.state.dailyCounts[m.id] || 0;
+                        const done = count >= m.max;
+                        
+                        const div = document.createElement('div');
+                        div.className = `kpop-card glass p-4 rounded-2xl flex items-center justify-between border-l-4 ${done ? 'border-green-500 opacity-50' : 'border-pink-500'}`;
+                        div.innerHTML = `
+                            <div class="flex items-center gap-4">
+                                <span class="text-2xl">${m.icon}</span>
+                                <div>
+                                    <h3 class="font-bold text-sm uppercase italic leading-tight">${m.label}</h3>
+                                    <p class="text-[10px] font-black text-pink-400 tracking-wider">${m.pts} PUNTOS</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="text-right">
-                                <span class="text-xs font-black">${count}/${m.max}</span>
-                            </div>
-                            <button onclick="App.addPoint('${m.id}')" 
-                                    class="w-10 h-10 rounded-full flex items-center justify-center font-black ${isMax ? 'bg-gray-800 text-gray-500' : 'bg-pink-600 text-white shadow-lg shadow-pink-900/40'}"
-                                    ${isMax ? 'disabled' : ''}>
-                                ${isMax ? '✓' : '+'}
+                            <button onclick="App.addPoint('${m.id}')" ${done ? 'disabled' : ''} 
+                                    class="w-12 h-12 rounded-full font-header text-xl flex items-center justify-center ${done ? 'bg-gray-800 text-gray-500' : 'bg-pink-600 text-white shadow-lg shadow-pink-900/50'}">
+                                ${done ? '✓' : '+'}
                             </button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            },
-
-            renderRewards(container) {
-                // Header for Rewards
-                const title = document.createElement('div');
-                title.className = "text-center mb-4";
-                title.innerHTML = `<h2 class="font-header text-lg italic text-blue-400 uppercase tracking-tighter">Tour Rewards Checklist</h2>`;
-                container.appendChild(title);
-
-                CONFIG.rewards.forEach(r => {
-                    const percentage = Math.min(100, (this.data.totalPoints / r.pts) * 100);
-                    const isClaimed = percentage >= 100;
-
-                    const card = document.createElement('div');
-                    card.className = `glass p-4 rounded-2xl relative overflow-hidden mb-3 border ${isClaimed ? 'border-green-500/50' : 'border-white/5'}`;
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start relative z-10 mb-2">
-                            <div>
-                                <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${r.type === 'Semanal' ? 'bg-blue-600' : 'bg-purple-600'} uppercase">${r.type}</span>
-                                <h4 class="font-bold text-sm uppercase italic mt-1">${r.label}</h4>
+                        `;
+                        container.appendChild(div);
+                    });
+                } else if (this.currentTab === 'rewards') {
+                    CONFIG.rewards.forEach(r => {
+                        const progress = Math.min(100, (this.state.total / r.pts) * 100);
+                        const unlocked = progress >= 100;
+                        
+                        const div = document.createElement('div');
+                        div.className = `glass p-4 rounded-2xl border ${unlocked ? 'border-green-500' : 'border-white/10'}`;
+                        div.innerHTML = `
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <span class="text-[8px] font-black px-2 py-0.5 rounded-full ${r.type === 'Semanal' ? 'bg-blue-600' : 'bg-purple-600'} uppercase">${r.type}</span>
+                                    <h4 class="font-bold text-sm uppercase italic mt-1">${r.label}</h4>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-header text-lg ${unlocked ? 'text-green-400' : 'opacity-40'}">${r.pts}</span>
+                                    <p class="text-[8px] font-black opacity-30 uppercase">Meta</p>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="font-header text-lg ${isClaimed ? 'text-green-400' : 'text-white/40'}">${r.pts}</span>
-                                <p class="text-[8px] font-bold uppercase opacity-40">puntos meta</p>
+                            <div class="w-full h-2 bg-black rounded-full overflow-hidden">
+                                <div class="progress-bar-fill h-full bg-pink-500" style="width: ${progress}%"></div>
                             </div>
-                        </div>
-                        <!-- Progress Bar -->
-                        <div class="w-full h-2 bg-black/50 rounded-full overflow-hidden">
-                            <div class="h-full transition-all duration-1000 ${isClaimed ? 'bg-green-500 progress-glow' : 'bg-blue-500'}" style="width: ${percentage}%"></div>
-                        </div>
-                        <div class="flex justify-between mt-1">
-                            <span class="text-[8px] font-black uppercase opacity-40">Progress</span>
-                            <span class="text-[8px] font-black uppercase ${isClaimed ? 'text-green-400' : 'text-blue-400'}">${Math.floor(percentage)}%</span>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            },
-
-            renderHistory(container) {
-                // Group points by day for the chart-like view
-                const days = {};
-                this.data.history.forEach(entry => {
-                    days[entry.dateStr] = (days[entry.dateStr] || 0) + entry.pts;
-                });
-
-                const sortedDays = Object.keys(days).sort((a,b) => new Date(b) - new Date(a));
-
-                if (sortedDays.length === 0) {
-                    container.innerHTML = `<div class="text-center py-12 opacity-30 italic text-sm">Aún no hay conciertos registrados...</div>`;
-                    return;
-                }
-
-                sortedDays.forEach(day => {
-                    const card = document.createElement('div');
-                    card.className = "glass p-4 rounded-2xl flex justify-between items-center mb-2 border-l-2 border-white/20";
-                    card.innerHTML = `
-                        <div>
-                            <p class="text-[10px] font-black uppercase opacity-40">${day}</p>
-                            <h4 class="font-bold text-sm uppercase italic">Day Total Score</h4>
-                        </div>
-                        <div class="font-header text-xl text-pink-400">${days[day]} PTS</div>
-                    `;
-                    container.appendChild(card);
-                });
-
-                // Detail Log (Last 10 entries)
-                const logTitle = document.createElement('h3');
-                logTitle.className = "font-black uppercase text-[10px] tracking-widest opacity-30 mt-8 mb-2 px-2";
-                logTitle.innerText = "Log de Actividad Reciente";
-                container.appendChild(logTitle);
-
-                [...this.data.history].reverse().slice(0, 15).forEach(entry => {
-                    const item = document.createElement('div');
-                    item.className = "text-[11px] py-2 px-3 border-b border-white/5 flex justify-between opacity-80";
-                    item.innerHTML = `
-                        <span><span class="opacity-40 mr-2">${new Date(entry.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span> ${entry.label}</span>
-                        <span class="font-bold ${entry.pts >= 0 ? 'text-green-400' : 'text-red-400'}">${entry.pts >= 0 ? '+' : ''}${entry.pts}</span>
-                    `;
-                    container.appendChild(item);
-                });
-
-                const clearBtn = document.createElement('button');
-                clearBtn.className = "w-full mt-8 py-3 text-[10px] font-black uppercase opacity-20 hover:opacity-100 transition-all";
-                clearBtn.innerText = "Reiniciar Tour (Borrar todo)";
-                clearBtn.onclick = () => {
-                    if(confirm("¿Estás segura? Esto borrará TODOS los puntos de Eva.")) {
-                        localStorage.removeItem('eva_kpop_data_v2');
-                        location.reload();
+                        `;
+                        container.appendChild(div);
+                    });
+                } else {
+                    const recent = [...this.state.history].reverse().slice(0, 20);
+                    if (recent.length === 0) {
+                        container.innerHTML = `<p class="text-center opacity-30 italic py-10">Sin actividad registrada aún...</p>`;
+                        return;
                     }
-                };
-                container.appendChild(clearBtn);
+                    recent.forEach(h => {
+                        const div = document.createElement('div');
+                        div.className = "flex justify-between items-center py-3 border-b border-white/5 px-2";
+                        div.innerHTML = `
+                            <div>
+                                <p class="text-xs font-bold uppercase italic">${h.label}</p>
+                                <p class="text-[9px] opacity-40 uppercase font-bold">${h.date} - ${h.fullDate}</p>
+                            </div>
+                            <span class="font-header ${h.pts >= 0 ? 'text-green-400' : 'text-red-400'}">
+                                ${h.pts >= 0 ? '+' : ''}${h.pts}
+                            </span>
+                        `;
+                        container.appendChild(div);
+                    });
+                }
             }
         };
 
