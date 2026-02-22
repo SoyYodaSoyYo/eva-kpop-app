@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL JUEGO DE EVA KPOP</title>
+    <title>EL JUEGO DE EVA KPOP - PREMIOS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
@@ -14,8 +14,6 @@
             color: #fff;
             margin: 0;
             overflow-x: hidden;
-            /* Tamaño base reducido un 20% respecto a la versión anterior */
-            font-size: 1rem; 
         }
 
         .font-header { font-family: 'Archivo Black', sans-serif; }
@@ -25,19 +23,18 @@
             background: #ff007f;
             overflow: hidden;
             white-space: nowrap;
-            padding: 12px 0;
-            border-bottom: 4px solid #fff;
+            padding: 10px 0;
+            border-bottom: 2px solid #fff;
         }
 
         .marquee-text {
             display: inline-block;
-            animation: marquee 25s linear infinite;
+            animation: marquee 20s linear infinite;
             font-family: 'Syne', sans-serif;
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 1.8rem; /* Reducido */
-            letter-spacing: 0.1em;
-            color: #ffffff;
+            font-size: 1.2rem;
+            color: #fff;
         }
 
         @keyframes marquee {
@@ -45,35 +42,25 @@
             100% { transform: translateX(-100%); }
         }
 
-        .main-stage {
-            background: linear-gradient(180deg, #000 0%, #1a001a 100%);
-            min-height: 100vh;
-        }
-
         .neon-text {
             color: #ff007f;
-            text-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+        }
+
+        .reward-card {
+            border-left: 4px solid #facc15;
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.1) 0%, transparent 100%);
         }
 
         .task-done {
-            border-left: 8px solid #ff007f !important;
-            background: rgba(255, 0, 127, 0.1) !important;
-        }
-
-        .btn-plus {
-            background: #ff007f;
-        }
-        
-        .btn-plus:disabled {
-            background: #333;
-            opacity: 0.3;
-            cursor: not-allowed;
+            border-left: 4px solid #ff007f !important;
+            background: rgba(255, 0, 127, 0.05) !important;
         }
 
         .tab-active {
@@ -81,68 +68,41 @@
             color: #000;
             font-weight: 900;
         }
-
-        .big-number {
-            font-size: 6rem; /* Reducido de 8rem */
-            line-height: 1;
-            letter-spacing: -0.05em;
-        }
-
-        .label-lg {
-            font-size: 1.25rem; /* Ajustado */
-            line-height: 1.2;
-        }
-
-        .btn-control {
-            width: 55px;
-            height: 55px;
-            font-size: 1.5rem;
-        }
-
-        /* Estilo para el botón amarillo de bono */
-        .btn-perfect-day {
-            background: #ffea00;
-            color: #000;
-            box-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
-        }
     </style>
 </head>
-<body class="main-stage pb-48">
+<body class="pb-40">
 
-    <div class="marquee-container sticky top-0 z-[60]">
-        <div class="marquee-text">
-            EVA K-POP TOUR • DÍA PERFECTO • RECIBES LO QUE DAS • CREA ALGO • LEE • TERMINA LO QUE EMPIECES •
+    <div class="marquee-container sticky top-0 z-50">
+        <div class="marquee-text italic">
+            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
         </div>
     </div>
 
-    <header class="p-8 border-b border-white/10 bg-black/50">
-        <div class="max-w-md mx-auto flex flex-col items-center text-center">
-            <h1 class="font-header text-4xl italic tracking-tighter neon-text mb-4">MI DI A DIA</h1>
-            
-            <div class="flex flex-col items-center">
-                <span id="total-pts" class="font-header big-number italic">0</span>
-                <span class="text-lg font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</span>
-            </div>
+    <header class="p-8 text-center border-b border-white/5 bg-zinc-950">
+        <h1 class="font-header text-4xl italic tracking-tighter neon-text mb-4">EVA K-POP</h1>
+        <div class="inline-block glass-card px-8 py-4 rounded-3xl">
+            <span id="total-pts" class="font-header text-6xl italic">0</span>
+            <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 mt-6">
-        <nav class="flex mb-8 gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
-            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest tab-active">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest opacity-40">Premios</button>
+    <main class="max-w-md mx-auto p-4 mt-4">
+        <nav class="flex mb-8 gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10">
+            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] tab-active">Misiones</button>
+            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-40">Premios/Dinero</button>
+            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-40">Historial</button>
         </nav>
 
-        <div id="main-content" class="space-y-4"></div>
+        <div id="main-content" class="space-y-3"></div>
     </main>
 
-    <!-- Botones de acción inferior más pequeños -->
-    <div class="fixed bottom-0 left-0 w-full p-6 bg-black/95 border-t-2 border-pink-500 z-[100]">
+    <div class="fixed bottom-0 left-0 w-full p-6 bg-black/90 backdrop-blur-md border-t border-white/10 z-50">
         <div class="max-w-md mx-auto grid grid-cols-2 gap-3">
-            <button onclick="App.quickAdjust(20, 'Bono + 20')" class="btn-perfect-day font-black py-4 rounded-2xl uppercase text-base italic flex items-center justify-center gap-2">
-                <span>🥳</span> Bono +20
+            <button onclick="App.quickAdjust(20)" class="bg-yellow-400 text-black font-black py-4 rounded-2xl uppercase text-xs italic shadow-lg shadow-yellow-400/20">
+                Día Perfecto +20
             </button>
-            <button onclick="App.quickAdjust(-5, 'Falta -5')" class="bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-base italic">
-                Falta -5
+            <button onclick="App.quickAdjust(-5)" class="bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-xs italic">
+                Falta Grave -5
             </button>
         </div>
     </div>
@@ -151,61 +111,77 @@
         const App = {
             data: {
                 total: 0,
-                today: {},
+                today: { id: '', points: {}, totalDay: 0 },
+                allHistory: [],
                 tab: 'tasks'
             },
 
-            tasks: [
-                { id: 'dientes', label: 'Lavar los dientes', pts: 1, limit: 6, icon: '🪥' },
-                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '📖' },
-                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥦' },
-                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '🎨' },
-                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' },
-                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '🤝' },
-                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
-                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
-                { id: 'baño', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
-                { id: 'vestir', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '👗' },
-                { id: 'tarea', label: 'Tarea', pts: 1, limit: 1, icon: '✏️' }
+            POINT_VALUE: 0.10,
+
+            financeConfig: [
+                { id: 'gastar', label: 'Gastar', pct: 0.40, color: 'text-green-400', desc: 'Libre disposición' },
+                { id: 'gastos', label: 'Gastos', pct: 0.40, color: 'text-blue-400', desc: 'Necesidades' },
+                { id: 'ahorro', label: 'Ahorro', pct: 0.10, color: 'text-purple-400', desc: 'Para el futuro' },
+                { id: 'compartir', label: 'Compartir', pct: 0.10, color: 'text-pink-400', desc: 'Ayudar/Regalar' }
             ],
 
-            rewards: [
-                { label: 'Película Extra', pts: 100 },
-                { label: 'Helado Especial', pts: 180 },
-                { label: 'Regalo Sorpresa', pts: 400 },
-                { label: 'Paseo + Regalo', pts: 800 }
+            tasks: [
+                { id: 'dientes', label: 'Lavar los dientes', pts: 1, limit: 3, icon: '🪥' },
+                { id: 'leer', label: 'Leer', pts: 2, limit: 2, icon: '📖' },
+                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥦' },
+                { id: 'crear', label: 'Crear algo', pts: 3, limit: 1, icon: '🎨' },
+                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' },
+                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
+                { id: 'tarea', label: 'Tarea terminada', pts: 2, limit: 1, icon: '✏️' }
             ],
+
+            goals: {
+                weekly: [
+                    { label: 'Película Extra', points: 100 },
+                    { label: 'Helado Especial', points: 180 }
+                ],
+                monthly: [
+                    { label: 'Regalo Sorpresa', points: 400 },
+                    { label: 'Paseo + Regalo', points: 800 }
+                ]
+            },
 
             init() {
-                const saved = localStorage.getItem('eva_kpop_v7');
+                const saved = localStorage.getItem('eva_finance_kpop_v2');
                 if (saved) this.data = JSON.parse(saved);
                 
-                const dateKey = new Date().toLocaleDateString();
-                if (!this.data.today || this.data.today.date !== dateKey) {
-                    this.data.today = { date: dateKey, completed: {} };
+                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                
+                if (this.data.today.id !== todayId) {
+                    if (this.data.today.id) this.data.allHistory.push({...this.data.today});
+                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
                 }
+                
                 this.render();
             },
 
             save() {
-                localStorage.setItem('eva_kpop_v7', JSON.stringify(this.data));
+                localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
                 this.render();
             },
 
             adjustPoints(taskId, amount) {
                 const task = this.tasks.find(t => t.id === taskId);
-                const currentCount = this.data.today.completed[taskId] || 0;
+                const current = this.data.today.points[taskId] || 0;
                 
-                if (amount > 0 && currentCount >= task.limit) return;
-                if (amount < 0 && currentCount <= 0) return;
+                if (amount > 0 && current >= task.limit) return;
+                if (amount < 0 && current <= 0) return;
 
-                this.data.today.completed[taskId] = currentCount + (amount > 0 ? 1 : -1);
-                this.data.total += (amount > 0 ? task.pts : -task.pts);
+                const change = amount > 0 ? 1 : -1;
+                this.data.today.points[taskId] = current + change;
+                this.data.today.totalDay += (change * task.pts);
+                this.data.total += (change * task.pts);
                 this.save();
             },
 
-            quickAdjust(pts, label) {
+            quickAdjust(pts) {
                 this.data.total += pts;
+                this.data.today.totalDay += pts;
                 this.save();
             },
 
@@ -219,52 +195,122 @@
                 const el = document.getElementById('main-content');
                 el.innerHTML = '';
 
-                ['tasks', 'rewards'].forEach(t => {
-                    const tabBtn = document.getElementById(`tab-${t}`);
-                    if (tabBtn) {
-                        tabBtn.className = this.data.tab === t 
-                            ? 'flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest tab-active' 
-                            : 'flex-1 py-4 rounded-full font-black uppercase italic text-sm tracking-widest opacity-40';
-                    }
+                ['tasks', 'rewards', 'history'].forEach(t => {
+                    const btn = document.getElementById(`tab-${t}`);
+                    if (btn) btn.className = this.data.tab === t 
+                        ? 'flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] tab-active' 
+                        : 'flex-1 py-3 rounded-xl font-black uppercase italic text-[10px] opacity-40';
                 });
 
                 if (this.data.tab === 'tasks') {
                     this.tasks.forEach(t => {
-                        const count = this.data.today.completed[t.id] || 0;
+                        const count = this.data.today.points[t.id] || 0;
                         const isMaxed = count >= t.limit;
                         const div = document.createElement('div');
-                        div.className = `glass-card p-5 rounded-[1.5rem] flex justify-between items-center ${isMaxed ? 'task-done' : ''}`;
+                        div.className = `glass-card p-4 rounded-2xl flex justify-between items-center ${isMaxed ? 'task-done' : ''}`;
                         div.innerHTML = `
-                            <div class="flex items-center gap-4">
-                                <span class="text-3xl">${t.icon}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">${t.icon}</span>
                                 <div>
-                                    <h3 class="font-bold uppercase italic label-lg">${t.label}</h3>
-                                    <span class="text-pink-500 font-black uppercase text-xs tracking-tighter">${count} / ${t.limit} COMPLETADO</span>
+                                    <h3 class="font-bold uppercase italic text-xs tracking-tight">${t.label}</h3>
+                                    <span class="text-pink-500 font-black text-[9px] uppercase">${count} / ${t.limit} • ${t.pts} pts</span>
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="App.adjustPoints('${t.id}', -1)" class="btn-control bg-white/10 rounded-xl font-bold">-</button>
-                                <button onclick="App.adjustPoints('${t.id}', 1)" ${isMaxed ? 'disabled' : ''} class="btn-control btn-plus rounded-xl font-bold text-white">+</button>
+                                <button onclick="App.adjustPoints('${t.id}', -1)" class="w-10 h-10 bg-white/5 rounded-xl border border-white/10">-</button>
+                                <button onclick="App.adjustPoints('${t.id}', 1)" class="w-10 h-10 bg-pink-600 rounded-xl font-bold">+</button>
                             </div>
                         `;
                         el.appendChild(div);
                     });
-                } else if (this.data.tab === 'rewards') {
-                    this.rewards.forEach(r => {
-                        const prog = Math.min(100, (this.data.total / r.pts) * 100);
-                        const div = document.createElement('div');
-                        div.className = `glass-card p-6 rounded-[1.2rem] relative overflow-hidden`;
-                        div.innerHTML = `
-                            <div class="absolute top-0 left-0 h-full bg-pink-500/10" style="width: ${prog}%"></div>
-                            <div class="relative z-10 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold label-lg uppercase italic">${r.label}</h4>
-                                    <p class="text-base font-black text-pink-500">${r.pts} PUNTOS</p>
+                } 
+                else if (this.data.tab === 'rewards') {
+                    // SECCIÓN 1: PREMIOS SEMANALES Y MENSUALES
+                    const sectionTitle = (txt) => `<h3 class="text-[10px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
+                    
+                    el.innerHTML += sectionTitle('Premios Semanales');
+                    this.goals.weekly.forEach(g => {
+                        const progress = Math.min(100, (this.data.total / g.points) * 100);
+                        el.innerHTML += `
+                            <div class="glass-card p-4 rounded-2xl mb-2 reward-card">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold uppercase italic text-[11px]">${g.label}</span>
+                                    <span class="font-black text-xs text-yellow-400">${g.points} PTS</span>
                                 </div>
-                                <div class="font-header text-2xl opacity-40">${Math.floor(prog)}%</div>
+                                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-yellow-400 h-full" style="width: ${progress}%"></div>
+                                </div>
                             </div>
                         `;
-                        el.appendChild(div);
+                    });
+
+                    el.innerHTML += sectionTitle('Metas Mensuales');
+                    this.goals.monthly.forEach(g => {
+                        const progress = Math.min(100, (this.data.total / g.points) * 100);
+                        el.innerHTML += `
+                            <div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-white/20">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold uppercase italic text-[11px]">${g.label}</span>
+                                    <span class="font-black text-xs opacity-50">${g.points} PTS</span>
+                                </div>
+                                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-white/20 h-full" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // SECCIÓN 2: GANANCIAS (Dinero Real)
+                    const totalMoney = this.data.total * this.POINT_VALUE;
+                    el.innerHTML += sectionTitle('Desglose de Ganancias ($)');
+                    
+                    const moneyBox = document.createElement('div');
+                    moneyBox.className = 'bg-zinc-900 rounded-3xl p-6 border border-white/5 mb-6 text-center';
+                    moneyBox.innerHTML = `
+                        <p class="text-[9px] font-black text-white/30 uppercase mb-1">Dinero Real Acumulado</p>
+                        <h2 class="text-4xl font-header italic text-green-400">$${totalMoney.toFixed(2)}</h2>
+                    `;
+                    el.appendChild(moneyBox);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 gap-2';
+                    this.financeConfig.forEach(conf => {
+                        const amount = totalMoney * conf.pct;
+                        grid.innerHTML += `
+                            <div class="glass-card px-5 py-4 rounded-2xl flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-black uppercase italic text-[10px] ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4>
+                                    <p class="text-[8px] text-white/40 uppercase">${conf.desc}</p>
+                                </div>
+                                <span class="font-header text-lg">$${amount.toFixed(2)}</span>
+                            </div>
+                        `;
+                    });
+                    el.appendChild(grid);
+                } 
+                else if (this.data.tab === 'history') {
+                    const hist = [...this.data.allHistory].reverse();
+                    el.innerHTML += `<h3 class="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>`;
+                    
+                    el.innerHTML += `
+                        <div class="glass-card p-5 rounded-3xl border-pink-500/30 mb-4 bg-pink-500/5">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="bg-pink-500 text-[8px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span>
+                                    <h4 class="font-bold italic uppercase text-sm">${this.data.today.id}</h4>
+                                </div>
+                                <span class="font-header text-2xl text-white">${this.data.today.totalDay} <span class="text-[10px]">PTS</span></span>
+                            </div>
+                        </div>
+                    `;
+
+                    hist.forEach(day => {
+                        el.innerHTML += `
+                            <div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-2 opacity-60">
+                                <span class="text-[10px] font-bold uppercase italic">${day.id}</span>
+                                <span class="font-header text-lg text-white/80">${day.totalDay} PTS</span>
+                            </div>
+                        `;
                     });
                 }
             }
