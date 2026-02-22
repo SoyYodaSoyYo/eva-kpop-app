@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL JUEGO DE EVA KPOP - GANANCIAS</title>
+    <title>EL JUEGO DE EVA KPOP - GANANCIAS CLP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
@@ -143,7 +143,8 @@
                 tab: 'tasks'
             },
 
-            POINT_VALUE: 0.10,
+            // RECONVERSIÓN: Cada punto vale 10 pesos chilenos
+            POINT_VALUE: 10,
 
             financeConfig: [
                 { id: 'gastar', label: 'Gastar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
@@ -217,6 +218,15 @@
                 this.render();
             },
 
+            // Formateador de moneda para Peso Chileno
+            formatCLP(val) {
+                return new Intl.NumberFormat('es-CL', { 
+                    style: 'currency', 
+                    currency: 'CLP',
+                    minimumFractionDigits: 0 
+                }).format(val);
+            },
+
             render() {
                 document.getElementById('total-pts').innerText = this.data.total;
                 const el = document.getElementById('main-content');
@@ -286,14 +296,15 @@
                         `;
                     });
 
+                    // Calculando dinero en Pesos Chilenos (Puntos * 10)
                     const totalMoney = this.data.total * this.POINT_VALUE;
-                    el.innerHTML += `<h3 class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Desglose de Ganancias</h3>`;
+                    el.innerHTML += `<h3 class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Desglose de Ganancias (CLP)</h3>`;
                     
                     const moneyBox = document.createElement('div');
                     moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/20 mb-6 text-center';
                     moneyBox.innerHTML = `
                         <p class="text-[10px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p>
-                        <h2 class="text-5xl font-header italic neon-text">$${totalMoney.toFixed(2)}</h2>
+                        <h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>
                     `;
                     el.appendChild(moneyBox);
 
@@ -307,7 +318,7 @@
                                     <h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4>
                                     <p class="text-[9px] text-white/30 uppercase tracking-tight">${conf.desc}</p>
                                 </div>
-                                <span class="font-header money-amount italic text-white">$${amount.toFixed(2)}</span>
+                                <span class="font-header money-amount italic text-white">${this.formatCLP(amount)}</span>
                             </div>
                         `;
                     });
