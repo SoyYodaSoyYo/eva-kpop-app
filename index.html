@@ -14,7 +14,6 @@
             color: #fff;
             margin: 0;
             overflow-x: hidden;
-            /* Subida de fuente base en un 10% (aprox 17.6px de 16px estándar) */
             font-size: 1.1rem;
             background-image: url('https://drive.google.com/uc?export=view&id=1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit');
             background-size: cover;
@@ -23,7 +22,6 @@
             background-repeat: no-repeat;
         }
 
-        /* Capa de oscurecimiento */
         body::before {
             content: "";
             position: fixed;
@@ -44,21 +42,23 @@
             white-space: nowrap;
             padding: 10px 0;
             border-bottom: 2px solid #fff;
+            display: flex;
         }
 
         .marquee-text {
             display: inline-block;
-            animation: marquee 20s linear infinite;
+            animation: marquee 22s linear infinite;
             font-family: 'Syne', sans-serif;
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 1.32rem; /* +10% de 1.2rem */
+            font-size: 1.32rem;
             color: #fff;
+            padding-left: 100%;
         }
 
         @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-250%); }
         }
 
         .neon-text {
@@ -80,7 +80,8 @@
 
         .task-done {
             border-left: 4px solid #ff007f !important;
-            background: rgba(255, 0, 127, 0.1) !important;
+            background: rgba(255, 0, 127, 0.15) !important;
+            box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.1);
         }
 
         .tab-active {
@@ -89,23 +90,34 @@
             font-weight: 900;
         }
 
-        /* Ajuste de fuentes específicas +10% */
+        /* Estilos para los segmentos de progreso */
+        .progress-segment {
+            height: 6px;
+            flex: 1;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .progress-segment.filled {
+            background: #ff007f;
+            box-shadow: 0 0 8px #ff007f;
+        }
+
         .money-label { font-size: 12.1px; }
         .money-amount { font-size: 1.375rem; }
         .task-label { font-size: 0.825rem; }
-        .task-pts { font-size: 10px; }
     </style>
 </head>
 <body class="pb-40">
 
     <div class="marquee-container sticky top-0 z-50">
         <div class="marquee-text italic">
-            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
+            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
         </div>
     </div>
 
     <header class="p-8 text-center border-b border-white/5 bg-zinc-950/60 backdrop-blur-md">
-        <h1 class="font-header text-4xl italic tracking-tighter neon-text mb-4">EVA K-POP</h1>
+        <h1 class="font-header text-[4.8rem] italic tracking-tighter neon-text mb-4 leading-none">EVA K-POP</h1>
         <div class="inline-block glass-card px-8 py-4 rounded-3xl">
             <span id="total-pts" class="font-header text-6xl italic">0</span>
             <p class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
@@ -152,6 +164,7 @@
             ],
 
             tasks: [
+                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
                 { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🚿' },
                 { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
                 { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
@@ -243,19 +256,41 @@
                     this.tasks.forEach(t => {
                         const count = this.data.today.points[t.id] || 0;
                         const isMaxed = count >= t.limit;
+                        
+                        // Crear segmentos de progreso
+                        let segmentsHtml = '';
+                        for(let i=0; i < t.limit; i++) {
+                            segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
+                        }
+
                         const div = document.createElement('div');
-                        div.className = `glass-card p-4 rounded-2xl flex justify-between items-center ${isMaxed ? 'task-done' : ''}`;
+                        div.className = `glass-card p-4 rounded-2xl flex flex-col gap-4 border-l-4 transition-all ${isMaxed ? 'task-done border-pink-500' : 'border-white/10'}`;
+                        
                         div.innerHTML = `
-                            <div class="flex items-center gap-3">
-                                <span class="text-3xl">${t.icon}</span>
-                                <div>
-                                    <h3 class="font-bold uppercase italic task-label tracking-tight">${t.label}</h3>
-                                    <span class="text-pink-500 font-black task-pts uppercase">${count} / ${t.limit} • ${t.pts} pts</span>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-inner">${t.icon}</div>
+                                    <div>
+                                        <h3 class="font-bold uppercase italic task-label tracking-tight text-white/90">${t.label}</h3>
+                                        <span class="text-yellow-400 font-black text-[10px] uppercase tracking-widest">+${t.pts} PTS</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${isMaxed ? 
+                                        `<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse">COMPLETO</span>` : 
+                                        `<span class="text-[12px] font-black italic text-white/40">${count} / ${t.limit}</span>`
+                                    }
                                 </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="App.adjustPoints('${t.id}', -1)" class="w-11 h-11 bg-white/10 rounded-xl border border-white/10">-</button>
-                                <button onclick="App.adjustPoints('${t.id}', 1)" class="w-11 h-11 bg-pink-600 rounded-xl font-bold">+</button>
+
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 flex gap-1">
+                                    ${segmentsHtml}
+                                </div>
+                                <div class="flex gap-1">
+                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">-</button>
+                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg shadow-pink-600/20 transition-all active:scale-90">+</button>
+                                </div>
                             </div>
                         `;
                         el.appendChild(div);
@@ -274,7 +309,23 @@
                                     <span class="font-black text-sm text-yellow-400">${g.points} PTS</span>
                                 </div>
                                 <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-yellow-400 h-full" style="width: ${progress}%"></div>
+                                    <div class="bg-yellow-400 h-full shadow-[0_0_8px_#facc15]" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    el.innerHTML += sectionTitle('Premios Mensuales');
+                    this.goals.monthly.forEach(g => {
+                        const progress = Math.min(100, (this.data.total / g.points) * 100);
+                        el.innerHTML += `
+                            <div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-pink-500 bg-gradient-to-r from-pink-500/10 to-transparent">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold uppercase italic text-[12.1px]">${g.label}</span>
+                                    <span class="font-black text-sm text-pink-500">${g.points} PTS</span>
+                                </div>
+                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-pink-500 h-full shadow-[0_0_8px_#ff007f]" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         `;
