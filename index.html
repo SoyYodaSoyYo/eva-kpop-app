@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL JUEGO DE EVA KPOP - GANANCIAS CLP</title>
+    <title>EL JUEGO DE EVA KPOP - CLOUD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
@@ -102,12 +102,28 @@
             box-shadow: 0 0 8px #ff007f;
         }
 
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
         .money-label { font-size: 12.1px; }
         .money-amount { font-size: 1.375rem; }
         .task-label { font-size: 0.825rem; }
     </style>
 </head>
 <body class="pb-40">
+
+    <div id="loading-overlay">
+        <div class="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 font-black uppercase text-[10px] tracking-widest text-pink-500">Sincronizando Gira...</p>
+    </div>
 
     <div class="marquee-container sticky top-0 z-50">
         <div class="marquee-text italic">
@@ -144,7 +160,17 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-v2';
+
         const App = {
             data: {
                 total: 0,
@@ -152,7 +178,7 @@
                 allHistory: [],
                 tab: 'tasks'
             },
-
+            user: null,
             POINT_VALUE: 10,
 
             financeConfig: [
@@ -164,7 +190,7 @@
 
             tasks: [
                 { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
-                { id: 'espacio', label: 'Mi  espacio ordenado', pts: 1, limit: 1, icon: '✨' },
+                { id: 'espacio', label: 'Mi espacio ordenado', pts: 1, limit: 1, icon: '✨' },
                 { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🚿' },
                 { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
                 { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
@@ -188,29 +214,84 @@
                 ]
             },
 
-            init() {
-                const saved = localStorage.getItem('eva_finance_kpop_v2');
-                if (saved) this.data = JSON.parse(saved);
-                
-                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-                
-                if (this.data.today.id !== todayId) {
-                    if (this.data.today.id) this.data.allHistory.push({...this.data.today});
-                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
+            async init() {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            this.user = user;
+                            this.bindCloud();
+                        }
+                    });
+                } catch (err) {
+                    console.error("Auth error", err);
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    this.render();
                 }
-                
-                this.render();
             },
 
-            save() {
-                localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
-                this.render();
+            bindCloud() {
+                if (!this.user) return;
+                
+                // RUTA CORREGIDA PARA TENER 4 SEGMENTOS (NÚMERO PAR)
+                // 1: artifacts, 2: appId, 3: public, 4: state
+                const docRef = doc(db, 'artifacts', appId, 'public', 'state');
+
+                onSnapshot(docRef, (snap) => {
+                    if (snap.exists()) {
+                        const cloud = snap.data();
+                        this.data.total = cloud.total || 0;
+                        this.data.today = cloud.today || { id: '', points: {}, totalDay: 0 };
+                        this.data.allHistory = cloud.allHistory || [];
+                        this.checkDayTransition();
+                    } else {
+                        const saved = localStorage.getItem('eva_finance_kpop_v2');
+                        if (saved) this.data = JSON.parse(saved);
+                        this.saveCloud();
+                    }
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    this.render();
+                }, (error) => {
+                    console.error("Cloud Error:", error);
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    this.render();
+                });
+            },
+
+            checkDayTransition() {
+                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                if (this.data.today.id && this.data.today.id !== todayId) {
+                    this.data.allHistory.push({...this.data.today});
+                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
+                    this.saveCloud();
+                } else if (!this.data.today.id) {
+                    this.data.today.id = todayId;
+                }
+            },
+
+            async saveCloud() {
+                if (!this.user) return;
+                const docRef = doc(db, 'artifacts', appId, 'public', 'state');
+                try {
+                    await setDoc(docRef, {
+                        total: this.data.total,
+                        today: this.data.today,
+                        allHistory: this.data.allHistory,
+                        updatedAt: Date.now()
+                    });
+                    localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
+                } catch (e) {
+                    console.error("Save Error", e);
+                }
             },
 
             adjustPoints(taskId, amount) {
                 const task = this.tasks.find(t => t.id === taskId);
                 const current = this.data.today.points[taskId] || 0;
-                
                 if (amount > 0 && current >= task.limit) return;
                 if (amount < 0 && current <= 0) return;
 
@@ -218,13 +299,13 @@
                 this.data.today.points[taskId] = current + change;
                 this.data.today.totalDay += (change * task.pts);
                 this.data.total += (change * task.pts);
-                this.save();
+                this.saveCloud();
             },
 
             quickAdjust(pts) {
                 this.data.total += pts;
                 this.data.today.totalDay += pts;
-                this.save();
+                this.saveCloud();
             },
 
             setTab(t) {
@@ -233,16 +314,13 @@
             },
 
             formatCLP(val) {
-                return new Intl.NumberFormat('es-CL', { 
-                    style: 'currency', 
-                    currency: 'CLP',
-                    minimumFractionDigits: 0 
-                }).format(val);
+                return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(val);
             },
 
             render() {
                 document.getElementById('total-pts').innerText = this.data.total;
                 const el = document.getElementById('main-content');
+                if(!el) return;
                 el.innerHTML = '';
 
                 ['tasks', 'rewards', 'history'].forEach(t => {
@@ -256,39 +334,29 @@
                     this.tasks.forEach(t => {
                         const count = this.data.today.points[t.id] || 0;
                         const isMaxed = count >= t.limit;
-                        
                         let segmentsHtml = '';
-                        for(let i=0; i < t.limit; i++) {
-                            segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
-                        }
+                        for(let i=0; i < t.limit; i++) segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
 
                         const div = document.createElement('div');
                         div.className = `glass-card p-4 rounded-2xl flex flex-col gap-4 border-l-4 transition-all ${isMaxed ? 'task-done border-pink-500' : 'border-white/10'}`;
-                        
                         div.innerHTML = `
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-inner">${t.icon}</div>
+                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl">${t.icon}</div>
                                     <div>
-                                        <h3 class="font-bold uppercase italic task-label tracking-tight text-white/90">${t.label}</h3>
-                                        <span class="text-yellow-400 font-black text-[10px] uppercase tracking-widest">+${t.pts} PTS</span>
+                                        <h3 class="font-bold uppercase italic task-label text-white/90">${t.label}</h3>
+                                        <span class="text-yellow-400 font-black text-[10px] uppercase">+${t.pts} PTS</span>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    ${isMaxed ? 
-                                        `<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse">COMPLETO</span>` : 
-                                        `<span class="text-[12px] font-black italic text-white/40">${count} / ${t.limit}</span>`
-                                    }
+                                    ${isMaxed ? '<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse">COMPLETO</span>' : `<span class="text-[12px] font-black italic text-white/40">${count} / ${t.limit}</span>`}
                                 </div>
                             </div>
-
                             <div class="flex items-center gap-4">
-                                <div class="flex-1 flex gap-1">
-                                    ${segmentsHtml}
-                                </div>
+                                <div class="flex-1 flex gap-1">${segmentsHtml}</div>
                                 <div class="flex gap-1">
-                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">-</button>
-                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg shadow-pink-600/20 transition-all active:scale-90">+</button>
+                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center">-</button>
+                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg">+</button>
                                 </div>
                             </div>
                         `;
@@ -297,7 +365,6 @@
                 } 
                 else if (this.data.tab === 'rewards') {
                     const sectionTitle = (txt) => `<h3 class="text-[12.1px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
-                    
                     el.innerHTML += sectionTitle('Premios Semanales');
                     this.goals.weekly.forEach(g => {
                         const progress = Math.min(100, (this.data.total / g.points) * 100);
@@ -308,23 +375,7 @@
                                     <span class="font-black text-sm text-yellow-400">${g.points} PTS</span>
                                 </div>
                                 <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-yellow-400 h-full shadow-[0_0_8px_#facc15]" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    el.innerHTML += sectionTitle('Premios Mensuales');
-                    this.goals.monthly.forEach(g => {
-                        const progress = Math.min(100, (this.data.total / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-pink-500 bg-gradient-to-r from-pink-500/10 to-transparent">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold uppercase italic text-[12.1px]">${g.label}</span>
-                                    <span class="font-black text-sm text-pink-500">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-pink-500 h-full shadow-[0_0_8px_#ff007f]" style="width: ${progress}%"></div>
+                                    <div class="bg-yellow-400 h-full" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         `;
@@ -332,13 +383,9 @@
 
                     const totalMoney = this.data.total * this.POINT_VALUE;
                     el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Ganancias (CLP)</h3>`;
-                    
                     const moneyBox = document.createElement('div');
                     moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/20 mb-6 text-center';
-                    moneyBox.innerHTML = `
-                        <p class="text-[11px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p>
-                        <h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>
-                    `;
+                    moneyBox.innerHTML = `<p class="text-[11px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p><h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>`;
                     el.appendChild(moneyBox);
 
                     const grid = document.createElement('div');
@@ -348,8 +395,8 @@
                         grid.innerHTML += `
                             <div class="glass-card px-5 py-5 rounded-2xl flex justify-between items-center border-white/5">
                                 <div>
-                                    <h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4>
-                                    <p class="text-[10px] text-white/30 uppercase tracking-tight">${conf.desc}</p>
+                                    <h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label}</h4>
+                                    <p class="text-[10px] text-white/30 uppercase">${conf.desc}</p>
                                 </div>
                                 <span class="font-header money-amount italic text-white">${this.formatCLP(amount)}</span>
                             </div>
@@ -360,19 +407,14 @@
                 else if (this.data.tab === 'history') {
                     const hist = [...this.data.allHistory].reverse();
                     el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>`;
-                    
                     el.innerHTML += `
                         <div class="glass-card p-5 rounded-3xl border-pink-500/30 mb-4 bg-pink-500/10">
                             <div class="flex justify-between items-end">
-                                <div>
-                                    <span class="bg-pink-500 text-[9px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span>
-                                    <h4 class="font-bold italic uppercase text-base">${this.data.today.id}</h4>
-                                </div>
+                                <div><span class="bg-pink-500 text-[9px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span><h4 class="font-bold italic uppercase text-base">${this.data.today.id}</h4></div>
                                 <span class="font-header text-3xl text-white">${this.data.today.totalDay} <span class="text-[11px]">PTS</span></span>
                             </div>
                         </div>
                     `;
-
                     hist.forEach(day => {
                         el.innerHTML += `
                             <div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-2 opacity-70">
@@ -385,7 +427,8 @@
             }
         };
 
-        window.onload = () => App.init();
+        window.App = App;
+        App.init();
     </script>
 </body>
 </html>
