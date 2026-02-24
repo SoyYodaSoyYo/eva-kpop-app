@@ -90,7 +90,6 @@
             font-weight: 900;
         }
 
-        /* Estilos para los segmentos de progreso */
         .progress-segment {
             height: 6px;
             flex: 1;
@@ -165,6 +164,7 @@
 
             tasks: [
                 { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
+                { id: 'espacio', label: 'Mi  espacio ordenado', pts: 1, limit: 1, icon: '✨' },
                 { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🚿' },
                 { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
                 { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
@@ -257,7 +257,6 @@
                         const count = this.data.today.points[t.id] || 0;
                         const isMaxed = count >= t.limit;
                         
-                        // Crear segmentos de progreso
                         let segmentsHtml = '';
                         for(let i=0; i < t.limit; i++) {
                             segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
