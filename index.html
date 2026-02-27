@@ -105,9 +105,16 @@
         .money-label { font-size: 12.1px; }
         .money-amount { font-size: 1.375rem; }
         .task-label { font-size: 0.825rem; }
+        
+        #sync-indicator {
+            position: fixed; top: 10px; right: 10px; font-size: 8px; 
+            letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; z-index: 100;
+        }
     </style>
 </head>
 <body class="pb-40">
+
+    <div id="sync-indicator">Conectando...</div>
 
     <div class="marquee-container sticky top-0 z-50">
         <div class="marquee-text italic">
@@ -144,7 +151,17 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-v2';
+
         const App = {
             data: {
                 total: 0,
@@ -152,7 +169,8 @@
                 allHistory: [],
                 tab: 'tasks'
             },
-
+            
+            user: null,
             POINT_VALUE: 10,
 
             financeConfig: [
@@ -164,17 +182,17 @@
 
             tasks: [
                 { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
-                { id: 'espacio', label: 'Mi  espacio ordenado', pts: 1, limit: 1, icon: '✨' },
-                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🚿' },
+                { id: 'espacio', label: 'Mi espacio ordenado', pts: 1, limit: 1, icon: '✨' },
+                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🦷' },
                 { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
                 { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🚿' },
                 { id: 'vestirse', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '👗' },
-                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: '✏️' },
+                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: '📚' },
                 { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '📖' },
                 { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '🎨' },
-                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥦' },
-                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '😇' },
-                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' }
+                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥗' },
+                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '🤝' },
+                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🔇' }
             ],
 
             goals: {
@@ -188,23 +206,71 @@
                 ]
             },
 
-            init() {
-                const saved = localStorage.getItem('eva_finance_kpop_v2');
-                if (saved) this.data = JSON.parse(saved);
-                
-                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-                
-                if (this.data.today.id !== todayId) {
-                    if (this.data.today.id) this.data.allHistory.push({...this.data.today});
-                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
+            async init() {
+                // Auth Rule 3
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
                 }
-                
-                this.render();
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        this.user = user;
+                        this.setupSync();
+                    }
+                });
             },
 
-            save() {
-                localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
-                this.render();
+            setupSync() {
+                // Rule 1: Correct 6-segment path
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
+                
+                onSnapshot(docRef, (snap) => {
+                    document.getElementById('sync-indicator').innerText = "SINCRONIZADO";
+                    if (snap.exists()) {
+                        const cloudData = snap.data();
+                        this.data.total = cloudData.total || 0;
+                        this.data.allHistory = cloudData.allHistory || [];
+                        this.checkDay(cloudData.today);
+                    } else {
+                        this.checkDay();
+                    }
+                    this.render();
+                }, (err) => {
+                    console.error("Sync Error", err);
+                    document.getElementById('sync-indicator').innerText = "ERROR SYNC";
+                });
+            },
+
+            checkDay(cloudToday) {
+                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                
+                if (cloudToday && cloudToday.id === todayId) {
+                    this.data.today = cloudToday;
+                } else {
+                    // Cambio de día
+                    if (this.data.today.id && this.data.today.id !== todayId) {
+                        this.data.allHistory.push({...this.data.today});
+                    }
+                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
+                    this.save();
+                }
+            },
+
+            async save() {
+                if (!this.user) return;
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
+                try {
+                    await setDoc(docRef, {
+                        total: this.data.total,
+                        today: this.data.today,
+                        allHistory: this.data.allHistory,
+                        updatedAt: new Date().getTime()
+                    });
+                } catch (e) {
+                    console.error("Save failed", e);
+                }
             },
 
             adjustPoints(taskId, amount) {
@@ -219,12 +285,14 @@
                 this.data.today.totalDay += (change * task.pts);
                 this.data.total += (change * task.pts);
                 this.save();
+                this.render();
             },
 
             quickAdjust(pts) {
                 this.data.total += pts;
                 this.data.today.totalDay += pts;
                 this.save();
+                this.render();
             },
 
             setTab(t) {
@@ -243,6 +311,7 @@
             render() {
                 document.getElementById('total-pts').innerText = this.data.total;
                 const el = document.getElementById('main-content');
+                if (!el) return;
                 el.innerHTML = '';
 
                 ['tasks', 'rewards', 'history'].forEach(t => {
@@ -283,9 +352,7 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <div class="flex-1 flex gap-1">
-                                    ${segmentsHtml}
-                                </div>
+                                <div class="flex-1 flex gap-1">${segmentsHtml}</div>
                                 <div class="flex gap-1">
                                     <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">-</button>
                                     <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg shadow-pink-600/20 transition-all active:scale-90">+</button>
@@ -385,7 +452,9 @@
             }
         };
 
-        window.onload = () => App.init();
+        // Exportar a global para los onclick del HTML
+        window.App = App;
+        App.init();
     </script>
 </body>
 </html>
