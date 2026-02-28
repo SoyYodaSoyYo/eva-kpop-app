@@ -1,391 +1,401 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL JUEGO DE EVA KPOP - GANANCIAS CLP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
-        
-        body { 
-            font-family: 'Archivo', sans-serif; 
-            background: #000;
-            color: #fff;
-            margin: 0;
-            overflow-x: hidden;
-            font-size: 1.1rem;
-            background-image: url('https://drive.google.com/uc?export=view&id=1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EL JUEGO DE EVA KPOP - GANANCIAS CLP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
+        
+        body { 
+            font-family: 'Archivo', sans-serif; 
+            background: #000;
+            color: #fff;
+            margin: 0;
+            overflow-x: hidden;
+            font-size: 1.1rem;
+            background-image: url('https://drive.google.com/uc?export=view&id=1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: -1;
-        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: -1;
+        }
 
-        .font-header { font-family: 'Archivo Black', sans-serif; }
-        .font-syne { font-family: 'Syne', sans-serif; }
+        .font-header { font-family: 'Archivo Black', sans-serif; }
+        .font-syne { font-family: 'Syne', sans-serif; }
 
-        .marquee-container {
-            background: #ff007f;
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 10px 0;
-            border-bottom: 2px solid #fff;
-            display: flex;
-        }
+        .marquee-container {
+            background: #ff007f;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 10px 0;
+            border-bottom: 2px solid #fff;
+            display: flex;
+        }
 
-        .marquee-text {
-            display: inline-block;
-            animation: marquee 22s linear infinite;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 1.32rem;
-            color: #fff;
-            padding-left: 100%;
-        }
+        .marquee-text {
+            display: inline-block;
+            animation: marquee 22s linear infinite;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.32rem;
+            color: #fff;
+            padding-left: 100%;
+        }
 
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-250%); }
-        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-250%); }
+        }
 
-        .neon-text {
-            color: #ff007f;
-            text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
-        }
+        .neon-text {
+            color: #ff007f;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+        }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
 
-        .reward-card {
-            border-left: 4px solid #facc15;
-            background: linear-gradient(90deg, rgba(250, 204, 21, 0.15) 0%, transparent 100%);
-        }
+        .reward-card {
+            border-left: 4px solid #facc15;
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.15) 0%, transparent 100%);
+        }
 
-        .task-done {
-            border-left: 4px solid #ff007f !important;
-            background: rgba(255, 0, 127, 0.15) !important;
-            box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.1);
-        }
+        .task-done {
+            border-left: 4px solid #ff007f !important;
+            background: rgba(255, 0, 127, 0.15) !important;
+            box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.1);
+        }
 
-        .tab-active {
-            background: #fff;
-            color: #000;
-            font-weight: 900;
-        }
+        .tab-active {
+            background: #fff;
+            color: #000;
+            font-weight: 900;
+        }
 
-        .progress-segment {
-            height: 6px;
-            flex: 1;
-            border-radius: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .progress-segment.filled {
-            background: #ff007f;
-            box-shadow: 0 0 8px #ff007f;
-        }
+        .progress-segment {
+            height: 6px;
+            flex: 1;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .progress-segment.filled {
+            background: #ff007f;
+            box-shadow: 0 0 8px #ff007f;
+        }
 
-        .money-label { font-size: 12.1px; }
-        .money-amount { font-size: 1.375rem; }
-        .task-label { font-size: 0.825rem; }
-    </style>
+        .money-label { font-size: 12.1px; }
+        .money-amount { font-size: 1.375rem; }
+        .task-label { font-size: 0.825rem; }
+    </style>
 </head>
-<body class="pb-40">
+<body class="pb-52">
 
-    <div class="marquee-container sticky top-0 z-50">
-        <div class="marquee-text italic">
-            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
-        </div>
-    </div>
+    <div class="marquee-container sticky top-0 z-50">
+        <div class="marquee-text italic">
+            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
+        </div>
+    </div>
 
-    <header class="p-8 text-center border-b border-white/5 bg-zinc-950/60 backdrop-blur-md">
-        <h1 class="font-header text-[4.8rem] italic tracking-tighter neon-text mb-4 leading-none">EVA K-POP</h1>
-        <div class="inline-block glass-card px-8 py-4 rounded-3xl">
-            <span id="total-pts" class="font-header text-6xl italic">0</span>
-            <p class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
-        </div>
-    </header>
+    <header class="p-8 text-center border-b border-white/5 bg-zinc-950/60 backdrop-blur-md">
+        <h1 class="font-header text-[4.8rem] italic tracking-tighter neon-text mb-4 leading-none">EVA K-POP</h1>
+        <div class="inline-block glass-card px-8 py-4 rounded-3xl">
+            <span id="total-pts" class="font-header text-6xl italic">0</span>
+            <p class="text-[11px] font-black text-pink-500 uppercase tracking-[0.3em] mt-2">Puntos Totales</p>
+        </div>
+    </header>
 
-    <main class="max-w-md mx-auto p-4 mt-4 relative z-10">
-        <nav class="flex mb-8 gap-1.5 bg-white/10 p-1 rounded-2xl border border-white/10 backdrop-blur-xl">
-            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Premios</button>
-            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Historial</button>
-        </nav>
+    <main class="max-w-md mx-auto p-4 mt-4 relative z-10">
+        <nav class="flex mb-8 gap-1.5 bg-white/10 p-1 rounded-2xl border border-white/10 backdrop-blur-xl">
+            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active">Misiones</button>
+            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Premios</button>
+            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60">Historial</button>
+        </nav>
 
-        <div id="main-content" class="space-y-3"></div>
-    </main>
+        <div id="main-content" class="space-y-3"></div>
+    </main>
 
-    <div class="fixed bottom-0 left-0 w-full p-6 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50">
-        <div class="max-w-md mx-auto grid grid-cols-2 gap-3">
-            <button onclick="App.quickAdjust(20)" class="bg-yellow-400 text-black font-black py-4 rounded-2xl uppercase text-xs italic shadow-lg shadow-yellow-400/20">
-                Día Perfecto +20
-            </button>
-            <button onclick="App.quickAdjust(-5)" class="bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-xs italic">
-                Falta Grave -5
-            </button>
-        </div>
-    </div>
+    <!-- FOOTER CON BOTÓN DE NUBE -->
+    <div class="fixed bottom-0 left-0 w-full p-6 bg-black/80 backdrop-blur-2xl border-t border-white/10 z-50">
+        <div class="max-w-md mx-auto flex flex-col gap-3">
+            <!-- Botón de Nube -->
+            <button id="btn-cloud" onclick="App.cloudSave()" class="w-full bg-pink-600/10 border border-pink-500/30 text-pink-500 font-black py-2 rounded-xl uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 mb-1">
+                <span id="cloud-status">☁️ GUARDAR PROGRESO</span>
+            </button>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="App.quickAdjust(20)" class="bg-yellow-400 text-black font-black py-4 rounded-2xl uppercase text-xs italic shadow-lg shadow-yellow-400/20">
+                    Día Perfecto +20
+                </button>
+                <button onclick="App.quickAdjust(-5)" class="bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-xs italic">
+                    Falta Grave -5
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        const App = {
-            data: {
-                total: 0,
-                today: { id: '', points: {}, totalDay: 0 },
-                allHistory: [],
-                tab: 'tasks'
-            },
+    <!-- CARGA DE LIBRERÍAS FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-            POINT_VALUE: 10,
+        // CONFIGURACIÓN DE SEGURIDAD PARA GITHUB
+        const getSafeConfig = () => {
+            try { return JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}'); }
+            catch(e) { return {}; }
+        };
 
-            financeConfig: [
-                { id: 'gastar', label: 'Libres para usar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
-                { id: 'gastos', label: 'Gastos', pct: 0.40, color: 'text-pink-300', desc: 'Necesidades' },
-                { id: 'ahorro', label: 'Ahorro', pct: 0.10, color: 'text-white', desc: 'Para el futuro' },
-                { id: 'compartir', label: 'Compartir', pct: 0.10, color: 'text-white/60', desc: 'Ayudar/Regalar' }
-            ],
+        const config = getSafeConfig();
+        const hasFirebase = !!config.apiKey;
+        let db = null, auth = null, appId = 'eva-kpop-v2';
 
-            tasks: [
-                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: ' ' },
-                { id: 'espacio', label: 'Mi  espacio ordenado', pts: 1, limit: 1, icon: ' ' },
-                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: ' ' },
-                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: ' ' },
-                { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: ' ' },
-                { id: 'vestirse', label: 'Vestirse Sola', pts: 1, limit: 1, icon: ' ' },
-                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: ' ' },
-                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: ' ' },
-                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: ' ' },
-                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: ' ' },
-                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: ' ' },
-                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: ' ' }
-            ],
+        if (hasFirebase) {
+            const app = initializeApp(config);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-v2';
+        }
 
-            goals: {
-                weekly: [
-                    { label: 'Película Extra', points: 100 },
-                    { label: 'Helado Especial', points: 180 }
-                ],
-                monthly: [
-                    { label: 'Regalo Sorpresa', points: 400 },
-                    { label: 'Paseo + Regalo', points: 800 }
-                ]
-            },
+        const App = {
+            data: {
+                total: 0,
+                today: { id: '', points: {}, totalDay: 0 },
+                allHistory: [],
+                tab: 'tasks'
+            },
+            user: null,
+            POINT_VALUE: 10,
 
-            init() {
-                const saved = localStorage.getItem('eva_finance_kpop_v2');
-                if (saved) this.data = JSON.parse(saved);
-                
-                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-                
-                if (this.data.today.id !== todayId) {
-                    if (this.data.today.id) this.data.allHistory.push({...this.data.today});
-                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
-                }
-                
-                this.render();
-            },
+            financeConfig: [
+                { id: 'gastar', label: 'Libres para usar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
+                { id: 'gastos', label: 'Gastos', pct: 0.40, color: 'text-pink-300', desc: 'Necesidades' },
+                { id: 'ahorro', label: 'Ahorro', pct: 0.10, color: 'text-white', desc: 'Para el futuro' },
+                { id: 'compartir', label: 'Compartir', pct: 0.10, color: 'text-white/60', desc: 'Ayudar/Regalar' }
+            ],
 
-            save() {
-                localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
-                this.render();
-            },
+            tasks: [
+                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '' },
+                { id: 'espacio', label: 'Mi espacio ordenado', pts: 1, limit: 1, icon: '' },
+                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '' },
+                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '' },
+                { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '' },
+                { id: 'vestirse', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '' },
+                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: '' },
+                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '' },
+                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '' },
+                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '' },
+                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '' },
+                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '' }
+            ],
 
-            adjustPoints(taskId, amount) {
-                const task = this.tasks.find(t => t.id === taskId);
-                const current = this.data.today.points[taskId] || 0;
-                
-                if (amount > 0 && current >= task.limit) return;
-                if (amount < 0 && current <= 0) return;
+            goals: {
+                weekly: [
+                    { label: 'Película Extra', points: 100 },
+                    { label: 'Helado Especial', points: 180 }
+                ],
+                monthly: [
+                    { label: 'Regalo Sorpresa', points: 400 },
+                    { label: 'Paseo + Regalo', points: 800 }
+                ]
+            },
 
-                const change = amount > 0 ? 1 : -1;
-                this.data.today.points[taskId] = current + change;
-                this.data.today.totalDay += (change * task.pts);
-                this.data.total += (change * task.pts);
-                this.save();
-            },
+            async init() {
+                // 1. Cargar local siempre primero
+                const saved = localStorage.getItem('eva_finance_kpop_v2');
+                if (saved) this.data = JSON.parse(saved);
+                
+                // 2. Controlar cambio de día
+                const todayId = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                if (this.data.today.id !== todayId) {
+                    if (this.data.today.id) this.data.allHistory.push({...this.data.today});
+                    this.data.today = { id: todayId, points: {}, totalDay: 0 };
+                }
+                
+                this.render();
 
-            quickAdjust(pts) {
-                this.data.total += pts;
-                this.data.today.totalDay += pts;
-                this.save();
-            },
+                // 3. Conectar Nube solo si existe config
+                if (hasFirebase) {
+                    try {
+                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                        if (token) await signInWithCustomToken(auth, token);
+                        else await signInAnonymously(auth);
 
-            setTab(t) {
-                this.data.tab = t;
-                this.render();
-            },
+                        onAuthStateChanged(auth, async (user) => {
+                            if (user) {
+                                this.user = user;
+                                await this.cloudLoad();
+                            }
+                        });
+                    } catch(e) { console.warn("Modo offline activado"); }
+                } else {
+                    document.getElementById('btn-cloud').style.display = 'none';
+                }
+            },
 
-            formatCLP(val) {
-                return new Intl.NumberFormat('es-CL', { 
-                    style: 'currency', 
-                    currency: 'CLP',
-                    minimumFractionDigits: 0 
-                }).format(val);
-            },
+            save() {
+                localStorage.setItem('eva_finance_kpop_v2', JSON.stringify(this.data));
+                this.render();
+            },
 
-            render() {
-                document.getElementById('total-pts').innerText = this.data.total;
-                const el = document.getElementById('main-content');
-                el.innerHTML = '';
+            async cloudSave() {
+                if (!this.user || !db) return;
+                const status = document.getElementById('cloud-status');
+                status.innerText = "⏳ GUARDANDO...";
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
+                    await setDoc(docRef, { ...this.data, lastSync: Date.now() });
+                    status.innerText = "✅ PROGRESO GUARDADO";
+                    setTimeout(() => status.innerText = "☁️ GUARDAR PROGRESO", 2000);
+                } catch (e) { status.innerText = "❌ ERROR AL GUARDAR"; }
+            },
 
-                ['tasks', 'rewards', 'history'].forEach(t => {
-                    const btn = document.getElementById(`tab-${t}`);
-                    if (btn) btn.className = this.data.tab === t 
-                        ? 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active' 
-                        : 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60';
-                });
+            async cloudLoad() {
+                if (!this.user || !db) return;
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        const cloud = snap.data();
+                        this.data = cloud;
+                        this.save();
+                    }
+                } catch (e) {}
+            },
 
-                if (this.data.tab === 'tasks') {
-                    this.tasks.forEach(t => {
-                        const count = this.data.today.points[t.id] || 0;
-                        const isMaxed = count >= t.limit;
-                        
-                        let segmentsHtml = '';
-                        for(let i=0; i < t.limit; i++) {
-                            segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
-                        }
+            adjustPoints(taskId, amount) {
+                const task = this.tasks.find(t => t.id === taskId);
+                const current = this.data.today.points[taskId] || 0;
+                if (amount > 0 && current >= task.limit) return;
+                if (amount < 0 && current <= 0) return;
+                const change = amount > 0 ? 1 : -1;
+                this.data.today.points[taskId] = current + change;
+                this.data.today.totalDay += (change * task.pts);
+                this.data.total += (change * task.pts);
+                this.save();
+            },
 
-                        const div = document.createElement('div');
-                        div.className = `glass-card p-4 rounded-2xl flex flex-col gap-4 border-l-4 transition-all ${isMaxed ? 'task-done border-pink-500' : 'border-white/10'}`;
-                        
-                        div.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-inner">${t.icon}</div>
-                                    <div>
-                                        <h3 class="font-bold uppercase italic task-label tracking-tight text-white/90">${t.label}</h3>
-                                        <span class="text-yellow-400 font-black text-[10px] uppercase tracking-widest">+${t.pts} PTS</span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    ${isMaxed ? 
-                                        `<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse">COMPLETO</span>` : 
-                                        `<span class="text-[12px] font-black italic text-white/40">${count} / ${t.limit}</span>`
-                                    }
-                                </div>
-                            </div>
+            quickAdjust(pts) {
+                this.data.total += pts;
+                this.data.today.totalDay += pts;
+                this.save();
+            },
 
-                            <div class="flex items-center gap-4">
-                                <div class="flex-1 flex gap-1">
-                                    ${segmentsHtml}
-                                </div>
-                                <div class="flex gap-1">
-                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">-</button>
-                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg shadow-pink-600/20 transition-all active:scale-90">+</button>
-                                </div>
-                            </div>
-                        `;
-                        el.appendChild(div);
-                    });
-                } 
-                else if (this.data.tab === 'rewards') {
-                    const sectionTitle = (txt) => `<h3 class="text-[12.1px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
-                    
-                    el.innerHTML += sectionTitle('Premios Semanales');
-                    this.goals.weekly.forEach(g => {
-                        const progress = Math.min(100, (this.data.total / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-2 reward-card">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold uppercase italic text-[12.1px]">${g.label}</span>
-                                    <span class="font-black text-sm text-yellow-400">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-yellow-400 h-full shadow-[0_0_8px_#facc15]" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
+            setTab(t) {
+                this.data.tab = t;
+                this.render();
+            },
 
-                    el.innerHTML += sectionTitle('Premios Mensuales');
-                    this.goals.monthly.forEach(g => {
-                        const progress = Math.min(100, (this.data.total / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-pink-500 bg-gradient-to-r from-pink-500/10 to-transparent">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold uppercase italic text-[12.1px]">${g.label}</span>
-                                    <span class="font-black text-sm text-pink-500">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-pink-500 h-full shadow-[0_0_8px_#ff007f]" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
+            formatCLP(val) {
+                return new Intl.NumberFormat('es-CL', { 
+                    style: 'currency', 
+                    currency: 'CLP',
+                    minimumFractionDigits: 0 
+                }).format(val);
+            },
 
-                    const totalMoney = this.data.total * this.POINT_VALUE;
-                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Ganancias (CLP)</h3>`;
-                    
-                    const moneyBox = document.createElement('div');
-                    moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/20 mb-6 text-center';
-                    moneyBox.innerHTML = `
-                        <p class="text-[11px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p>
-                        <h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>
-                    `;
-                    el.appendChild(moneyBox);
+            render() {
+                document.getElementById('total-pts').innerText = this.data.total;
+                const el = document.getElementById('main-content');
+                if (!el) return;
+                el.innerHTML = '';
 
-                    const grid = document.createElement('div');
-                    grid.className = 'grid grid-cols-1 gap-2';
-                    this.financeConfig.forEach(conf => {
-                        const amount = totalMoney * conf.pct;
-                        grid.innerHTML += `
-                            <div class="glass-card px-5 py-5 rounded-2xl flex justify-between items-center border-white/5">
-                                <div>
-                                    <h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4>
-                                    <p class="text-[10px] text-white/30 uppercase tracking-tight">${conf.desc}</p>
-                                </div>
-                                <span class="font-header money-amount italic text-white">${this.formatCLP(amount)}</span>
-                            </div>
-                        `;
-                    });
-                    el.appendChild(grid);
-                } 
-                else if (this.data.tab === 'history') {
-                    const hist = [...this.data.allHistory].reverse();
-                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>`;
-                    
-                    el.innerHTML += `
-                        <div class="glass-card p-5 rounded-3xl border-pink-500/30 mb-4 bg-pink-500/10">
-                            <div class="flex justify-between items-end">
-                                <div>
-                                    <span class="bg-pink-500 text-[9px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span>
-                                    <h4 class="font-bold italic uppercase text-base">${this.data.today.id}</h4>
-                                </div>
-                                <span class="font-header text-3xl text-white">${this.data.today.totalDay} <span class="text-[11px]">PTS</span></span>
-                            </div>
-                        </div>
-                    `;
+                ['tasks', 'rewards', 'history'].forEach(t => {
+                    const btn = document.getElementById(`tab-${t}`);
+                    if (btn) btn.className = this.data.tab === t 
+                        ? 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] tab-active' 
+                        : 'flex-1 py-3 rounded-xl font-black uppercase italic text-[11px] opacity-60';
+                });
 
-                    hist.forEach(day => {
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-2 opacity-70">
-                                <span class="text-[11px] font-bold uppercase italic">${day.id}</span>
-                                <span class="font-header text-xl text-white/80">${day.totalDay} PTS</span>
-                            </div>
-                        `;
-                    });
-                }
-            }
-        };
+                if (this.data.tab === 'tasks') {
+                    this.tasks.forEach(t => {
+                        const count = this.data.today.points[t.id] || 0;
+                        const isMaxed = count >= t.limit;
+                        let segmentsHtml = '';
+                        for(let i=0; i < t.limit; i++) {
+                            segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
+                        }
+                        const div = document.createElement('div');
+                        div.className = `glass-card p-4 rounded-2xl flex flex-col gap-4 border-l-4 transition-all ${isMaxed ? 'task-done border-pink-500' : 'border-white/10'}`;
+                        div.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-inner">${t.icon}</div>
+                                    <div>
+                                        <h3 class="font-bold uppercase italic task-label tracking-tight text-white/90">${t.label}</h3>
+                                        <span class="text-yellow-400 font-black text-[10px] uppercase tracking-widest">+${t.pts} PTS</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${isMaxed ? `<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse">COMPLETO</span>` : `<span class="text-[12px] font-black italic text-white/40">${count} / ${t.limit}</span>`}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 flex gap-1">${segmentsHtml}</div>
+                                <div class="flex gap-1">
+                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-9 h-9 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">-</button>
+                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-9 h-9 ${isMaxed ? 'bg-zinc-700 opacity-50' : 'bg-pink-600'} rounded-lg font-bold flex items-center justify-center shadow-lg shadow-pink-600/20 transition-all active:scale-90">+</button>
+                                </div>
+                            </div>`;
+                        el.appendChild(div);
+                    });
+                } 
+                else if (this.data.tab === 'rewards') {
+                    const sectionTitle = (txt) => `<h3 class="text-[12.1px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-3 mt-6 ml-2">${txt}</h3>`;
+                    el.innerHTML += sectionTitle('Premios Semanales');
+                    this.goals.weekly.forEach(g => {
+                        const progress = Math.min(100, (this.data.total / g.points) * 100);
+                        el.innerHTML += `<div class="glass-card p-4 rounded-2xl mb-2 reward-card"><div class="flex justify-between items-center mb-2"><span class="font-bold uppercase italic text-[12.1px]">${g.label}</span><span class="font-black text-sm text-yellow-400">${g.points} PTS</span></div><div class="w-full bg-white/10 h-2 rounded-full overflow-hidden"><div class="bg-yellow-400 h-full shadow-[0_0_8px_#facc15]" style="width: ${progress}%"></div></div></div>`;
+                    });
+                    el.innerHTML += sectionTitle('Premios Mensuales');
+                    this.goals.monthly.forEach(g => {
+                        const progress = Math.min(100, (this.data.total / g.points) * 100);
+                        el.innerHTML += `<div class="glass-card p-4 rounded-2xl mb-2 border-l-4 border-pink-500 bg-gradient-to-r from-pink-500/10 to-transparent"><div class="flex justify-between items-center mb-2"><span class="font-bold uppercase italic text-[12.1px]">${g.label}</span><span class="font-black text-sm text-pink-500">${g.points} PTS</span></div><div class="w-full bg-white/10 h-2 rounded-full overflow-hidden"><div class="bg-pink-500 h-full shadow-[0_0_8px_#ff007f]" style="width: ${progress}%"></div></div></div>`;
+                    });
+                    const totalMoney = this.data.total * this.POINT_VALUE;
+                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-8 ml-2">Ganancias (CLP)</h3>`;
+                    const moneyBox = document.createElement('div');
+                    moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/20 mb-6 text-center';
+                    moneyBox.innerHTML = `<p class="text-[11px] font-black text-white/40 uppercase mb-1 tracking-widest">Saldo Real Total</p><h2 class="text-4xl font-header italic neon-text">${this.formatCLP(totalMoney)}</h2>`;
+                    el.appendChild(moneyBox);
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 gap-2';
+                    this.financeConfig.forEach(conf => {
+                        const amount = totalMoney * conf.pct;
+                        grid.innerHTML += `<div class="glass-card px-5 py-5 rounded-2xl flex justify-between items-center border-white/5"><div><h4 class="font-black uppercase italic money-label ${conf.color}">${conf.label} (${conf.pct * 100}%)</h4><p class="text-[10px] text-white/30 uppercase tracking-tight">${conf.desc}</p></div><span class="font-header money-amount italic text-white">${this.formatCLP(amount)}</span></div>`;
+                    });
+                    el.appendChild(grid);
+                } 
+                else if (this.data.tab === 'history') {
+                    const hist = [...this.data.allHistory].reverse();
+                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3><div class="glass-card p-5 rounded-3xl border-pink-500/30 mb-4 bg-pink-500/10"><div class="flex justify-between items-end"><div><span class="bg-pink-500 text-[9px] font-black px-2 py-0.5 rounded mb-2 inline-block">HOY</span><h4 class="font-bold italic uppercase text-base">${this.data.today.id}</h4></div><span class="font-header text-3xl text-white">${this.data.today.totalDay} <span class="text-[11px]">PTS</span></span></div></div>`;
+                    hist.forEach(day => {
+                        el.innerHTML += `<div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-2 opacity-70"><span class="text-[11px] font-bold uppercase italic">${day.id}</span><span class="font-header text-xl text-white/80">${day.totalDay} PTS</span></div>`;
+                    });
+                }
+            }
+        };
 
-        window.onload = () => App.init();
-    </script>
+        window.App = App;
+        window.onload = () => App.init();
+    </script>
 </body>
 </html>
