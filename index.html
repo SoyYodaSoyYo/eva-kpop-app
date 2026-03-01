@@ -303,6 +303,14 @@
     <div id="content"></div>
 </main>
 
+<!-- MARQUEE INFERIOR -->
+<div style="position:fixed;bottom:0;left:0;width:100%;z-index:45;background:linear-gradient(90deg,rgba(100,0,60,0.95),rgba(180,0,90,0.95));overflow:hidden;white-space:nowrap;padding:7px 0;box-shadow:0 0 18px rgba(255,0,127,.5);border-top:1px solid rgba(255,0,127,.4)">
+    <span style="display:inline-block;animation:marquee 28s linear infinite reverse;font-family:'Syne',sans-serif;font-weight:800;text-transform:uppercase;font-size:.9rem;padding-left:100%;letter-spacing:.05em;color:#fff">
+        • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
+        GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
+    </span>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════
    EVA K-POP — v6.0
@@ -474,8 +482,8 @@ var App={
         if(this.d.today.date){
             this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));
         }
-        // Restar los puntos del día de los totales
-        var ptsHoy = this.d.today.basePoints;
+        // Restar los puntos del día de los totales (incluyendo bono día perfecto)
+        var ptsHoy = this.d.today.totalDay;
         this.d.total      = Math.max(0, this.d.total      - ptsHoy);
         this.d.week.pts   = Math.max(0, this.d.week.pts   - ptsHoy);
         this.d.month.pts  = Math.max(0, this.d.month.pts  - ptsHoy);
