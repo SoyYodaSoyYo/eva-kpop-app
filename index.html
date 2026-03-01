@@ -297,7 +297,8 @@
     <div class="glass" style="display:flex;gap:6px;padding:6px;border-radius:16px;margin-bottom:16px">
         <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
-        <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Historial</button>
+        <button class="tab-btn"        id="tab-historia" onclick="App.tab('historia')">Historia</button>
+        <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Logros</button>
         <button class="tab-btn"        id="tab-rules"   onclick="App.tab('rules')">Reglas</button>
     </div>
     <div id="content"></div>
@@ -364,7 +365,7 @@ function showToast(title,msg,type){
 function syncBar(cls,txt){var b=document.getElementById('sync-bar');b.className=cls;b.id='sync-bar';b.textContent=txt;}
 
 /* ── DATOS VACÍOS ── */
-function emptyData(){return{total:0,today:{date:'',points:{},totalDay:0,basePoints:0,perfectDay:false},week:{id:'',pts:0,claimed:[]},month:{id:'',pts:0,claimed:[]},history:[],activeTab:'tasks',lastSync:0};}
+function emptyData(){return{total:0,today:{date:'',points:{},totalDay:0,basePoints:0,perfectDay:false},week:{id:'',pts:0,claimed:[]},month:{id:'',pts:0,claimed:[]},history:[],activeTab:'tasks',lastSync:0,historiaLeida:'',historiaEleccion:null};}
 
 /* ═══════════════════════════════════════════
    APP
@@ -530,12 +531,13 @@ var App={
 
     _render:function(){
         var ptEl=document.getElementById('total-pts');if(ptEl)ptEl.textContent=this.d.total;
-        ['tasks','rewards','history','rules'].forEach(function(t){var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(App.d.activeTab===t?' active':'');});
+        ['tasks','rewards','historia','history','rules'].forEach(function(t){var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(App.d.activeTab===t?' active':'');});
         var c=document.getElementById('content');if(!c)return;
-        if(this.d.activeTab==='tasks')   c.innerHTML=this._buildTasks();
-        if(this.d.activeTab==='rewards') c.innerHTML=this._buildRewards();
-        if(this.d.activeTab==='history') c.innerHTML=this._buildHistory();
-        if(this.d.activeTab==='rules')   c.innerHTML=this._buildRules();
+        if(this.d.activeTab==='tasks')    c.innerHTML=this._buildTasks();
+        if(this.d.activeTab==='rewards')  c.innerHTML=this._buildRewards();
+        if(this.d.activeTab==='historia') c.innerHTML=this._buildHistoria();
+        if(this.d.activeTab==='history')  c.innerHTML=this._buildHistory();
+        if(this.d.activeTab==='rules')    c.innerHTML=this._buildRules();
     },
 
     _buildTasks:function(){
@@ -656,6 +658,381 @@ var App={
             '</div>';
 
         return html;
+    },
+
+    /* ════════════════════════════════════════
+       HISTORIAS DIARIAS
+    ════════════════════════════════════════ */
+    HISTORIAS: [
+        /*
+           COMO AGREGAR UNA HISTORIA NUEVA:
+           Busca el comentario "AGREGA TU HISTORIA AQUI" al final
+           de esta lista y sigue las instrucciones.
+        */
+        {
+            titulo: 'El juguete de Tomás',
+            emoji: '🧸',
+            intro: 'En el recreo, Sofía estaba jugando con sus amigas cuando escuchó un llanto. Era Tomás, sentado solo en un rincón. Su osito favorito, el que llevaba todos los días al jardín, había desaparecido. Tomás lloraba tanto que no podía hablar. Sofía miró alrededor y vio algo marrón detrás del banco grande: ¡era el osito! Pero sus amigas la esperaban para jugar a las rondas y si se iba, perdería su turno. Sofía tenía que decidir.',
+            opciones: [
+                {
+                    texto: 'Voy a ayudar a Tomás a encontrar su osito',
+                    valor: 'bueno',
+                    feedback: '🌟 ¡Qué buena amiga! Sofía corrió hacia el banco y levantó el osito bien alto: "¡Tomás, aquí está!". Tomás dejó de llorar de golpe, sus ojos se pusieron muy grandes y corrió a abrazarla. "Gracias, gracias, gracias", le decía. Sus amigas la esperaron un poquito y cuando Sofía llegó a jugar, todos querían ser su pareja en la ronda. Ayudar a alguien que está triste es una de las cosas más bonitas que podemos hacer.',
+                    leccion: 'Cuando vemos que alguien necesita ayuda, siempre podemos elegir ayudar.'
+                },
+                {
+                    texto: 'Me voy a jugar, él solo encontrará su osito',
+                    valor: 'neutro',
+                    feedback: '😔 Sofía fue a jugar con sus amigas, pero durante todo el juego no podía dejar de pensar en Tomás llorando solo. Al final del recreo, cuando regresó a la sala, vio que Tomás todavía buscaba con los ojos rojos. La tía tuvo que ayudarlo. Sofía se preguntó: "¿y si yo hubiera ido antes?" A veces ayudar un poquito a tiempo puede hacer una diferencia enorme.',
+                    leccion: 'Un pequeño gesto de ayuda en el momento justo puede cambiar el día de alguien.'
+                }
+            ]
+        },
+        {
+            titulo: 'La galletita de más',
+            emoji: '🍪',
+            intro: 'Mamá puso una fuente de galletas en la mesa antes de salir a hablar por teléfono. Eran cuatro galletas: dos para Eva y dos para su hermano Mateo. Eva las contó bien: dos y dos, todo justo. Pero Mateo se distrajo mirando un libro y no estaba mirando la fuente. Eva vio que podía tomar una galletita más sin que nadie se diera cuenta. Total, eran muy ricas y ella tenía un poco más de hambre. ¿Qué haría?',
+            opciones: [
+                {
+                    texto: 'No la tomo. Dos galletas es mi parte y es justo',
+                    valor: 'bueno',
+                    feedback: '💎 Eva miró la galletita extra, respiró hondo y no la tomó. Comió sus dos galletas despacio, saboreándolas. Cuando mamá volvió, vio que cada uno tenía exactamente las suyas y le dio un abrazo a Eva: "vi que no tomaste más de lo que te tocaba, eso me hace muy feliz". Eva se sintió mejor por ese abrazo que lo que habría sentido comiendo una galletita de más.',
+                    leccion: 'Ser honesta, aunque nadie nos mire, es lo que nos hace buenas personas de verdad.'
+                },
+                {
+                    texto: 'La tomo, total nadie me vio',
+                    valor: 'malo',
+                    feedback: '😬 Eva tomó la galletita extra rápidito. Estaba muy rica. Pero cuando Mateo fue a comer la suya, las contó y preguntó: "mamá, ¿dónde está mi otra galleta?" Eva tuvo que mirar para otro lado y no dijo nada. Mamá la miró a ella. Eva sintió algo raro por dentro, como si algo pesado se le hubiera puesto en la panza. Portarse bien solo cuando nos miran no es portarse bien de verdad.',
+                    leccion: 'Hacer lo correcto cuando nadie nos mira es la verdadera honestidad.'
+                }
+            ]
+        },
+        {
+            titulo: 'El dibujo de Valentina',
+            emoji: '🎨',
+            intro: 'La tía pidió que todos dibujaran un árbol con los colores que quisieran. Valentina tomó sus lápices con mucha ilusión, pero cuando terminó, miró su dibujo y frunció el ceño. Las ramas le quedaron chuecas, el tronco parecía un palito flaco y las hojas no eran redondas como quería. Miró el dibujo de su compañera de al lado que quedó precioso. Valentina sintió vergüenza. Quería esconder su hoja o romperla antes de que alguien la viera. La tía estaba por pasar a recoger los dibujos.',
+            opciones: [
+                {
+                    texto: 'Entrego mi dibujo aunque no quedó como quería',
+                    valor: 'bueno',
+                    feedback: '🌈 Valentina respiró fuerte y entregó su dibujo con la carita un poco colorada. La tía los fue mirando uno a uno y cuando llegó al de Valentina, lo levantó y dijo: "miren qué raíces tan interesantes dibujó Valentina, se ve que el árbol está muy bien plantado en la tierra". Valentina no lo podía creer. A veces lo que nos parece un error, otros lo ven diferente. ¡Nadie hace todo perfecto la primera vez!',
+                    leccion: 'Intentarlo es más importante que hacerlo perfecto. Cada intento es un aprendizaje.'
+                },
+                {
+                    texto: 'Lo escondo, no quiero que nadie lo vea',
+                    valor: 'neutro',
+                    feedback: '📄 Valentina metió el dibujo bajo su mochila. Cuando la tía preguntó por el suyo, ella dijo que se le había caído. La tía la miró con una sonrisa suave. Esa tarde, mirando el dibujo a solas, Valentina pensó: "¿y si lo hubiera entregado?" La próxima vez se animaría a intentarlo, porque todos empezamos aprendiendo.',
+                    leccion: 'Cada intento nos enseña algo nuevo, aunque no quede exactamente como queríamos.'
+                }
+            ]
+        },
+        {
+            titulo: 'El turno en el tobogán',
+            emoji: '🛝',
+            intro: 'Eva llevaba muuucho tiempo en la fila del tobogán. Había contado: nueve niños delante de ella. Uno a uno fueron bajando hasta que por fin llegó su turno. Puso el pie en el primer escalón, lista para subir, cuando de repente un niño chiquito, más pequeño que ella, se puso justo adelante. Parecía que no sabía que había fila. Estaba solo y miraba con miedo hacia arriba. Eva tenía todo el derecho de decirle que era su turno. Pero el niño se veía muy asustado.',
+            opciones: [
+                {
+                    texto: 'Le dejo pasar primero al niño chiquito',
+                    valor: 'bueno',
+                    feedback: '💕 Eva dio un paso atrás y le hizo señas al niño para que subiera. Él la miró sorprendido, como si no pudiera creer que alguien tan buena existiera, y subió despacito. Cuando llegó abajo del tobogán, se dio vuelta y le gritó "¡gracias!" con una gran sonrisa. Eva esperó un poquito más, pero cuando llegó su turno y bajó volando, se sintió feliz por dentro de una manera especial.',
+                    leccion: 'A veces ceder nuestro turno es el gesto más amable y generoso que podemos tener.'
+                },
+                {
+                    texto: 'Es mi turno, yo llevo mucho tiempo esperando',
+                    valor: 'neutro',
+                    feedback: '⏳ Eva le dijo al niño que era su turno y que tenía que ir atrás. El niño bajó la cabeza y se fue a la fila. Eva subió y bajó el tobogán, que estuvo muy divertido. Pero cuando llegó abajo, vio que el niño pequeño estaba llorando. Eva tenía razón: era su turno. Pero a veces tener razón y ser amable son dos cosas que podemos elegir juntas.',
+                    leccion: 'Podemos tener razón y también elegir ser amables al mismo tiempo.'
+                }
+            ]
+        },
+        {
+            titulo: 'La tarea aburrida',
+            emoji: '✏️',
+            intro: 'La maestra había pedido copiar cinco oraciones del pizarrón al cuaderno. Eva copiaba y copiaba, su mano ya estaba cansada. Copió la primera, la segunda, la tercera, la cuarta... y se detuvo. "Ya casi", se dijo. Pero era tan aburrido. La quinta oración era larga, con muchas palabras. Afuera se escuchaba a los pájaros. Su gato Melón estaba durmiendo en el sofá y se veía muy suave y rico para abrazar. Faltaba solo una. Solo una más.',
+            opciones: [
+                {
+                    texto: 'Termino la última oración antes de hacer otra cosa',
+                    valor: 'bueno',
+                    feedback: '🏆 Eva apretó el lápiz, se puso derecha en la silla y copió la última oración letra por letra. Cuando puso el punto final, cerró el cuaderno de un golpe y dijo "¡listo!" en voz alta. Se fue corriendo a abrazar a Melón con una sensación muy rica por dentro: la sensación de haber terminado lo que empezó. Mamá la vio y le dijo: "eso es lo que se llama ser responsable".',
+                    leccion: 'Terminar lo que empezamos, aunque estemos cansados, nos hace más fuertes y responsables.'
+                },
+                {
+                    texto: 'La dejo para después, solo es una oración',
+                    valor: 'neutro',
+                    feedback: '😴 Eva fue a abrazar a Melón. Después llegó la merienda, luego el baño, luego el cuento de antes de dormir, y de repente mamá dijo: "¿terminaste la tarea?" Eva recordó la quinta oración. Tuvo que hacerla con sueño, con los ojos casi cerrados. "Solo era una", pensó. Pero lo que dejamos para después casi siempre cuesta el doble.',
+                    leccion: 'Terminar las cosas de una vez nos deja más tiempo libre para jugar y descansar tranquilas.'
+                }
+            ]
+        },
+        {
+            titulo: '¿De quién es la culpa?',
+            emoji: '🏺',
+            intro: 'Eva estaba jugando con su pelota en la sala, aunque mamá siempre decía que la pelota era solo para afuera. La pelota rebotó raro, Eva estiró la mano para agarrarla y... ¡crash! El jarrón verde de mamá, el que tenía flores pintadas y que era su favorito, estaba en el piso hecho pedazos. Eva se quedó helada. La sala estaba en silencio. Nadie la había visto. En ese momento se escucharon pasos y llegó su hermano Mateo a la sala, mirando el jarrón roto.',
+            opciones: [
+                {
+                    texto: 'Voy a buscar a mamá y le digo que fui yo sin querer',
+                    valor: 'bueno',
+                    feedback: '💎 Eva fue a buscar a mamá con el corazón latiendo muy rápido. "Mamá, fui yo. Estaba jugando con la pelota adentro y rompí tu jarrón. Fue sin querer y lo siento mucho." Mamá se puso triste por su jarrón favorito, pero después abrazó a Eva muy fuerte y le dijo: "gracias por decirme la verdad. Eso es lo que más me importa". Eva sintió un alivio enorme.',
+                    leccion: 'Decir la verdad cuando hicimos algo mal, aunque da miedo, es lo más valiente del mundo.'
+                },
+                {
+                    texto: 'Me quedo callada, quizás no se dan cuenta',
+                    valor: 'malo',
+                    feedback: '😰 Eva no dijo nada. Pero mamá encontró el jarrón roto y preguntó a todos. Eva tuvo que decir "no sé" mirando al piso. Mamá la miró a los ojos un buen rato. Eva no pudo dormir bien esa noche pensando en el jarrón y en la mirada de mamá. Una pequeña mentira a veces pesa más de lo que esperamos.',
+                    leccion: 'La verdad puede dar miedo un momento, pero cargar una mentira pesa mucho más y por más tiempo.'
+                }
+            ]
+        },
+        {
+            titulo: 'La niña nueva',
+            emoji: '🌸',
+            intro: 'El lunes llegó una niña nueva al jardín. Se llamaba Luna y venía de otra ciudad muy lejos. La tía la presentó a todos y Luna dijo "hola" con una voz muy chiquitita, mirando sus zapatos. En el recreo, todas las niñas se juntaron a jugar como siempre. Eva se dio vuelta y vio a Luna parada sola al lado de la puerta, mirando cómo jugaban todas sin saber cómo acercarse. Eva sabía muy bien cómo se sentía eso, porque ella también había sido nueva alguna vez.',
+            opciones: [
+                {
+                    texto: 'Me acerco a Luna y la invito a jugar con nosotras',
+                    valor: 'bueno',
+                    feedback: '🌈 Eva se separó del grupo y caminó hacia Luna. "Hola, yo soy Eva. ¿Quieres jugar con nosotras?" Luna levantó la vista y sus ojos brillaron. Jugaron todo el recreo y al final Luna le dijo bajito: "eres la primera amiga que tengo aquí". Eva sintió algo muy calentito por dentro. Un gesto pequeño puede significar el mundo entero para alguien que está solo.',
+                    leccion: 'Acercarnos a quien está solo es uno de los gestos más poderosos que podemos tener.'
+                },
+                {
+                    texto: 'Espero que alguien más la invite, yo no la conozco',
+                    valor: 'neutro',
+                    feedback: '⏳ Eva esperó. Y esperó. Pero nadie más se acercó a Luna tampoco, porque todos pensaron lo mismo. Luna estuvo sola todo el recreo. Cuando Eva llegó a casa esa tarde, no podía dejar de pensar en la cara de Luna mirando al piso. "Mañana sí me acerco", se prometió. A veces el mejor momento para hacer algo bonito es ahora mismo.',
+                    leccion: 'La bondad no necesita esperar el momento perfecto. Ese momento es ahora.'
+                }
+            ]
+        },
+        {
+            titulo: 'El secreto de Sofía',
+            emoji: '🤫',
+            intro: 'Sofía le había contado a Eva algo muy importante en secreto, tapándose la boca con las dos manos: se había hecho pipí en el pantalón en educación física y la tía la ayudó a cambiarse sin que nadie se diera cuenta. "¡Júrame que no le dices a nadie, a nadie, a nadie!"  le dijo Sofía, y Eva prometió. Pero al día siguiente, Camila le preguntó a Eva por qué Sofía se había cambiado de ropa el día anterior. Camila era muy curiosa y seguía preguntando.',
+            opciones: [
+                {
+                    texto: 'Digo que no sé nada, el secreto de Sofía es de Sofía',
+                    valor: 'bueno',
+                    feedback: '🔒 Eva encogió los hombros y dijo: "no sé, no me fijé". Y cambió el tema hablando de otra cosa. Esa tarde, Sofía corrió a abrazarla: "Camila me preguntó a mí también y me dijo que tú no le habías dicho nada. ¡Sabía que podía confiar en ti!" Los secretos que nos cuentan son un regalo muy especial de confianza.',
+                    leccion: 'Guardar los secretos de nuestras amigas es una de las formas más bonitas de quererlas.'
+                },
+                {
+                    texto: 'Cuento el secreto, no era para tanto',
+                    valor: 'malo',
+                    feedback: '💔 Eva le contó a Camila, pensando que no era gran cosa. Pero Camila se lo contó a otra, y esa a otra más. Al otro día, Sofía llegó llorando: "me prometiste que no dirías nada. Ahora todos lo saben". Eva se sintió muy mal. Aunque fue sin mala intención, las palabras que salen no pueden volver a entrar.',
+                    leccion: 'Un secreto que nos confían hay que cuidarlo como si fuera un tesoro muy valioso.'
+                }
+            ]
+        },
+        {
+            titulo: 'El dulce que encontré',
+            emoji: '🍬',
+            intro: 'Eva estaba caminando al baño del jardín cuando vio algo brillante en el piso del pasillo: era un dulce de frutilla, su sabor favorito, bien cerrado y sin ninguna rayadura. Miró para todos lados: no había nadie. Nadie la había visto. Podría guardarlo en el bolsillo y comérselo después. Pero también podía ser de alguien que lo había perdido y que lo estaba buscando en ese momento sintiéndose muy triste.',
+            opciones: [
+                {
+                    texto: 'Lo entrego a la tía por si alguien lo perdió',
+                    valor: 'bueno',
+                    feedback: '⭐ Eva lo levantó y se lo llevó a la tía. "Lo encontré en el pasillo, no sé de quién es." La tía lo puso en su escritorio. Veinte minutos después, un niño de la sala de al lado llegó llorando buscando su dulce. La tía se lo devolvió y el niño miró a Eva: "¡gracias, lo encontraste tú!" Eva sonrió. Devolver lo que no es nuestro se siente increíblemente bien.',
+                    leccion: 'Lo que encontramos y no es nuestro siempre vale más devolverlo que quedárselo.'
+                },
+                {
+                    texto: 'Lo guardo, quien lo perdió ya no lo encontrará igual',
+                    valor: 'neutro',
+                    feedback: '🍬 Eva lo guardó en el bolsillo. El dulce estaba rico, de frutilla, su favorito. Pero media hora después escuchó a un niño llorando en el pasillo buscando su dulce de frutilla. Eva tocó su bolsillo y sintió algo raro por dentro. El dulce ya no le supo tan bien. Las cosas que tomamos cuando no son nuestras a veces dejan un sabor muy extraño.',
+                    leccion: 'Ser honesta con las cosas ajenas, aunque nadie nos vea, nos hace sentir bien por dentro.'
+                }
+            ]
+        },
+        {
+            titulo: 'Cuando tengo miedo',
+            emoji: '🌙',
+            intro: 'Era de noche y toda la casa estaba oscura y en silencio. Eva trataba de dormirse pero no podía. De repente escuchó un ruido raro que venía de su clóset: un crujido, luego otro. El corazón le empezó a latir muy rápido. Quería llamar a mamá, pero le daba vergüenza porque pensaba: "¿y si se ríe de mí? ¿y si me dice que soy una niña chica por tener miedo?" Eva se quedó quieta bajo las frazadas, sin saber qué hacer.',
+            opciones: [
+                {
+                    texto: 'Llamo a mamá y le digo que tengo miedo',
+                    valor: 'bueno',
+                    feedback: '💕 Eva sacó la cabeza de las frazadas y llamó: "¡mamá!". Mamá llegó enseguida en pijama, sin enojarse, sin reírse. Se sentó en la cama y revisaron el cuarto juntas: era solo el viento moviendo la puerta del clóset que estaba entreabierta. Mamá la arropó y le dijo: "gracias por llamarme. Para eso estoy yo, de día y de noche." Eva cerró los ojos y se durmió en dos minutos.',
+                    leccion: 'Pedir ayuda cuando tenemos miedo o necesitamos algo no es de cobardes. ¡Es de muy valientes!'
+                },
+                {
+                    texto: 'Me tapo bien con la frazada y trato de dormir sola',
+                    valor: 'neutro',
+                    feedback: '🌙 Eva se tapó hasta la cabeza. Le costó mucho dormirse y tuvo un sueño raro. A la mañana siguiente tenía ojeras y estaba cansada. Cuando le contó a mamá lo que había pasado, mamá la abrazó y le dijo: "¿por qué no me llamaste? Para eso estoy yo." Eva aprendió que pedir ayuda a quienes nos quieren siempre está bien.',
+                    leccion: 'Las personas que nos quieren están ahí para ayudarnos, de día y también de noche.'
+                }
+            ]
+        },
+        {
+            titulo: 'Compartir el juguete nuevo',
+            emoji: '🎀',
+            intro: 'El día de su cumpleaños, Eva recibió el juguete que había pedido por meses: un set de peluquería con peinetas, hebillas y un espejo de verdad. Era precioso y lo cuidaba muchísimo. Esa tarde llegó su prima Renata a visitarla. Renata vio el juguete y sus ojos se pusieron enormes: "¿puedo jugar un ratito?", preguntó. Eva sintió que se le apretaba el pecho. Era nuevo, era de ella, ¿y si Renata lo rompía o perdía alguna pieza?',
+            opciones: [
+                {
+                    texto: 'Le presto el juguete a Renata y jugamos juntas',
+                    valor: 'bueno',
+                    feedback: '🌟 Eva respiró hondo y dijo: "sí, pero cuidémoslo juntas". Renata lo cuidó como si fuera suyo y jugaron por horas haciéndose peinados una a la otra y riéndose mucho. Cuando Renata se fue, el juguete estaba perfecto y Eva pensó: "sola no me habría divertido tanto". Compartir hace que las cosas buenas sean mucho más grandes.',
+                    leccion: 'Compartir lo que más queremos es difícil, pero hace que todo sea infinitamente más divertido.'
+                },
+                {
+                    texto: 'Le digo que no, es muy nuevo y puede romperlo',
+                    valor: 'neutro',
+                    feedback: '😕 Eva dijo que no podía prestarlo porque era muy nuevo. Renata asintió y se fue a jugar a otra cosa sola. Eva jugó con su set de peluquería, pero de vez en cuando miraba a Renata aburrida en el rincón. El juguete no le pareció tan divertido como esperaba. A veces las cosas más lindas se disfrutan el doble cuando las compartimos.',
+                    leccion: 'Las cosas que más queremos se disfrutan mucho más cuando las compartimos con alguien.'
+                }
+            ]
+        },
+        {
+            titulo: 'El error en el juego',
+            emoji: '⚽',
+            intro: 'Eva y tres amigos estaban jugando a las bolitas en el patio. Era el turno de Eva y estaba a punto de ganar: solo necesitaba darle a una bolita azul. Lanzó, pero calculó mal y su pie rozó la bolita sin querer, moviéndola un poco más cerca. Nadie la vio. Tiró desde esa posición y... ¡le dio! Sus amigos gritaron "¡ganó Eva!" Eva sabía la verdad: sin ese pequeño movimiento con el pie, no hubiera llegado.',
+            opciones: [
+                {
+                    texto: 'Digo la verdad: moví la bolita sin querer',
+                    valor: 'bueno',
+                    feedback: '💎 Eva levantó la mano: "esperen, moví la bolita sin querer con el pie. No vale, tengo que tirar de nuevo desde donde estaba antes." Sus amigos se quedaron callados. Uno dijo despacio: "eso es jugar limpio de verdad." Volvieron a jugar y aunque Eva no ganó esa vez, al salir del colegio todos querían jugar con ella al día siguiente.',
+                    leccion: 'Jugar limpio y decir la verdad es siempre más importante que ganar.'
+                },
+                {
+                    texto: 'No digo nada, fue sin querer y nadie me vio',
+                    valor: 'malo',
+                    feedback: '😔 Eva se quedó callada y todos festejaron que ganó. Pero al rato, uno de sus amigos le dijo en voz baja: "yo sí te vi mover la bolita". Eva se puso colorada. El amigo no le dijo a nadie más, pero al día siguiente no la invitó a jugar. Ganar de esa manera no se siente igual que ganar de verdad, y los demás lo notan.',
+                    leccion: 'Una victoria que no fue justa no nos hace sentir bien por dentro. Jugar limpio siempre vale más.'
+                }
+            ]
+        }
+
+        /*
+           =====================================================
+           AGREGA TU HISTORIA AQUI
+           
+           Copia el bloque de abajo y pegalo ANTES de este
+           comentario (con una coma despues del } anterior):
+           
+           ,{
+               titulo: 'Escribe el titulo aqui',
+               emoji: '😊',
+               intro: 'El cuento en 4-6 oraciones para una niña de 6 años. Presenta el personaje, la situación, el dilema y termina con la decisión que debe tomar.',
+               opciones: [
+                   {
+                       texto: 'Opcion A: la primera eleccion',
+                       valor: 'bueno',
+                       feedback: 'Que paso despues. 3-4 oraciones con consecuencia positiva.',
+                       leccion: 'La enseñanza en una sola frase.'
+                   },
+                   {
+                       texto: 'Opcion B: la segunda eleccion',
+                       valor: 'neutro',
+                       feedback: 'Que paso despues. 3-4 oraciones con consecuencia reflexiva.',
+                       leccion: 'La enseñanza en una sola frase.'
+                   }
+               ]
+           }
+           ===================================================== */
+    ],
+
+        _getHistoriaDelDia: function(){
+        // Selecciona historia basada en el día del año para que cambie cada día
+        var now = new Date();
+        var start = new Date(now.getFullYear(), 0, 0);
+        var diff = now - start;
+        var oneDay = 1000 * 60 * 60 * 24;
+        var dayOfYear = Math.floor(diff / oneDay);
+        return this.HISTORIAS[dayOfYear % this.HISTORIAS.length];
+    },
+
+    _buildHistoria: function(){
+        var h = this._getHistoriaDelDia();
+        var hoy = this._hoy();
+        var yaLeyo = this.d.historiaLeida === hoy;
+        var eleccion = this.d.historiaEleccion || null;
+
+        var html =
+            // === BANNER SUPERIOR ===
+            (yaLeyo
+                ? '<div style="background:linear-gradient(135deg,rgba(0,160,60,.3),rgba(0,100,40,.3));border:2px solid rgba(0,220,80,.5);border-radius:16px;padding:14px 20px;text-align:center;margin-bottom:18px;backdrop-filter:blur(10px)">'+
+                  '<div style="font-size:1.6rem;margin-bottom:6px">✅</div>'+
+                  '<div class="font-arch" style="font-size:1rem;font-style:italic;color:#00ff70;margin-bottom:4px">¡Historia de hoy completada!</div>'+
+                  '<div style="font-size:.8rem;font-weight:700;color:rgba(0,255,112,.7);text-transform:uppercase;letter-spacing:.1em">+2 puntos ganados</div>'+
+                  '</div>'
+                : '<div style="background:linear-gradient(135deg,rgba(255,0,127,.25),rgba(123,0,204,.25));border:2px solid rgba(255,0,127,.5);border-radius:16px;padding:16px 20px;text-align:center;margin-bottom:18px;backdrop-filter:blur(10px);box-shadow:0 0 24px rgba(255,0,127,.15)">'+
+                  '<div style="font-size:1.6rem;margin-bottom:8px">📖</div>'+
+                  '<div class="font-arch" style="font-size:1.05rem;font-style:italic;color:#fff;margin-bottom:6px">Completa la historia de hoy</div>'+
+                  '<div style="display:inline-block;background:#ff007f;color:#fff;font-family:'Archivo Black',sans-serif;font-style:italic;font-size:1.1rem;padding:6px 22px;border-radius:999px;box-shadow:0 0 18px rgba(255,0,127,.5);border-bottom:3px solid #a8005a">¡Gana +2 Puntos!</div>'+
+                  '</div>'
+            )+
+
+            // === TARJETA HISTORIA ===
+            '<div style="background:rgba(10,0,25,0.88);border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden;margin-bottom:14px">'+
+
+            // Header tarjeta
+            '<div style="background:linear-gradient(135deg,rgba(255,0,127,.3),rgba(123,0,204,.3));padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center">'+
+            '<div style="font-size:3.2rem;margin-bottom:10px">'+h.emoji+'</div>'+
+            '<div class="font-arch" style="font-size:1.2rem;font-style:italic;color:#fff;text-shadow:0 0 20px rgba(255,0,127,.4)">'+h.titulo+'</div>'+
+            '</div>'+
+
+            // Texto historia
+            '<div style="padding:20px 18px">'+
+            '<div style="font-size:.92rem;color:rgba(255,255,255,.88);line-height:1.85;margin-bottom:22px;border-left:3px solid rgba(255,0,127,.5);padding-left:15px">'+h.intro+'</div>';
+
+        if(!yaLeyo){
+            // === BANNER ¿QUÉ HARÍAS TÚ? ===
+            html +=
+                '<div style="background:linear-gradient(90deg,rgba(255,0,127,.2),rgba(123,0,204,.2));border:1px solid rgba(255,0,127,.4);border-radius:12px;padding:12px 16px;margin-bottom:16px;text-align:center">'+
+                '<div class="font-arch" style="font-size:1.15rem;font-style:italic;color:#fff;letter-spacing:.03em;text-shadow:0 0 14px rgba(255,0,127,.6)">✨ ¿QUÉ HARÍAS TÚ? ✨</div>'+
+                '<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.1em">Elige una respuesta</div>'+
+                '</div>';
+
+            h.opciones.forEach(function(op, i){
+                html +=
+                    '<button onclick="App.elegirOpcion('+i+')" style="width:100%;text-align:left;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 18px;margin-bottom:12px;color:#fff;cursor:pointer;font-size:.88rem;line-height:1.6;font-family:'Archivo',sans-serif;transition:all .2s;display:flex;align-items:flex-start;gap:12px" '+
+                    'onmouseover="this.style.background='rgba(255,0,127,.15)';this.style.borderColor='rgba(255,0,127,.6)';this.style.transform='scale(1.01)'" '+
+                    'onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.borderColor='rgba(255,255,255,.1)';this.style.transform='scale(1)'">'+
+                    '<span style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ff007f,#7b00cc);font-size:.8rem;font-weight:900;font-family:'Archivo Black',sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(255,0,127,.4)">'+(i===0?'A':'B')+'</span>'+
+                    '<span style="flex:1">'+op.texto+'</span>'+
+                    '</button>';
+            });
+        } else {
+            var opElegida = eleccion !== null ? h.opciones[eleccion] : null;
+            if(opElegida){
+                html +=
+                    '<div style="background:rgba(255,0,127,.1);border:1px solid rgba(255,0,127,.3);border-radius:14px;padding:18px;margin-bottom:14px">'+
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+
+                    '<span style="background:#ff007f;color:#fff;font-size:9px;font-weight:900;padding:3px 10px;border-radius:999px;font-family:'Archivo Black',sans-serif;letter-spacing:.05em">TU ELECCIÓN</span>'+
+                    '<span style="font-size:.82rem;color:#fff;font-style:italic">'+
+                    '<span style="background:rgba(255,0,127,.4);border-radius:5px;padding:1px 8px;font-size:.7rem;font-weight:900;margin-right:6px">'+(eleccion===0?'A':'B')+'</span>'+
+                    opElegida.texto+'</span>'+
+                    '</div>'+
+                    '<div style="font-size:.9rem;color:rgba(255,255,255,.88);line-height:1.7;margin-bottom:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">'+opElegida.feedback+'</div>'+
+                    '<div style="background:rgba(250,204,21,.12);border:2px solid rgba(250,204,21,.35);border-radius:12px;padding:14px 16px">'+
+                    '<div style="font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:#facc15;margin-bottom:6px">💡 Lo que aprendemos hoy</div>'+
+                    '<div style="font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.6;font-style:italic">'+opElegida.leccion+'</div>'+
+                    '</div></div>';
+            }
+        }
+
+        html += '</div></div>';
+
+        if(yaLeyo){
+            html +=
+                '<div style="text-align:center;padding:20px;background:rgba(10,0,25,0.70);border:1px solid rgba(255,255,255,.08);border-radius:16px;backdrop-filter:blur(10px)">'+
+                '<div style="font-size:1.5rem;margin-bottom:6px">🌙</div>'+
+                '<div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4)">Vuelve mañana para una nueva historia</div>'+
+                '</div>';
+        }
+
+        return html;
+    },
+
+        elegirOpcion: function(idx){
+        var hoy = this._hoy();
+        this.d.historiaLeida = hoy;
+        this.d.historiaEleccion = idx;
+        // Sumar 2 puntos
+        this.d.total += 2;
+        this.d.today.totalDay += 2;
+        this.d.week.pts += 2;
+        this.d.month.pts += 2;
+        SFX.coin();
+        FX.burst();
+        showToast('¡Historia completada! 📖', '+2 puntos por leer hoy', 'reward');
+        this._save();
     },
 
     _buildRules:function(){
