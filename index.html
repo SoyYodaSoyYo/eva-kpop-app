@@ -3,808 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL JUEGO DE EVA KPOP - GANANCIAS CLP</title>
+    <title>El Juego de Eva K-POP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
-        
-        body { 
-            font-family: 'Archivo', sans-serif; 
-            background: #000;
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background: #0a0006;
             color: #fff;
             margin: 0;
             overflow-x: hidden;
-            font-size: 1.1rem;
-            background-image: url('https://drive.google.com/uc?export=view&id=1A7Lb_GlMRW8dOnMqA9nvY1VG7EeUYzit');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
             -webkit-tap-highlight-color: transparent;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            background: radial-gradient(circle at center, rgba(30,0,20,0.7) 0%, rgba(0,0,0,0.95) 100%);
-            z-index: -1;
-        }
+        .font-arch { font-family: 'Archivo Black', sans-serif; }
 
-        .font-header { font-family: 'Archivo Black', sans-serif; }
-        .font-syne { font-family: 'Syne', sans-serif; }
-
-        .marquee-container {
+        /* ── MARQUEE ── */
+        .marquee-wrap {
             background: linear-gradient(90deg, #ff007f, #b30059);
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 10px 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-            display: flex;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+            overflow: hidden; white-space: nowrap; padding: 9px 0;
+            box-shadow: 0 0 18px rgba(255,0,127,.5);
+            position: sticky; top: 0; z-index: 50;
         }
-
-        .marquee-text {
+        .marquee-inner {
             display: inline-block;
             animation: marquee 22s linear infinite;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 1.32rem;
-            color: #fff;
-            padding-left: 100%;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            text-transform: uppercase; font-size: 1.1rem; padding-left: 100%;
+            letter-spacing: .05em;
+        }
+        @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-250%)} }
+
+        /* ── COLORES / EFECTOS ── */
+        .neon { color: #ff007f; text-shadow: 0 0 10px #ff007f, 0 0 30px #ff007f; }
+        .glass {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.1);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
         }
 
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-250%); }
+        /* ── TABS ── */
+        .tab-btn {
+            flex:1; padding:13px 4px; border-radius:11px;
+            font-family:'Archivo Black',sans-serif; font-style:italic;
+            text-transform:uppercase; font-size:11px; cursor:pointer;
+            transition:all .2s; opacity:.5; background:none; border:none; color:#fff;
+        }
+        .tab-btn.active { background:#fff; color:#000; opacity:1; box-shadow:0 0 14px rgba(255,255,255,.2); }
+
+        /* ── TARJETA DE TAREA ── */
+        .task-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.08);
+            border-left: 4px solid rgba(255,255,255,.12);
+            border-radius: 16px; padding: 15px;
+            display: flex; flex-direction: column; gap: 13px;
+            margin-bottom: 11px;
+            transition: all .3s;
+        }
+        .task-card.done {
+            border-left-color: #ff007f;
+            background: linear-gradient(90deg, rgba(255,0,127,.11) 0%, transparent 100%);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: inset 0 0 8px rgba(255,0,127,.04); }
+            to   { box-shadow: inset 0 0 22px rgba(255,0,127,.16); }
         }
 
-        .neon-text {
-            color: #ff007f;
-            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 40px #ff007f;
+        /* ── SEGMENTOS DE PROGRESO ── */
+        .seg {
+            height: 7px; flex: 1; border-radius: 4px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.09);
+            transition: all .3s;
         }
+        .seg.on { background:#ff007f; border-color:#ff007f; box-shadow:0 0 7px #ff007f; }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        /* ── BOTONES +/- ── */
+        .btn-m {
+            width:40px; height:40px; border-radius:10px;
+            background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+            color:rgba(255,255,255,.45); font-size:20px; font-weight:900;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:all .12s; user-select:none; -webkit-user-select:none;
         }
+        .btn-p {
+            width:40px; height:40px; border-radius:10px;
+            background:#ff007f; border:none; border-bottom:4px solid #a8005a;
+            color:#fff; font-size:22px; font-weight:900;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            box-shadow:0 0 12px rgba(255,0,127,.35);
+            transition:all .12s; user-select:none; -webkit-user-select:none;
+        }
+        .btn-p.off { background:#3a3a3a; border-bottom-color:#222; box-shadow:none; opacity:.45; }
+        .btn-m:active, .btn-p:active { transform:scale(.85); }
 
-        .reward-card {
-            border-left: 4px solid #facc15;
-            background: linear-gradient(90deg, rgba(250, 204, 21, 0.15) 0%, rgba(0,0,0,0) 100%);
+        /* ── BARRA DE PROGRESO PREMIOS ── */
+        .prog-track {
+            width:100%; height:9px;
+            background:rgba(0,0,0,.5); border-radius:999px;
+            overflow:hidden; border:1px solid rgba(255,255,255,.07);
         }
+        .prog-fill { height:100%; border-radius:999px; transition:width .9s; }
 
-        .task-done {
-            border-left: 4px solid #ff007f !important;
-            background: linear-gradient(90deg, rgba(255, 0, 127, 0.15) 0%, transparent 100%) !important;
-            box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.1);
-            animation: pulseCard 2s infinite alternate;
+        /* ── TOAST ── */
+        #toasts {
+            position:fixed; top:68px; right:12px; z-index:300;
+            display:flex; flex-direction:column; gap:9px;
+            pointer-events:none;
+            width: min(290px, calc(100vw - 24px));
         }
+        .toast {
+            background:rgba(8,0,8,.88);
+            border:1px solid rgba(255,255,255,.1); border-left:4px solid #ff007f;
+            border-radius:13px; padding:13px 15px;
+            backdrop-filter:blur(18px);
+            animation: tIn .38s cubic-bezier(.17,.89,.32,1.28);
+        }
+        .toast.out     { animation: tOut .3s ease-in forwards; }
+        .toast.perfect { border-left-color:#facc15; }
+        .toast.reward  { border-left-color:#22d3ee; }
+        .toast.bad     { border-left-color:#f87171; }
+        @keyframes tIn  { from{transform:translateX(108%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes tOut { from{transform:translateX(0);opacity:1} to{transform:translateX(108%);opacity:0} }
 
-        @keyframes pulseCard {
-            from { box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.05); }
-            to { box-shadow: inset 0 0 30px rgba(255, 0, 127, 0.2); }
-        }
+        /* ── CONFETI ── */
+        #fx-canvas { position:fixed; inset:0; pointer-events:none; z-index:900; }
 
-        .tab-active {
-            background: linear-gradient(135deg, #fff, #f0f0f0);
-            color: #000;
-            font-weight: 900;
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        /* ── FOOTER ── */
+        #footer {
+            position:fixed; bottom:0; left:0; width:100%;
+            background:linear-gradient(to top, #000 55%, transparent);
+            padding:14px 16px 22px; z-index:40;
         }
+        .btn-bonus {
+            flex:1; padding:15px; border:none; border-radius:14px;
+            font-family:'Archivo Black',sans-serif; font-style:italic;
+            text-transform:uppercase; font-size:12px; cursor:pointer;
+            transition: transform .12s;
+        }
+        .btn-bonus:active { transform:scale(.93); }
 
-        .progress-segment {
-            height: 8px;
-            flex: 1;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* ── HISTORIAL ── */
+        .hist-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:13px 16px; border-radius:13px; margin-bottom:9px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
         }
-        .progress-segment.filled {
-            background: #ff007f;
-            border-color: #ff007f;
-            box-shadow: 0 0 10px #ff007f, inset 0 0 5px rgba(255,255,255,0.5);
-        }
-
-        .btn-action {
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-        .btn-action:active {
-            transform: scale(0.92);
-        }
-
-        /* TOAST ANIMATIONS */
-        .toast-enter {
-            animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        .toast-exit {
-            animation: slideOutRight 0.4s ease-in forwards;
-        }
-        @keyframes slideInRight {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(120%); opacity: 0; }
-        }
-
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        .money-label { font-size: 12.1px; }
-        .money-amount { font-size: 1.375rem; }
-        .task-label { font-size: 0.85rem; }
     </style>
 </head>
-<body class="pb-64">
+<body class="pb-36">
 
-    <!-- CANVAS PARA ANIMACIONES DE PREMIOS -->
-    <canvas id="confetti-canvas"></canvas>
+<!-- CONFETI -->
+<canvas id="fx-canvas"></canvas>
 
-    <!-- CONTENEDOR DE NOTIFICACIONES -->
-    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-3 pointer-events-none w-[calc(100%-2rem)] max-w-[320px]"></div>
+<!-- NOTIFICACIONES -->
+<div id="toasts"></div>
 
-    <div class="marquee-container sticky top-0 z-50">
-        <div class="marquee-text italic">
-            • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
-        </div>
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+    <span class="marquee-inner">
+        • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
+        GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
+    </span>
+</div>
+
+<!-- HEADER -->
+<header style="text-align:center;padding:32px 24px 28px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.35)">
+    <h1 class="font-arch neon" style="font-size:4.2rem;font-style:italic;letter-spacing:-.05em;line-height:1;margin:0 0 20px">EVA<br>K-POP</h1>
+    <div class="glass" style="display:inline-block;padding:18px 36px;border-radius:24px;border-top:1px solid rgba(255,255,255,.15)">
+        <div id="total-pts" class="font-arch" style="font-size:4.5rem;font-style:italic;color:#fff">0</div>
+        <p style="font-size:10px;font-weight:900;color:#ff4da6;text-transform:uppercase;letter-spacing:.4em;margin:6px 0 0">Puntos Totales</p>
+    </div>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main style="max-width:440px;margin:0 auto;padding:20px 16px 8px">
+
+    <!-- TABS -->
+    <div class="glass" style="display:flex;gap:6px;padding:6px;border-radius:16px;margin-bottom:20px">
+        <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
+        <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
+        <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Historial</button>
     </div>
 
-    <header class="p-8 text-center border-b border-white/10 bg-black/40 backdrop-blur-xl relative overflow-hidden">
-        <!-- Glow background effect -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-600/20 rounded-full blur-[80px] -z-10"></div>
-        
-        <h1 class="font-header text-[4.8rem] italic tracking-tighter neon-text mb-4 leading-none relative z-10">EVA<br>K-POP</h1>
-        <div class="inline-block glass-card px-10 py-5 rounded-3xl relative z-10 border-t border-white/20">
-            <span id="total-pts" class="font-header text-7xl italic text-transparent bg-clip-text bg-gradient-to-b from-white to-pink-200 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">0</span>
-            <p class="text-[11px] font-black text-pink-500 uppercase tracking-[0.4em] mt-2">Puntos Totales</p>
-        </div>
-    </header>
+    <div id="content"></div>
+</main>
 
-    <main class="max-w-md mx-auto p-4 mt-6 relative z-10">
-        <nav class="flex mb-8 gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl">
-            <button onclick="App.setTab('tasks')" id="tab-tasks" class="flex-1 py-3.5 rounded-xl font-black uppercase italic text-[11px] tab-active transition-all">Misiones</button>
-            <button onclick="App.setTab('rewards')" id="tab-rewards" class="flex-1 py-3.5 rounded-xl font-black uppercase italic text-[11px] opacity-60 hover:opacity-100 transition-all">Premios</button>
-            <button onclick="App.setTab('history')" id="tab-history" class="flex-1 py-3.5 rounded-xl font-black uppercase italic text-[11px] opacity-60 hover:opacity-100 transition-all">Historial</button>
-        </nav>
-
-        <div id="main-content" class="space-y-4"></div>
-    </main>
-
-    <!-- FOOTER FLOTANTE -->
-    <div class="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md z-50 pb-8">
-        <div class="max-w-md mx-auto flex flex-col gap-3">
-            <button id="btn-cloud" onclick="App.cloudSave()" class="w-full bg-pink-600/10 border border-pink-500/40 text-pink-400 font-black py-3 rounded-xl uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 mb-1 hover:bg-pink-600/20 transition-colors">
-                <span id="cloud-status">☁️ GUARDAR PROGRESO EN LA NUBE</span>
-            </button>
-            
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="App.quickAdjust(10)" class="btn-action bg-yellow-400 text-black font-black py-4 rounded-2xl uppercase text-xs italic shadow-[0_0_20px_rgba(250,204,21,0.3)] border-b-4 border-yellow-600">
-                    Bono Extra +10
-                </button>
-                <button onclick="App.quickAdjust(-5)" class="btn-action bg-zinc-800 text-white font-black py-4 rounded-2xl uppercase text-xs italic border border-white/10 border-b-4 border-black shadow-lg">
-                    Falta Grave -5
-                </button>
-            </div>
-        </div>
+<!-- FOOTER CON BOTONES DE AJUSTE RÁPIDO -->
+<div id="footer">
+    <div style="max-width:440px;margin:0 auto;display:flex;gap:12px">
+        <button class="btn-bonus" onclick="App.bonus(10)"
+            style="background:#facc15;color:#000;border-bottom:4px solid #b8960a;box-shadow:0 0 16px rgba(250,204,21,.25)">
+            Bono Extra +10
+        </button>
+        <button class="btn-bonus" onclick="App.bonus(-5)"
+            style="background:#27272a;color:#fff;border:1px solid rgba(255,255,255,.1);border-bottom:4px solid #000">
+            Falta Grave &minus;5
+        </button>
     </div>
+</div>
 
-    <!-- CARGA DE LIBRERÍAS FIREBASE & LÓGICA -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   EVA K-POP  —  v4.0
+   Funciona 100% offline con localStorage.
+   Para sincronizar entre dispositivos, configura Firebase más abajo.
+═══════════════════════════════════════════════════════════════════ */
 
-        const getSafeConfig = () => {
-            try { return JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}'); }
-            catch(e) { return {}; }
-        };
+/* ─────────────────────────────────────────────────────────────────
+   CONFIGURACIÓN FIREBASE (OPCIONAL)
+   Si no tienes Firebase, deja estos valores tal cual.
+   La app funciona perfectamente sin ellos.
 
-        const config = getSafeConfig();
-        const hasFirebase = !!config.apiKey;
-        let db = null, auth = null, appId = 'eva-kpop-v3';
+   Para activar la sincronización multi-dispositivo:
+   1. Ve a https://console.firebase.google.com
+   2. Crea un proyecto → Agrega una app web
+   3. Copia los valores que te entrega y pégalos aquí
+   4. En Firestore → Reglas: allow read, write: if true;
+   5. En Authentication → Habilita "Anónimo"
+───────────────────────────────────────────────────────────────── */
+var FIREBASE_ON = false; // ← Cambia a true cuando tengas los datos
+var FIREBASE_CONFIG = {
+    apiKey:            "",
+    authDomain:        "",
+    projectId:         "",
+    storageBucket:     "",
+    messagingSenderId: "",
+    appId:             ""
+};
+var GAME_ID = "eva-kpop-v4"; // No cambiar una vez que hayas guardado datos
+/* ───────────────────────────────────────────────────────────────── */
 
-        if (hasFirebase) {
-            const app = initializeApp(config);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            appId = typeof __app_id !== 'undefined' ? __app_id : 'eva-kpop-v3';
+
+/* ══════════════════════════════
+   AUDIO
+══════════════════════════════ */
+var SFX = (function(){
+    var ctx = null;
+    function getCtx() {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        return ctx;
+    }
+    function play(freq, type, dur, vol, delay) {
+        delay = delay || 0;
+        try {
+            var c = getCtx();
+            var osc = c.createOscillator(), g = c.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, c.currentTime + delay);
+            g.gain.setValueAtTime(vol, c.currentTime + delay);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + dur);
+            osc.connect(g); g.connect(c.destination);
+            osc.start(c.currentTime + delay);
+            osc.stop(c.currentTime + delay + dur);
+        } catch(e){}
+    }
+    return {
+        unlock:  function(){ try{ getCtx(); }catch(e){} },
+        coin:    function(){ play(900,'sine',.1,.2); play(1200,'sine',.15,.2,.05); },
+        error:   function(){ play(300,'sawtooth',.2,.1); play(200,'sawtooth',.3,.1,.15); },
+        win:     function(){ [400,500,600,800].forEach(function(f,i){ play(f,'square',i===3?.3:.1,.1,i*.1); }); },
+        perfect: function(){ [523,659,784,1047].forEach(function(f,i){ play(f,'sine',.4,.2,i*.1); }); }
+    };
+})();
+
+
+/* ══════════════════════════════
+   CONFETI
+══════════════════════════════ */
+var FX = (function(){
+    var cv, ctx2d, parts = [];
+    var cols = ['#ff007f','#facc15','#00f2fe','#fff','#ff66b2'];
+    function loop(){
+        ctx2d.clearRect(0,0,cv.width,cv.height);
+        for(var i=parts.length-1;i>=0;i--){
+            var p=parts[i];
+            p.x+=p.vx; p.y+=p.vy; p.vy+=.4;
+            p.spin+=p.sp; p.life-=.013;
+            if(p.life<=0){ parts.splice(i,1); continue; }
+            ctx2d.save();
+            ctx2d.globalAlpha=Math.max(0,p.life);
+            ctx2d.fillStyle=p.col;
+            ctx2d.translate(p.x,p.y);
+            ctx2d.rotate(p.spin*Math.PI/180);
+            ctx2d.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz);
+            ctx2d.restore();
         }
+        requestAnimationFrame(loop);
+    }
+    return {
+        init: function(){
+            cv=document.getElementById('fx-canvas');
+            ctx2d=cv.getContext('2d');
+            function resize(){ cv.width=innerWidth; cv.height=innerHeight; }
+            resize(); window.addEventListener('resize',resize);
+            loop();
+        },
+        burst: function(){
+            for(var i=0;i<160;i++) parts.push({
+                x:innerWidth/2, y:innerHeight/2,
+                vx:(Math.random()-.5)*26, vy:(Math.random()-1)*26-4,
+                sz:Math.random()*8+4,
+                col:cols[Math.floor(Math.random()*cols.length)],
+                life:1, spin:Math.random()*360, sp:(Math.random()-.5)*10
+            });
+        }
+    };
+})();
 
-        // --- SISTEMA DE AUDIO SINTETIZADO ---
-        const AudioSys = {
-            ctx: null,
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            },
-            playTone(freq, type, duration, vol, delay=0) {
-                if(!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
-                gain.gain.setValueAtTime(vol, this.ctx.currentTime + delay);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + delay + duration);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(this.ctx.currentTime + delay);
-                osc.stop(this.ctx.currentTime + delay + duration);
-            },
-            coin() {
-                this.init();
-                this.playTone(900, 'sine', 0.1, 0.2);
-                this.playTone(1200, 'sine', 0.15, 0.2, 0.05);
-            },
-            win() {
-                this.init();
-                this.playTone(400, 'square', 0.1, 0.1, 0);
-                this.playTone(500, 'square', 0.1, 0.1, 0.1);
-                this.playTone(600, 'square', 0.1, 0.1, 0.2);
-                this.playTone(800, 'square', 0.3, 0.1, 0.3);
-            },
-            perfect() {
-                this.init();
-                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => this.playTone(f, 'sine', 0.4, 0.2, i*0.1));
-            },
-            error() {
-                this.init();
-                this.playTone(300, 'sawtooth', 0.2, 0.1);
-                this.playTone(200, 'sawtooth', 0.3, 0.1, 0.15);
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+function showToast(title, msg, type){
+    type = type || 'normal';
+    var box = document.getElementById('toasts');
+    var el = document.createElement('div');
+    el.className = 'toast' + (type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':'');
+    el.innerHTML =
+        '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:16px;margin-bottom:3px">' + title + '</div>' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.8">' + msg + '</div>';
+    box.appendChild(el);
+    setTimeout(function(){
+        el.classList.add('out');
+        setTimeout(function(){ el.remove(); }, 320);
+    }, 3600);
+}
+
+
+/* ══════════════════════════════
+   DATOS POR DEFECTO
+══════════════════════════════ */
+function emptyData(){
+    return {
+        total: 0,
+        today: { date:'', points:{}, totalDay:0, basePoints:0, perfectDay:false },
+        week:  { id:'', pts:0, claimed:[] },
+        month: { id:'', pts:0, claimed:[] },
+        history: [],
+        activeTab: 'tasks',
+        lastSync: 0
+    };
+}
+
+
+/* ══════════════════════════════
+   APP
+══════════════════════════════ */
+var App = {
+
+    d: emptyData(),
+    _fb: null,
+    _unsub: null,
+    _saveTimer: null,
+    _skipSnap: false,
+    POINT_VALUE: 10,
+
+    TASKS: [
+        { id:'cama',     label:'Hacer la cama',       pts:1, limit:1, icon:'🛏️' },
+        { id:'espacio',  label:'Mi espacio ordenado',  pts:1, limit:1, icon:'🧹' },
+        { id:'dientes',  label:'Lavarse los dientes',  pts:1, limit:6, icon:'🦷' },
+        { id:'dormir',   label:'Dormir sola',          pts:1, limit:1, icon:'🌙' },
+        { id:'banarse',  label:'Bañarse Sola',         pts:1, limit:1, icon:'🛁' },
+        { id:'vestirse', label:'Vestirse Sola',        pts:1, limit:1, icon:'👗' },
+        { id:'tarea',    label:'Tareas escolares',     pts:1, limit:1, icon:'📚' },
+        { id:'leer',     label:'Leer',                 pts:1, limit:6, icon:'📖' },
+        { id:'crear',    label:'Crear algo',           pts:1, limit:2, icon:'🎨' },
+        { id:'comida',   label:'Comida balanceada',    pts:1, limit:3, icon:'🥗' },
+        { id:'honesto',  label:'Día honesto',          pts:5, limit:1, icon:'😇' },
+        { id:'gritos',   label:'Día sin gritos',       pts:5, limit:1, icon:'🤫' }
+    ],
+
+    WEEKLY:  [ {label:'Película Extra', pts:100}, {label:'Helado Especial', pts:180} ],
+    MONTHLY: [ {label:'Regalo Sorpresa',pts:400}, {label:'Paseo + Regalo',  pts:800} ],
+
+    FINANCE: [
+        {label:'Libres para usar', pct:.40, color:'#ff7eb3', desc:'Libre disposición'},
+        {label:'Gastos',           pct:.40, color:'#ffaacc', desc:'Necesidades / Extras'},
+        {label:'Ahorro',           pct:.10, color:'#ffffff', desc:'Para el futuro'},
+        {label:'Compartir',        pct:.10, color:'#aaaaaa', desc:'Ayudar / Regalar'}
+    ],
+
+    /* ── Fechas ── */
+    _hoy:  function(){ return new Date().toISOString().split('T')[0]; },
+    _mes:  function(){ return this._hoy().slice(0,7); },
+    _semana: function(){
+        var d = new Date();
+        d.setDate(d.getDate() - (d.getDay()+1)%7);
+        return d.toISOString().split('T')[0];
+    },
+
+    /* ── Reseteos diario / semanal / mensual ── */
+    _checkResets: function(){
+        var h=this._hoy(), s=this._semana(), m=this._mes();
+        var changed=false;
+        if(this.d.today.date !== h){
+            if(this.d.today.date) this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));
+            this.d.today = {date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
+            changed=true;
+        }
+        if(!this.d.week  || this.d.week.id  !== s){ this.d.week  = {id:s,pts:0,claimed:[]}; changed=true; }
+        if(!this.d.month || this.d.month.id !== m){ this.d.month = {id:m,pts:0,claimed:[]}; changed=true; }
+        return changed;
+    },
+
+    /* ── Local storage ── */
+    _loadLocal: function(){
+        try{
+            var raw = localStorage.getItem('eva_kpop_v4');
+            if(raw){
+                var parsed = JSON.parse(raw);
+                this.d = Object.assign(emptyData(), parsed);
             }
-        };
+        }catch(e){}
+    },
+    _saveLocal: function(){
+        try{ localStorage.setItem('eva_kpop_v4', JSON.stringify(this.d)); }catch(e){}
+    },
 
-        // --- SISTEMA DE CONFETI ---
-        const Confetti = {
-            ctx: null,
-            particles: [],
-            colors: ['#ff007f', '#facc15', '#00f2fe', '#ffffff', '#ff66b2'],
-            init() {
-                const canvas = document.getElementById('confetti-canvas');
-                this.ctx = canvas.getContext('2d');
-                this.resize();
-                window.addEventListener('resize', () => this.resize());
-                this.loop();
-            },
-            resize() {
-                const canvas = document.getElementById('confetti-canvas');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            },
-            burst() {
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-                for(let i=0; i<150; i++) {
-                    this.particles.push({
-                        x: w / 2,
-                        y: h / 2,
-                        vx: (Math.random() - 0.5) * 25,
-                        vy: (Math.random() - 1) * 25 - 5,
-                        size: Math.random() * 8 + 4,
-                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
-                        life: 1,
-                        spin: Math.random() * 360,
-                        spinSpeed: (Math.random() - 0.5) * 10
-                    });
-                }
-            },
-            loop() {
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-                this.ctx.clearRect(0, 0, w, h);
-                for(let i = this.particles.length - 1; i >= 0; i--) {
-                    let p = this.particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.4; // gravity
-                    p.spin += p.spinSpeed;
-                    p.life -= 0.012;
-                    
-                    this.ctx.save();
-                    this.ctx.globalAlpha = Math.max(0, p.life);
-                    this.ctx.fillStyle = p.color;
-                    this.ctx.translate(p.x, p.y);
-                    this.ctx.rotate(p.spin * Math.PI / 180);
-                    this.ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
-                    this.ctx.restore();
+    /* ── Guardar (local + nube si está activa) ── */
+    _save: function(){
+        this._saveLocal();
+        this._cloudSave();
+        this._render();
+    },
 
-                    if(p.life <= 0) this.particles.splice(i, 1);
-                }
-                requestAnimationFrame(() => this.loop());
+    /* ── Firebase: guardar con debounce ── */
+    _cloudSave: function(){
+        if(!this._fb) return;
+        var self = this;
+        clearTimeout(this._saveTimer);
+        this._saveTimer = setTimeout(function(){
+            try{
+                self._skipSnap = true;
+                var ref = self._fb.doc(self._fb.db, 'games', GAME_ID);
+                self._fb.setDoc(ref, Object.assign({}, self.d, {lastSync: Date.now()}));
+            }catch(e){}
+        }, 700);
+    },
+
+    /* ── Milestones ── */
+    _checkMilestones: function(){
+        var maxBase = this.TASKS.reduce(function(s,t){ return s + t.pts*t.limit; }, 0);
+        if(this.d.today.basePoints >= maxBase && !this.d.today.perfectDay){
+            this.d.today.perfectDay = true;
+            this.d.total           += 20;
+            this.d.today.totalDay  += 20;
+            this.d.week.pts        += 20;
+            this.d.month.pts       += 20;
+            FX.burst(); SFX.perfect();
+            showToast('¡DÍA PERFECTO! 🌟','¡Completaste todo! +20 Puntos Extra','perfect');
+        }
+        var self = this;
+        this.WEEKLY.forEach(function(g,i){
+            if(self.d.week.pts >= g.pts && self.d.week.claimed.indexOf(i)===-1){
+                self.d.week.claimed.push(i);
+                FX.burst(); SFX.win();
+                showToast('¡PREMIO SEMANAL! 🎁','Desbloqueaste: '+g.label,'reward');
             }
-        };
+        });
+        this.MONTHLY.forEach(function(g,i){
+            if(self.d.month.pts >= g.pts && self.d.month.claimed.indexOf(i)===-1){
+                self.d.month.claimed.push(i);
+                FX.burst(); SFX.win();
+                showToast('¡PREMIO MENSUAL! 🎁','Desbloqueaste: '+g.label,'reward');
+            }
+        });
+    },
 
-        const App = {
-            data: {
-                total: 0,
-                today: { date: '', points: {}, totalDay: 0, basePoints: 0, perfectDay: false },
-                week: { id: '', points: 0, rewardsClaimed: [] },
-                month: { id: '', points: 0, rewardsClaimed: [] },
-                allHistory: [],
-                tab: 'tasks'
-            },
-            user: null,
-            POINT_VALUE: 10,
+    /* ══════════════════════════════════════
+       ACCIONES PÚBLICAS
+    ══════════════════════════════════════ */
+    adjust: function(id, dir){
+        SFX.unlock();
+        var task = null;
+        for(var i=0;i<this.TASKS.length;i++){ if(this.TASKS[i].id===id){ task=this.TASKS[i]; break; } }
+        var cur = this.d.today.points[id] || 0;
+        if(dir>0 && cur>=task.limit) return;
+        if(dir<0 && cur<=0) return;
+        var delta = dir * task.pts;
+        this.d.today.points[id]  = cur + dir;
+        this.d.today.totalDay   += delta;
+        this.d.today.basePoints += delta;
+        this.d.total            += delta;
+        this.d.week.pts   = Math.max(0, this.d.week.pts  + delta);
+        this.d.month.pts  = Math.max(0, this.d.month.pts + delta);
+        if(dir>0) SFX.coin(); else SFX.error();
+        this._checkMilestones();
+        this._save();
+    },
 
-            financeConfig: [
-                { id: 'gastar', label: 'Libres para usar', pct: 0.40, color: 'text-pink-400', desc: 'Libre disposición' },
-                { id: 'gastos', label: 'Gastos', pct: 0.40, color: 'text-pink-300', desc: 'Necesidades / Extras' },
-                { id: 'ahorro', label: 'Ahorro', pct: 0.10, color: 'text-white', desc: 'Para el futuro' },
-                { id: 'compartir', label: 'Compartir', pct: 0.10, color: 'text-white/60', desc: 'Ayudar/Regalar' }
-            ],
+    bonus: function(pts){
+        SFX.unlock();
+        if(pts>0){ SFX.coin(); showToast('¡BONO EXTRA!','+'+pts+' Puntos añadidos'); }
+        else      { SFX.error(); showToast('PENALIZACIÓN',pts+' Puntos restados','bad'); }
+        this.d.total          += pts;
+        this.d.today.totalDay += pts;
+        this.d.week.pts   = Math.max(0, this.d.week.pts  + pts);
+        this.d.month.pts  = Math.max(0, this.d.month.pts + pts);
+        this._checkMilestones();
+        this._save();
+    },
 
-            tasks: [
-                { id: 'cama', label: 'Hacer la cama', pts: 1, limit: 1, icon: '🛏️' },
-                { id: 'espacio', label: 'Mi espacio ordenado', pts: 1, limit: 1, icon: '🧹' },
-                { id: 'dientes', label: 'Lavarse los dientes', pts: 1, limit: 6, icon: '🦷' },
-                { id: 'dormir', label: 'Dormir sola', pts: 1, limit: 1, icon: '🌙' },
-                { id: 'banarse', label: 'Bañarse Sola', pts: 1, limit: 1, icon: '🛁' },
-                { id: 'vestirse', label: 'Vestirse Sola', pts: 1, limit: 1, icon: '👗' },
-                { id: 'tarea', label: 'Tareas escolares', pts: 1, limit: 1, icon: '📚' },
-                { id: 'leer', label: 'Leer', pts: 1, limit: 6, icon: '📖' },
-                { id: 'crear', label: 'Crear algo', pts: 1, limit: 2, icon: '🎨' },
-                { id: 'comida', label: 'Comida balanceada', pts: 1, limit: 3, icon: '🥗' },
-                { id: 'honesto', label: 'Día honesto', pts: 5, limit: 1, icon: '😇' },
-                { id: 'gritos', label: 'Día sin gritos', pts: 5, limit: 1, icon: '🤫' }
-            ],
+    tab: function(t){ this.d.activeTab=t; this._render(); },
 
-            goals: {
-                weekly: [
-                    { label: 'Película Extra', points: 100 },
-                    { label: 'Helado Especial', points: 180 }
-                ],
-                monthly: [
-                    { label: 'Regalo Sorpresa', points: 400 },
-                    { label: 'Paseo + Regalo', points: 800 }
-                ]
-            },
+    /* ══════════════════════════════════════
+       RENDER
+    ══════════════════════════════════════ */
+    _clp: function(v){
+        return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);
+    },
 
-            async init() {
-                Confetti.init();
+    _render: function(){
+        var ptEl = document.getElementById('total-pts');
+        if(ptEl) ptEl.textContent = this.d.total;
 
-                // Cargar local data (versión 3)
-                const saved = localStorage.getItem('eva_finance_kpop_v3');
-                if (saved) {
-                    this.data = JSON.parse(saved);
-                } else {
-                    // Intento de migración de v2 si existe
-                    const old = localStorage.getItem('eva_finance_kpop_v2');
-                    if (old) {
-                        try {
-                            const oldData = JSON.parse(old);
-                            this.data.total = oldData.total || 0;
-                            // Resetear progreso local para evitar bugs, manteniendo el total
-                        } catch(e){}
-                    }
-                }
-                
-                this.checkResets();
-                this.render();
+        ['tasks','rewards','history'].forEach(function(t){
+            var b = document.getElementById('tab-'+t);
+            if(b) b.className = 'tab-btn' + (App.d.activeTab===t?' active':'');
+        });
 
-                if (hasFirebase) {
-                    try {
-                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                        if (token) await signInWithCustomToken(auth, token);
-                        else await signInAnonymously(auth);
+        var c = document.getElementById('content');
+        if(!c) return;
+        if(this.d.activeTab==='tasks')   c.innerHTML = this._buildTasks();
+        if(this.d.activeTab==='rewards') c.innerHTML = this._buildRewards();
+        if(this.d.activeTab==='history') c.innerHTML = this._buildHistory();
+    },
 
-                        onAuthStateChanged(auth, async (user) => {
-                            if (user) {
-                                this.user = user;
-                                await this.cloudLoad();
-                            }
-                        });
-                    } catch(e) { console.warn("Modo offline activado"); }
-                } else {
-                    document.getElementById('btn-cloud').style.display = 'none';
-                }
-            },
+    _buildTasks: function(){
+        var html = '';
+        if(this.d.today.perfectDay){
+            html += '<div style="background:rgba(250,204,21,.14);border:2px solid #facc15;border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:14px">' +
+                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>' +
+                '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-top:5px;opacity:.75">+20 Puntos de bonificación asignados</div>' +
+                '</div>';
+        }
+        var self = this;
+        this.TASKS.forEach(function(t){
+            var count = self.d.today.points[t.id] || 0;
+            var maxed = count >= t.limit;
+            var segs = '';
+            for(var i=0;i<t.limit;i++) segs += '<div class="seg'+(i<count?' on':'')+'"></div>';
+            html +=
+                '<div class="task-card'+(maxed?' done':'')+'">' +
+                  '<div style="display:flex;justify-content:space-between;align-items:center">' +
+                    '<div style="display:flex;align-items:center;gap:11px">' +
+                      '<div style="width:46px;height:46px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">' + t.icon + '</div>' +
+                      '<div>' +
+                        '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.81rem;color:rgba(255,255,255,.88)">' + t.label + '</div>' +
+                        '<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#facc15;margin-top:2px">+' + t.pts + ' PTS</div>' +
+                      '</div>' +
+                    '</div>' +
+                    (maxed
+                      ? '<div style="background:#ff007f;font-size:9px;font-weight:900;padding:4px 9px;border-radius:6px;font-style:italic;font-family:\'Archivo Black\',sans-serif">COMPLETO</div>'
+                      : '<div style="font-weight:900;font-size:13px;color:rgba(255,255,255,.45);background:rgba(0,0,0,.4);padding:4px 11px;border-radius:8px">' + count + '/' + t.limit + '</div>'
+                    ) +
+                  '</div>' +
+                  '<div style="display:flex;align-items:center;gap:13px">' +
+                    '<div style="flex:1;display:flex;gap:5px">' + segs + '</div>' +
+                    '<div style="display:flex;gap:6px">' +
+                      '<button class="btn-m" onclick="App.adjust(\'' + t.id + '\',-1)">−</button>' +
+                      '<button class="btn-p' + (maxed?' off':'') + '" onclick="App.adjust(\'' + t.id + '\',1)">+</button>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>';
+        });
+        return html;
+    },
 
-            // Lógica de Tiempos y Reseteos
-            getTodayDate() { return new Date().toISOString().split('T')[0]; },
-            getMonthDate() { return this.getTodayDate().substring(0, 7); },
-            getWeekDate() {
-                const d = new Date();
-                // Semana empieza el sábado (6).
-                const diff = (d.getDay() + 1) % 7; 
-                d.setDate(d.getDate() - diff);
-                return d.toISOString().split('T')[0];
-            },
+    _buildRewards: function(){
+        var html = '';
+        var self = this;
 
-            checkResets() {
-                const today = this.getTodayDate();
-                const week = this.getWeekDate();
-                const month = this.getMonthDate();
-                let needsSave = false;
+        /* Semanales */
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px">' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Semanales</div>' +
+            '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">' + this.d.week.pts + ' pts</div>' +
+            '</div>';
+        this.WEEKLY.forEach(function(g,i){
+            var done = self.d.week.claimed.indexOf(i) !== -1;
+            var pct  = Math.min(100, self.d.week.pts/g.pts*100);
+            html += self._rewardCard(g.label, g.pts, pct, done, '#facc15');
+        });
 
-                // Reset Diario
-                if (this.data.today.date !== today) {
-                    if (this.data.today.date) {
-                        this.data.allHistory.push({...this.data.today});
-                    }
-                    this.data.today = { date: today, points: {}, totalDay: 0, basePoints: 0, perfectDay: false };
-                    needsSave = true;
-                }
+        /* Mensuales */
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px">' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#22d3ee;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Mensuales</div>' +
+            '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">' + this.d.month.pts + ' pts</div>' +
+            '</div>';
+        this.MONTHLY.forEach(function(g,i){
+            var done = self.d.month.claimed.indexOf(i) !== -1;
+            var pct  = Math.min(100, self.d.month.pts/g.pts*100);
+            html += self._rewardCard(g.label, g.pts, pct, done, '#22d3ee');
+        });
 
-                // Reset Semanal (Cada Sábado)
-                if (!this.data.week || this.data.week.id !== week) {
-                    this.data.week = { id: week, points: 0, rewardsClaimed: [] };
-                    needsSave = true;
-                }
+        /* Finanzas */
+        var total = this.d.total * this.POINT_VALUE;
+        html +=
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin:26px 2px 10px">Ganancias (CLP)</div>' +
+            '<div style="background:rgba(255,0,127,.1);border:1px solid rgba(255,0,127,.22);border-radius:18px;padding:22px;text-align:center;margin-bottom:12px">' +
+              '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;opacity:.45;margin-bottom:7px">Saldo Real Total</div>' +
+              '<div class="font-arch neon" style="font-size:2.6rem;font-style:italic">' + this._clp(total) + '</div>' +
+            '</div>';
+        this.FINANCE.forEach(function(f){
+            html +=
+                '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-left:3px solid '+f.color+';border-radius:13px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">' +
+                  '<div>' +
+                    '<div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">' + f.label + ' (' + (f.pct*100|0) + '%)</div>' +
+                    '<div style="font-size:10px;opacity:.35;text-transform:uppercase;margin-top:2px">' + f.desc + '</div>' +
+                  '</div>' +
+                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.15rem">' + self._clp(total*f.pct) + '</div>' +
+                '</div>';
+        });
+        return html;
+    },
 
-                // Reset Mensual
-                if (!this.data.month || this.data.month.id !== month) {
-                    this.data.month = { id: month, points: 0, rewardsClaimed: [] };
-                    needsSave = true;
-                }
+    _rewardCard: function(label, pts, pct, done, color){
+        return '<div style="background:' + (done?'rgba(34,197,94,.07)':'rgba(255,255,255,.04)') + ';border:1px solid rgba(255,255,255,.07);border-left:4px solid ' + (done?'#22c55e':color) + ';border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden">' +
+            (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:8px;font-weight:900;padding:15px 17px 4px;transform:rotate(45deg)">LISTO</div>':'') +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:11px">' +
+              '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:12px">' + label + '</span>' +
+              '<span style="font-weight:900;font-size:13px;color:' + color + '">' + pts + ' PTS</span>' +
+            '</div>' +
+            '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+(done?'#22c55e':color)+';'+(done?'':'box-shadow:0 0 7px '+color)+'"></div></div>' +
+            '</div>';
+    },
 
-                if (needsSave) this.save();
-            },
+    _buildHistory: function(){
+        var hist = this.d.history.slice().reverse();
+        var html =
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:13px">Logros Recientes</div>' +
+            '<div style="background:linear-gradient(90deg,rgba(255,0,127,.16) 0%,transparent 100%);border:1px solid rgba(255,0,127,.27);border-radius:15px;padding:16px 18px;margin-bottom:13px;position:relative;overflow:hidden">' +
+              (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:900;padding:4px 10px;border-radius:0 15px 0 11px">DÍA PERFECTO 🌟</div>':'') +
+              '<div style="display:flex;justify-content:space-between;align-items:flex-end">' +
+                '<div>' +
+                  '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:5px">HOY</div>' +
+                  '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.83rem">' + this.d.today.date + '</div>' +
+                '</div>' +
+                '<div style="font-family:\'Archivo Black\',sans-serif;font-size:2rem;font-style:italic">' + this.d.today.totalDay + ' <span style="font-size:11px;color:#ff99cc">PTS</span></div>' +
+              '</div>' +
+            '</div>';
 
-            save() {
-                localStorage.setItem('eva_finance_kpop_v3', JSON.stringify(this.data));
-                this.render();
-            },
+        if(hist.length===0){
+            html += '<div style="text-align:center;padding:36px;opacity:.28;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
+        } else {
+            hist.forEach(function(day){
+                html += '<div class="hist-row">' +
+                    '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">' + day.date + '</span>' +
+                    '<div style="display:flex;align-items:center;gap:9px">' +
+                      (day.perfectDay?'<span style="font-size:.95rem">🌟</span>':'') +
+                      '<span style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.05rem">' + day.totalDay + ' <span style="font-size:10px;opacity:.45">PTS</span></span>' +
+                    '</div>' +
+                '</div>';
+            });
+        }
+        return html;
+    },
 
-            async cloudSave() {
-                if (!this.user || !db) return;
-                const status = document.getElementById('cloud-status');
-                status.innerText = "⏳ GUARDANDO EN LA NUBE...";
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
-                    await setDoc(docRef, { ...this.data, lastSync: Date.now() });
-                    status.innerText = "✅ PROGRESO GUARDADO";
-                    setTimeout(() => status.innerText = "☁️ GUARDAR PROGRESO EN LA NUBE", 2000);
-                } catch (e) { status.innerText = "❌ ERROR AL GUARDAR"; }
-            },
+    /* ══════════════════════════════════════════════════
+       INIT  —  arranca la app INMEDIATAMENTE con datos
+       locales, luego conecta Firebase en segundo plano
+    ══════════════════════════════════════════════════ */
+    init: function(){
+        var self = this;
+        FX.init();
 
-            async cloudLoad() {
-                if (!this.user || !db) return;
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'scores', 'v1');
-                    const snap = await getDoc(docRef);
-                    if (snap.exists()) {
-                        const cloud = snap.data();
-                        if (cloud.total !== undefined) {
-                            this.data = cloud;
-                            this.checkResets(); // Re-validar fechas
-                            this.save();
+        /* 1. Cargar local y mostrar ya */
+        this._loadLocal();
+        this._checkResets();
+        this._render();
+
+        /* 2. Firebase en segundo plano (solo si está activado) */
+        if(!FIREBASE_ON || !FIREBASE_CONFIG.apiKey){ return; }
+
+        /* Carga dinámica de Firebase para no bloquear nada */
+        Promise.all([
+            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"),
+            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js")
+        ]).then(function(modules){
+            var initApp = modules[0].initializeApp;
+            var fs      = modules[1];
+            var initAuth= modules[2].getAuth;
+            var signIn  = modules[2].signInAnonymously;
+
+            var app  = initApp(FIREBASE_CONFIG);
+            var db   = fs.getFirestore(app);
+            var auth = initAuth(app);
+
+            self._fb = {
+                db:     db,
+                doc:    fs.doc,
+                getDoc: fs.getDoc,
+                setDoc: fs.setDoc,
+                onSnapshot: fs.onSnapshot
+            };
+
+            signIn(auth).then(function(){
+                var ref = fs.doc(db, 'games', GAME_ID);
+
+                /* Carga inicial: tomar el más reciente */
+                fs.getDoc(ref).then(function(snap){
+                    if(snap.exists()){
+                        var cloud = snap.data();
+                        if((cloud.lastSync||0) >= (self.d.lastSync||0)){
+                            self.d = Object.assign(emptyData(), cloud);
                         }
                     }
-                } catch (e) {}
-            },
+                    self._checkResets();
+                    self._saveLocal();
+                    self._render();
 
-            showToast(title, message, type = 'normal') {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                
-                let border = 'border-pink-500';
-                let bg = 'bg-pink-600/20';
-                let text = 'text-pink-400';
-                let icon = '✨';
-
-                if (type === 'perfect') {
-                    border = 'border-yellow-400';
-                    bg = 'bg-yellow-400/20';
-                    text = 'text-yellow-400';
-                    icon = '🌟';
-                } else if (type === 'reward') {
-                    border = 'border-cyan-400';
-                    bg = 'bg-cyan-400/20';
-                    text = 'text-cyan-400';
-                    icon = '🎁';
-                } else if (type === 'error') {
-                    border = 'border-red-500';
-                    bg = 'bg-red-500/20';
-                    text = 'text-red-400';
-                    icon = '⚠️';
-                }
-
-                toast.className = `toast-enter glass-card p-4 rounded-2xl border-l-4 ${border} ${bg} shadow-2xl backdrop-blur-xl relative overflow-hidden`;
-                toast.innerHTML = `
-                    <div class="absolute -right-4 -top-4 text-6xl opacity-20">${icon}</div>
-                    <h4 class="font-header italic ${text} text-xl relative z-10">${title}</h4>
-                    <p class="text-xs font-bold text-white/90 mt-1 uppercase tracking-wider relative z-10">${message}</p>
-                `;
-                
-                container.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.classList.replace('toast-enter', 'toast-exit');
-                    setTimeout(() => toast.remove(), 400);
-                }, 4000);
-            },
-
-            triggerReward(title, message, type) {
-                Confetti.burst();
-                this.showToast(title, message, type);
-                if(type === 'perfect') AudioSys.perfect();
-                else if(type === 'reward') AudioSys.win();
-                else AudioSys.coin();
-            },
-
-            checkMilestones() {
-                // Calcular puntos máximos base posibles en el día
-                const maxDailyBase = this.tasks.reduce((sum, t) => sum + (t.pts * t.limit), 0);
-                
-                // 1. DÍA PERFECTO
-                if (this.data.today.basePoints >= maxDailyBase && !this.data.today.perfectDay) {
-                    this.data.today.perfectDay = true;
-                    this.data.total += 20;
-                    this.data.today.totalDay += 20;
-                    this.data.week.points += 20;
-                    this.data.month.points += 20;
-                    this.triggerReward('¡DÍA PERFECTO!', '¡Completaste todas las tareas! +20 Puntos Extra', 'perfect');
-                }
-
-                // 2. PREMIOS SEMANALES
-                this.goals.weekly.forEach((g, idx) => {
-                    if (this.data.week.points >= g.points && !this.data.week.rewardsClaimed.includes(idx)) {
-                        this.data.week.rewardsClaimed.push(idx);
-                        this.triggerReward('¡PREMIO SEMANAL!', `Has desbloqueado: ${g.label}`, 'reward');
-                    }
-                });
-
-                // 3. PREMIOS MENSUALES
-                this.goals.monthly.forEach((g, idx) => {
-                    if (this.data.month.points >= g.points && !this.data.month.rewardsClaimed.includes(idx)) {
-                        this.data.month.rewardsClaimed.push(idx);
-                        this.triggerReward('¡PREMIO MENSUAL!', `Has desbloqueado: ${g.label}`, 'reward');
-                    }
-                });
-            },
-
-            adjustPoints(taskId, amount) {
-                AudioSys.init(); // Unlock audio context
-                const task = this.tasks.find(t => t.id === taskId);
-                const current = this.data.today.points[taskId] || 0;
-                
-                if (amount > 0 && current >= task.limit) return;
-                if (amount < 0 && current <= 0) return;
-                
-                const change = amount > 0 ? 1 : -1;
-                const pointsDelta = change * task.pts;
-
-                if(change > 0) AudioSys.coin();
-                else AudioSys.error();
-
-                this.data.today.points[taskId] = current + change;
-                this.data.today.totalDay += pointsDelta;
-                this.data.today.basePoints += pointsDelta;
-                this.data.total += pointsDelta;
-                
-                // Adjust week/month (prevent negative overall progress if they drop points)
-                this.data.week.points = Math.max(0, this.data.week.points + pointsDelta);
-                this.data.month.points = Math.max(0, this.data.month.points + pointsDelta);
-                
-                this.checkMilestones();
-                this.save();
-            },
-
-            quickAdjust(pts) {
-                AudioSys.init();
-                if(pts > 0) {
-                    AudioSys.coin();
-                    this.showToast('¡BONO EXTRA!', `+${pts} Puntos añadidos`, 'normal');
-                } else {
-                    AudioSys.error();
-                    this.showToast('PENALIZACIÓN', `${pts} Puntos restados`, 'error');
-                }
-
-                this.data.total += pts;
-                this.data.today.totalDay += pts;
-                
-                this.data.week.points = Math.max(0, this.data.week.points + pts);
-                this.data.month.points = Math.max(0, this.data.month.points + pts);
-                
-                this.checkMilestones();
-                this.save();
-            },
-
-            setTab(t) {
-                this.data.tab = t;
-                this.render();
-            },
-
-            formatCLP(val) {
-                return new Intl.NumberFormat('es-CL', { 
-                    style: 'currency', 
-                    currency: 'CLP',
-                    minimumFractionDigits: 0 
-                }).format(val);
-            },
-
-            render() {
-                // Actualizar Puntos Header con Animación (simple re-asignación)
-                const totalEl = document.getElementById('total-pts');
-                if (totalEl.innerText !== this.data.total.toString()) {
-                    totalEl.innerText = this.data.total;
-                    totalEl.classList.add('scale-110');
-                    setTimeout(() => totalEl.classList.remove('scale-110'), 200);
-                }
-
-                const el = document.getElementById('main-content');
-                if (!el) return;
-                el.innerHTML = '';
-
-                // Tabs Styling
-                ['tasks', 'rewards', 'history'].forEach(t => {
-                    const btn = document.getElementById(`tab-${t}`);
-                    if (btn) btn.className = this.data.tab === t 
-                        ? 'flex-1 py-3.5 rounded-xl font-black uppercase italic text-[11px] tab-active transition-all' 
-                        : 'flex-1 py-3.5 rounded-xl font-black uppercase italic text-[11px] opacity-60 hover:opacity-100 transition-all';
-                });
-
-                if (this.data.tab === 'tasks') {
-                    // Si ya es Día Perfecto, mostrar banner top
-                    if(this.data.today.perfectDay) {
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl border-2 border-yellow-400 bg-yellow-400/20 text-center shadow-[0_0_20px_rgba(250,204,21,0.3)] mb-4 animate-pulse">
-                                <h3 class="font-header text-yellow-400 text-xl italic">¡DÍA PERFECTO LOGRADO! 🌟</h3>
-                                <p class="text-[10px] font-black uppercase tracking-widest mt-1">+20 Puntos de bonificación asignados</p>
-                            </div>
-                        `;
-                    }
-
-                    this.tasks.forEach(t => {
-                        const count = this.data.today.points[t.id] || 0;
-                        const isMaxed = count >= t.limit;
-                        
-                        let segmentsHtml = '';
-                        for(let i=0; i < t.limit; i++) {
-                            segmentsHtml += `<div class="progress-segment ${i < count ? 'filled' : ''}"></div>`;
+                    /* Listener en tiempo real */
+                    self._unsub = fs.onSnapshot(ref, function(snap){
+                        if(self._skipSnap){ self._skipSnap=false; return; }
+                        if(!snap.exists()) return;
+                        var cloud = snap.data();
+                        if((cloud.lastSync||0) > (self.d.lastSync||0)){
+                            self.d = Object.assign(emptyData(), cloud);
+                            self._checkResets();
+                            self._saveLocal();
+                            self._render();
+                            showToast('Sincronizado ☁️','Datos actualizados desde otro dispositivo');
                         }
-                        
-                        const div = document.createElement('div');
-                        div.className = `glass-card p-4 rounded-2xl flex flex-col gap-4 border-l-4 transition-all ${isMaxed ? 'task-done border-pink-500' : 'border-white/10 hover:border-white/30 hover:bg-white/10'}`;
-                        div.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-inner bg-black/40 border-white/5">${t.icon}</div>
-                                    <div>
-                                        <h3 class="font-bold uppercase italic task-label tracking-tight text-white/90 drop-shadow-md">${t.label}</h3>
-                                        <span class="text-yellow-400 font-black text-[10px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]">+${t.pts} PTS</span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    ${isMaxed ? `<span class="bg-pink-600 text-[9px] font-black px-2 py-1 rounded italic animate-pulse shadow-lg">COMPLETO</span>` : `<span class="text-[13px] font-black italic text-white/60 bg-black/50 px-3 py-1 rounded-lg">${count} / ${t.limit}</span>`}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <div class="flex-1 flex gap-1.5">${segmentsHtml}</div>
-                                <div class="flex gap-1.5">
-                                    <button onclick="App.adjustPoints('${t.id}', -1)" class="w-10 h-10 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all text-lg font-black text-white/50 active:scale-90">-</button>
-                                    <button onclick="App.adjustPoints('${t.id}', 1)" class="w-10 h-10 ${isMaxed ? 'bg-zinc-700 opacity-50 border-zinc-600' : 'bg-pink-600 border-pink-400'} border-b-4 rounded-xl font-bold flex items-center justify-center shadow-[0_0_15px_rgba(255,0,127,0.4)] transition-all active:scale-90 text-xl">+</button>
-                                </div>
-                            </div>`;
-                        el.appendChild(div);
                     });
-                } 
-                else if (this.data.tab === 'rewards') {
-                    // Semanal
-                    el.innerHTML += `
-                        <div class="flex justify-between items-end mt-4 mb-3 ml-2">
-                            <h3 class="text-[12px] font-black text-yellow-400 uppercase tracking-[0.3em]">Premios Semanales</h3>
-                            <span class="text-[9px] text-white/60 uppercase font-black bg-white/10 px-2 py-1 rounded-md">Puntos: ${this.data.week.points}</span>
-                        </div>`;
-                    this.goals.weekly.forEach((g, idx) => {
-                        const isClaimed = this.data.week.rewardsClaimed.includes(idx);
-                        const progress = Math.min(100, (this.data.week.points / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-3 reward-card relative overflow-hidden ${isClaimed ? 'border-l-4 border-green-400 bg-green-400/10' : ''}">
-                                ${isClaimed ? '<div class="absolute inset-0 bg-green-400/10 z-0"></div><div class="absolute right-[-10px] top-[-10px] bg-green-500 text-[8px] font-black px-5 py-2 rotate-45 z-10">LISTO</div>' : ''}
-                                <div class="flex justify-between items-center mb-3 relative z-10">
-                                    <span class="font-bold uppercase italic text-[12.1px] drop-shadow-md">${g.label}</span>
-                                    <span class="font-black text-sm text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-black/50 h-2.5 rounded-full overflow-hidden border border-white/10 relative z-10">
-                                    <div class="${isClaimed ? 'bg-green-400' : 'bg-yellow-400 shadow-[0_0_10px_#facc15]'} h-full transition-all duration-1000" style="width: ${progress}%"></div>
-                                </div>
-                            </div>`;
-                    });
+                });
+            });
+        }).catch(function(e){
+            console.warn('Firebase no disponible:', e.message);
+        });
+    }
+};
 
-                    // Mensual
-                    el.innerHTML += `
-                        <div class="flex justify-between items-end mt-8 mb-3 ml-2">
-                            <h3 class="text-[12px] font-black text-cyan-400 uppercase tracking-[0.3em]">Premios Mensuales</h3>
-                            <span class="text-[9px] text-white/60 uppercase font-black bg-white/10 px-2 py-1 rounded-md">Puntos: ${this.data.month.points}</span>
-                        </div>`;
-                    this.goals.monthly.forEach((g, idx) => {
-                        const isClaimed = this.data.month.rewardsClaimed.includes(idx);
-                        const progress = Math.min(100, (this.data.month.points / g.points) * 100);
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl mb-3 border-l-4 border-cyan-500 bg-gradient-to-r from-cyan-500/10 to-transparent relative overflow-hidden ${isClaimed ? 'border-l-4 border-green-400 bg-green-400/10' : ''}">
-                                ${isClaimed ? '<div class="absolute inset-0 bg-green-400/10 z-0"></div><div class="absolute right-[-10px] top-[-10px] bg-green-500 text-[8px] font-black px-5 py-2 rotate-45 z-10">LISTO</div>' : ''}
-                                <div class="flex justify-between items-center mb-3 relative z-10">
-                                    <span class="font-bold uppercase italic text-[12.1px] drop-shadow-md">${g.label}</span>
-                                    <span class="font-black text-sm text-cyan-400 drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">${g.points} PTS</span>
-                                </div>
-                                <div class="w-full bg-black/50 h-2.5 rounded-full overflow-hidden border border-white/10 relative z-10">
-                                    <div class="${isClaimed ? 'bg-green-400' : 'bg-cyan-400 shadow-[0_0_10px_#22d3ee]'} h-full transition-all duration-1000" style="width: ${progress}%"></div>
-                                </div>
-                            </div>`;
-                    });
+/* Arrancar */
+window.App = App;
+document.addEventListener('DOMContentLoaded', function(){ App.init(); });
+</script>
 
-                    // Finanzas
-                    const totalMoney = this.data.total * this.POINT_VALUE;
-                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-[0.3em] mb-3 mt-10 ml-2">Ganancias (CLP)</h3>`;
-                    
-                    const moneyBox = document.createElement('div');
-                    moneyBox.className = 'glass-card rounded-3xl p-6 border-pink-500/30 mb-6 text-center bg-pink-900/10 relative overflow-hidden';
-                    moneyBox.innerHTML = `
-                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/20 blur-[30px] rounded-full"></div>
-                        <p class="text-[11px] font-black text-white/50 uppercase mb-2 tracking-widest relative z-10">Saldo Real Total</p>
-                        <h2 class="text-5xl font-header italic neon-text relative z-10">${this.formatCLP(totalMoney)}</h2>
-                    `;
-                    el.appendChild(moneyBox);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'grid grid-cols-1 gap-3';
-                    this.financeConfig.forEach(conf => {
-                        const amount = totalMoney * conf.pct;
-                        grid.innerHTML += `
-                            <div class="glass-card px-5 py-5 rounded-2xl flex justify-between items-center border-l-2 ${conf.color.replace('text-','border-')} hover:bg-white/5 transition-colors">
-                                <div>
-                                    <h4 class="font-black uppercase italic money-label ${conf.color} drop-shadow-md">${conf.label} (${conf.pct * 100}%)</h4>
-                                    <p class="text-[10px] text-white/40 uppercase tracking-tight mt-1">${conf.desc}</p>
-                                </div>
-                                <span class="font-header money-amount italic text-white drop-shadow-lg">${this.formatCLP(amount)}</span>
-                            </div>`;
-                    });
-                    el.appendChild(grid);
-                } 
-                else if (this.data.tab === 'history') {
-                    const hist = [...this.data.allHistory].reverse();
-                    el.innerHTML += `<h3 class="text-[12.1px] font-black text-pink-500 uppercase tracking-widest mb-4 ml-2">Logros Recientes</h3>
-                        <div class="glass-card p-5 rounded-3xl border-pink-500/40 mb-5 bg-gradient-to-r from-pink-600/20 to-transparent relative overflow-hidden">
-                            ${this.data.today.perfectDay ? '<div class="absolute top-0 right-0 bg-yellow-400 text-black text-[9px] font-black px-3 py-1 rounded-bl-xl shadow-lg z-10">DÍA PERFECTO 🌟</div>' : ''}
-                            <div class="flex justify-between items-end relative z-10">
-                                <div>
-                                    <span class="bg-pink-500 text-[10px] font-black px-2 py-0.5 rounded mb-2 inline-block shadow-md">HOY</span>
-                                    <h4 class="font-bold italic uppercase text-base drop-shadow-md">${this.data.today.date}</h4>
-                                </div>
-                                <span class="font-header text-4xl text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">${this.data.today.totalDay} <span class="text-[12px] text-pink-300">PTS</span></span>
-                            </div>
-                        </div>`;
-                    
-                    hist.forEach(day => {
-                        el.innerHTML += `
-                            <div class="glass-card p-4 rounded-2xl flex justify-between items-center mb-3 opacity-80 hover:opacity-100 transition-opacity">
-                                <span class="text-[11px] font-bold uppercase italic">${day.date}</span>
-                                <div class="flex items-center gap-3">
-                                    ${day.perfectDay ? '<span class="text-yellow-400 text-sm drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" title="Día Perfecto">🌟</span>' : ''}
-                                    <span class="font-header text-xl text-white/90">${day.totalDay} PTS</span>
-                                </div>
-                            </div>`;
-                    });
-
-                    if(hist.length === 0) {
-                        el.innerHTML += `<div class="text-center p-8 text-white/30 text-sm font-bold uppercase italic">Aún no hay historial anterior</div>`;
-                    }
-                }
-            }
-        };
-
-        window.App = App;
-        window.onload = () => App.init();
-    </script>
 </body>
 </html>
