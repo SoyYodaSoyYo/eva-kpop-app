@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>El Juego de Eva K-POP</title>
 
     <!-- Tailwind -->
@@ -28,17 +28,27 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            /* Eliminado height: 100% para permitir scroll natural */
+            overflow-x: hidden;
+            background-color: var(--bg-dark);
+        }
+
         body {
             font-family: 'Fredoka', sans-serif;
-            background-color: var(--bg-dark);
             background-image: url('https://image.qwenlm.ai/public_source/9c54a017-96d8-44fa-a48f-957c5a130e87/1c805cb79-8785-4f75-86f8-581423817ee7.png');
             background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-position: center top;
+            background-attachment: scroll;
             color: #fff;
-            margin: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* Padding reducido para evitar scroll innecesario al inicio */
+            padding-top: 10px; 
+            padding-bottom: 40px; /* Espacio solo para el sync bar si aparece */
         }
 
         body::before {
@@ -51,7 +61,7 @@
 
         .marquee-wrap {
             background: linear-gradient(90deg, #ff007f, #9d00ff);
-            overflow: hidden; white-space: nowrap; padding: 8px 0;
+            overflow: hidden; white-space: nowrap; padding: 6px 0;
             box-shadow: 0 4px 20px rgba(255, 0, 127, 0.6);
             position: sticky; top: 0; z-index: 50;
             border-bottom: 2px solid #fff;
@@ -60,7 +70,7 @@
             display: inline-block;
             animation: marquee 20s linear infinite;
             font-weight: 700;
-            text-transform: uppercase; font-size: 1.1rem; padding-left: 100%;
+            text-transform: uppercase; font-size: 1rem; padding-left: 100%;
             letter-spacing: .05em;
             color: #fff;
             text-shadow: 2px 2px 0px #000;
@@ -82,9 +92,9 @@
         }
 
         .tab-btn {
-            flex:1; padding:12px 8px; border-radius: 50px;
+            flex:1; padding:10px 4px; border-radius: 50px;
             font-weight: 700;
-            text-transform:uppercase; font-size:12px; cursor:pointer;
+            text-transform:uppercase; font-size:11px; cursor:pointer;
             transition:all .2s; opacity:.6; background: rgba(0,0,0,0.3); border:none; color:#fff;
             border: 1px solid rgba(255,255,255,0.1);
         }
@@ -99,9 +109,9 @@
         .task-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
             border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 20px; padding: 16px;
-            display: flex; flex-direction: column; gap: 12px;
-            margin-bottom: 12px;
+            border-radius: 20px; padding: 14px;
+            display: flex; flex-direction: column; gap: 10px;
+            margin-bottom: 10px;
             transition: all .3s;
             position: relative;
             overflow: hidden;
@@ -125,17 +135,17 @@
         }
 
         .btn-m {
-            width:36px; height:36px; border-radius:12px;
+            width:34px; height:34px; border-radius:10px;
             background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2);
-            color:#fff; font-size:20px; font-weight:700;
+            color:#fff; font-size:18px; font-weight:700;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
             transition:all .1s;
         }
         .btn-p {
-            width:36px; height:36px; border-radius:12px;
+            width:34px; height:34px; border-radius:10px;
             background:linear-gradient(135deg, #00f2fe, #0099ff); 
             border:none; 
-            color:#fff; font-size:22px; font-weight:900;
+            color:#fff; font-size:20px; font-weight:900;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
             box-shadow:0 4px 15px rgba(0, 242, 254, 0.4);
             transition:all .1s;
@@ -144,7 +154,7 @@
         .btn-m:active, .btn-p:active { transform:scale(.9); }
 
         .prog-track {
-            width:100%; height:12px;
+            width:100%; height:10px;
             background:rgba(0,0,0,0.5); border-radius:999px;
             overflow:hidden; border:1px solid rgba(255,255,255,0.1);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
@@ -152,15 +162,15 @@
         .prog-fill { height:100%; border-radius:999px; transition:width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
         #toasts {
-            position:fixed; top:60px; right:12px; z-index:300;
+            position:fixed; top:50px; right:10px; z-index:300;
             display:flex; flex-direction:column; gap:10px;
             pointer-events:none;
-            width: min(300px, calc(100vw - 24px));
+            width: min(280px, calc(100vw - 20px));
         }
         .toast {
             background: rgba(20, 10, 30, 0.95);
             border: 2px solid #ff007f;
-            border-radius: 16px; padding: 12px 16px;
+            border-radius: 16px; padding: 10px 14px;
             backdrop-filter: blur(10px);
             animation: tIn .4s cubic-bezier(.17,.89,.32,1.28);
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
@@ -175,9 +185,9 @@
         @keyframes tOut { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
 
         #sync-bar {
-            position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
-            z-index:60; font-size:11px; font-weight:700; text-transform:uppercase;
-            letter-spacing:.1em; padding:6px 16px; border-radius:999px;
+            position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+            z-index:60; font-size:10px; font-weight:700; text-transform:uppercase;
+            letter-spacing:.1em; padding:5px 12px; border-radius:999px;
             transition:all .3s; white-space:nowrap; pointer-events:none;
             background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2);
             backdrop-filter: blur(4px);
@@ -188,36 +198,38 @@
         .sb-busy { background:rgba(255,200,0,.2); color:#ffc800; border-color:#ffc800; }
         .sb-err  { background:rgba(255,80,80,.2); color:#ff5050; border-color:#ff5050; }
 
-        #footer {
-            position:fixed; bottom:0; left:0; width:100%;
-            background: linear-gradient(to top, #000 80%, transparent);
-            padding:16px 16px 24px; z-index:40;
+        /* Eliminado el footer fijo, ahora los botones están en el flujo */
+        
+        .hist-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:12px 16px; border-radius:16px; margin-bottom:8px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
         }
-        .btn-bonus {
-            flex:1; padding:14px; border:none; border-radius:16px;
+
+        .btn-action-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .btn-bonus-flow {
+            flex:1; padding:12px; border:none; border-radius:14px;
             font-weight:700; text-transform:uppercase; font-size:11px; cursor:pointer;
             transition: transform .12s;
             color: #000;
         }
-        .btn-bonus:active { transform:scale(.95); }
+        .btn-bonus-flow:active { transform:scale(.95); }
 
-        .hist-row {
-            display:flex; justify-content:space-between; align-items:center;
-            padding:14px 18px; border-radius:16px; margin-bottom:10px;
-            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-        }
-
-        .btn-reset {
+        .btn-reset-flow {
             background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 0, 0, 0.1));
             border: 2px solid rgba(255, 68, 68, 0.5);
             color: #ff6666;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border-radius: 12px;
             cursor: pointer;
-            margin-top: 20px;
             width: 100%;
+            margin-top: 10px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
@@ -226,14 +238,68 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .btn-reset:hover {
+        .btn-reset-flow:hover {
             background: rgba(255, 68, 68, 0.3);
             border-color: #ff4444;
             color: #ff4444;
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
         }
-        .btn-reset:active {
-            transform: scale(0.98);
+
+        /* Finance Card Styles */
+        .finance-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .finance-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(3px);
+        }
+        .finance-card.libres { border-left: 5px solid #ff7eb3; }
+        .finance-card.gastos { border-left: 5px solid #ffaacc; }
+        .finance-card.ahorro { border-left: 5px solid #ffffff; }
+        .finance-card.compartir { border-left: 5px solid #aaaaaa; }
+
+        .finance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .finance-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .finance-desc {
+            font-size: 10px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .finance-amount {
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: right;
+            min-width: 90px;
+        }
+
+        .finance-pct {
+            font-size: 9px;
+            opacity: 0.7;
+            margin-left: 6px;
+            padding: 2px 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
         }
 
         #celebration-overlay {
@@ -252,7 +318,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 700;
             text-transform: uppercase;
             color: #facc15;
@@ -285,7 +351,7 @@
         }
     </style>
 </head>
-<body class="pb-40">
+<body>
 
 <canvas id="fx-canvas"></canvas>
 <div id="celebration-overlay"></div>
@@ -299,17 +365,17 @@
     </span>
 </div>
 
-<header style="text-align:center;padding:20px 24px 20px;">
-    <h1 class="neon-text" style="font-size:3.8rem;font-weight:700;letter-spacing:-.04em;line-height:0.9;margin:0 0 15px; font-family:'Fredoka', sans-serif;">EVA<br>K-POP</h1>
+<header style="text-align:center;padding:15px 20px 10px;">
+    <h1 class="neon-text" style="font-size:3.2rem;font-weight:700;letter-spacing:-.04em;line-height:0.9;margin:0 0 10px; font-family:'Fredoka', sans-serif;">EVA<br>K-POP</h1>
     
-    <div class="glass-panel" style="display:inline-block;padding:15px 35px;border-radius:30px;transform: rotate(-2deg);">
-        <div id="total-pts" style="font-size:4.5rem;font-weight:700;color:#fff; font-family:'Fredoka', sans-serif; line-height:1;">0</div>
-        <p style="font-size:11px;font-weight:700;color:#ff4da6;text-transform:uppercase;letter-spacing:.2em;margin:6px 0 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Puntos Totales</p>
+    <div class="glass-panel" style="display:inline-block;padding:10px 25px;border-radius:30px;transform: rotate(-2deg);">
+        <div id="total-pts" style="font-size:3.8rem;font-weight:700;color:#fff; font-family:'Fredoka', sans-serif; line-height:1;">0</div>
+        <p style="font-size:9px;font-weight:700;color:#ff4da6;text-transform:uppercase;letter-spacing:.2em;margin:4px 0 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Puntos Totales</p>
     </div>
 </header>
 
-<main style="max-width:460px;margin:0 auto;padding:10px 16px 8px">
-    <div class="glass-panel" style="display:flex;gap:8px;padding:6px;border-radius:50px;margin-bottom:20px; border: 2px solid rgba(255,255,255,0.1);">
+<main style="max-width:460px;margin:0 auto;padding:5px 14px 20px">
+    <div class="glass-panel" style="display:flex;gap:6px;padding:5px;border-radius:50px;margin-bottom:14px; border: 2px solid rgba(255,255,255,0.1);">
         <button class="tab-btn active" id="tab-tasks" onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn" id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
         <button class="tab-btn" id="tab-history" onclick="App.tab('history')">Historial</button>
@@ -317,22 +383,9 @@
     <div id="content"></div>
 </main>
 
-<div id="footer">
-    <div style="max-width:440px;margin:0 auto;display:flex;gap:12px">
-        <button class="btn-bonus" onclick="App.bonus(10)"
-            style="background:linear-gradient(135deg, #facc15, #ff9900); box-shadow:0 0 20px rgba(250,204,21,.4); font-weight:800; font-size:13px;">
-            ⭐ Bono +10
-        </button>
-        <button class="btn-bonus" onclick="App.bonus(-5)"
-            style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); box-shadow:none; font-weight:800; font-size:13px;">
-            ⚠️ Falta -5
-        </button>
-    </div>
-</div>
-
 <script>
 /* ═══════════════════════════════════════════════════
-   EVA K-POP — v5.5 Reset Fixed Edition
+   EVA K-POP — v6.2 Layout Fixed Edition
 ═══════════════════════════════════════════════════ */
 
 var FIREBASE_CONFIG = {
@@ -344,7 +397,7 @@ var FIREBASE_CONFIG = {
     appId: "1:49327968177:web:96ed05e9f0854e893c7790",
     measurementId: "G-038YDW4PQS"
 };
-var GAME_ID = "eva-kpop-v4";
+var GAME_ID = "eva-kpop-v6";
 
 /* ── AUDIO ── */
 var SFX = (function(){
@@ -363,7 +416,7 @@ var SFX = (function(){
             g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+d);
             o.connect(g); g.connect(c.destination);
             o.start(c.currentTime+delay); o.stop(c.currentTime+delay+d);
-        }catch(e){ console.log('SFX error:', e); }
+        }catch(e){}
     }
     return {
         unlock: function(){ try{getCtx();}catch(e){} },
@@ -380,6 +433,9 @@ var SFX = (function(){
         },
         reset: function(){
             [880,660,440,330].forEach(function(f,i){ play(f,'sawtooth',.4,.2,i*.12); });
+        },
+        loseReward: function(){
+            [600,500,400,300].forEach(function(f,i){ play(f,'sawtooth',.3,.15,i*.08); });
         }
     };
 })();
@@ -462,10 +518,10 @@ function showToast(title,msg,type){
     var el=document.createElement('div');
     el.className='toast'+(type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':type==='reset'?' reset':'');
     var icon = type==='perfect'?'🌟':type==='reward'?'🎁':type==='bad'?'⚠️':type==='reset'?'🔄':'👍';
-    el.innerHTML='<div style="font-size:24px">'+icon+'</div>'+
+    el.innerHTML='<div style="font-size:22px">'+icon+'</div>'+
                  '<div style="flex:1">'+
-                    '<div style="font-weight:700;font-size:16px;margin-bottom:2px;color:#fff">'+title+'</div>'+
-                    '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:.9;color:#ddd">'+msg+'</div>'+
+                    '<div style="font-weight:700;font-size:15px;margin-bottom:2px;color:#fff">'+title+'</div>'+
+                    '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:.9;color:#ddd">'+msg+'</div>'+
                  '</div>';
     box.appendChild(el);
     setTimeout(function(){ el.classList.add('out'); setTimeout(function(){el.remove();},320); },3600);
@@ -504,7 +560,6 @@ var App = {
     _saveTimer: null,
     _skipSnap: false,
     POINT_VALUE: 10,
-    _initialized: false,
 
     TASKS: [
         {id:'cama',    label:'Hacer la cama',       pts:1, limit:1, icon:'🛏️'},
@@ -522,18 +577,22 @@ var App = {
     ],
     WEEKLY:  [{label:'Película Extra',pts:100},{label:'Helado Especial',pts:180}],
     MONTHLY: [{label:'Regalo Sorpresa',pts:400},{label:'Paseo + Regalo',pts:800}],
+    
     FINANCE: [
-        {label:'Libres para usar',pct:.40,color:'#ff7eb3',desc:'Libre disposición'},
-        {label:'Gastos',          pct:.40,color:'#ffaacc',desc:'Necesidades / Extras'},
-        {label:'Ahorro',          pct:.10,color:'#ffffff',desc:'Para el futuro'},
-        {label:'Compartir',       pct:.10,color:'#aaaaaa',desc:'Ayudar / Regalar'}
+        {id:'libres', label:'LIBRES PARA USAR', pct:0.40, color:'#ff7eb3', desc:'Libre disposición'},
+        {id:'gastos', label:'GASTOS', pct:0.40, color:'#ffaacc', desc:'Necesidades / Extras'},
+        {id:'ahorro', label:'AHORRO', pct:0.10, color:'#ffffff', desc:'Para el futuro'},
+        {id:'compartir', label:'COMPARTIR', pct:0.10, color:'#aaaaaa', desc:'Ayudar / Regalar'}
     ],
 
     _hoy: function(){ return new Date().toISOString().split('T')[0]; },
     _mes: function(){ return this._hoy().slice(0,7); },
+    
     _semana: function(){
-        var d=new Date();
-        d.setDate(d.getDate()-(d.getDay()+1)%7);
+        var d = new Date();
+        var day = d.getDay();
+        var daysSinceSaturday = (day + 1) % 7;
+        d.setDate(d.getDate() - daysSinceSaturday);
         return d.toISOString().split('T')[0];
     },
 
@@ -544,37 +603,36 @@ var App = {
             this.d.today={date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
             changed=true;
         }
-        if(!this.d.week||this.d.week.id!==s){this.d.week={id:s,pts:0,claimed:[]};changed=true;}
-        if(!this.d.month||this.d.month.id!==m){this.d.month={id:m,pts:0,claimed:[]};changed=true;}
+        if(!this.d.week||this.d.week.id!==s){
+            this.d.week={id:s,pts:0,claimed:[]};
+            changed=true;
+        }
+        if(!this.d.month||this.d.month.id!==m){
+            this.d.month={id:m,pts:0,claimed:[]};
+            changed=true;
+        }
         return changed;
     },
 
     _loadLocal: function(){
         try{
-            var raw=localStorage.getItem('eva_kpop_v5');
+            var raw=localStorage.getItem('eva_kpop_v6');
             if(raw) this.d=Object.assign(emptyData(),JSON.parse(raw));
-        }catch(e){ console.log('Load error:', e); }
+        }catch(e){}
     },
 
     _saveLocal: function(){
-        try{
-            localStorage.setItem('eva_kpop_v5',JSON.stringify(this.d));
-            console.log('Saved to localStorage');
-        }catch(e){ console.log('Save error:', e); }
+        try{localStorage.setItem('eva_kpop_v6',JSON.stringify(this.d));}catch(e){}
     },
 
     _save: function(){
-        console.log('App._save called');
         this._saveLocal();
         this._cloudSave();
         this._render();
     },
 
     _cloudSave: function(){
-        if(!this._db) {
-            console.log('No DB connection, saving locally only');
-            return;
-        }
+        if(!this._db) return;
         var self=this;
         clearTimeout(this._saveTimer);
         this._saveTimer=setTimeout(function(){
@@ -582,9 +640,9 @@ var App = {
                 self._skipSnap=true;
                 self._db.collection('games').doc(GAME_ID)
                     .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
-                    .then(function(){ console.log('Cloud save success'); })
+                    .then(function(){})
                     .catch(function(e){ console.log('Cloud save error:', e); });
-            }catch(e){ console.log('Cloud save exception:', e); }
+            }catch(e){}
         },500);
     },
 
@@ -620,8 +678,30 @@ var App = {
         });
     },
 
+    _checkLostRewards: function(){
+        var lostRewards = [];
+        var self = this;
+        
+        this.WEEKLY.forEach(function(g,i){
+            var idx = self.d.week.claimed.indexOf(i);
+            if(idx !== -1 && self.d.week.pts < g.pts){
+                self.d.week.claimed.splice(idx, 1);
+                lostRewards.push({type:'semanal', label:g.label});
+            }
+        });
+        
+        this.MONTHLY.forEach(function(g,i){
+            var idx = self.d.month.claimed.indexOf(i);
+            if(idx !== -1 && self.d.month.pts < g.pts){
+                self.d.month.claimed.splice(idx, 1);
+                lostRewards.push({type:'mensual', label:g.label});
+            }
+        });
+        
+        return lostRewards;
+    },
+
     adjust: function(id,dir){
-        console.log('adjust called:', id, dir);
         SFX.unlock();
         var task=null;
         for(var i=0;i<this.TASKS.length;i++){if(this.TASKS[i].id===id){task=this.TASKS[i];break;}}
@@ -651,98 +731,76 @@ var App = {
         this._save();
     },
 
-    /* ── RESET DAY - FIXED ───────────────────── */
     resetDay: function(){
-        console.log('resetDay called!');
         SFX.unlock();
-        
         var puntosHoy = this.d.today.totalDay || 0;
         
-        if(!confirm("⚠️ ¿Estás segura de reiniciar el día?\n\nSe perderán " + puntosHoy + " puntos de hoy.")) {
-            console.log('Reset cancelled by user');
-            return;
-        }
-        
-        console.log('Reset confirmed, puntosHoy:', puntosHoy);
+        if(!confirm("⚠️ ¿Estás segura de reiniciar el día?\n\nSe perderán " + puntosHoy + " puntos de hoy.\n\nSi tenías premios desbloqueados con estos puntos, también se perderán.")) return;
         
         SFX.reset();
         
-        // Restar puntos del total
-        this.d.total = Math.max(0, this.d.total - puntosHoy);
+        var newTotal = Math.max(0, this.d.total - puntosHoy);
+        var newWeekPts = Math.max(0, this.d.week.pts - puntosHoy);
+        var newMonthPts = Math.max(0, this.d.month.pts - puntosHoy);
         
-        // Restar puntos de semana y mes
-        this.d.week.pts = Math.max(0, this.d.week.pts - puntosHoy);
-        this.d.month.pts = Math.max(0, this.d.month.pts - puntosHoy);
+        this.d.total = newTotal;
+        this.d.week.pts = newWeekPts;
+        this.d.month.pts = newMonthPts;
         
-        // Reiniciar misiones a 0
+        var lostRewards = this._checkLostRewards();
+        
         this.d.today.points = {};
-        
-        // Reiniciar contadores
         this.d.today.totalDay = 0;
         this.d.today.basePoints = 0;
         this.d.today.perfectDay = false;
         
-        console.log('After reset - total:', this.d.total, 'today:', this.d.today);
-        
-        // Guardar
         this._saveLocal();
         this._cloudSave();
         
-        // Efecto visual de reset
         document.body.classList.add('flash-reset');
         setTimeout(function(){ document.body.classList.remove('flash-reset'); }, 400);
         
-        // Renderizar inmediatamente
         this._render();
         
-        // Mostrar toast
-        showToast('Día Reiniciado', '¡Todas las misiones volvieron a 0!', 'reset');
-        
-        console.log('Reset complete!');
+        var msg = '¡Todas las misiones volvieron a 0!';
+        if(lostRewards.length > 0){
+            SFX.loseReward();
+            msg += '\nPremios perdidos: ' + lostRewards.map(function(r){ return r.label; }).join(', ');
+            showToast('Día Reiniciado', msg, 'reset');
+            setTimeout(function(){
+                showToast('Premios Perdidos', lostRewards.length + ' premios fueron bloqueados', 'bad');
+            }, 2000);
+        } else {
+            showToast('Día Reiniciado', msg, 'reset');
+        }
     },
 
-    tab: function(t){ 
-        console.log('tab changed to:', t);
-        this.d.activeTab=t; 
-        this._render(); 
-    },
+    tab: function(t){ this.d.activeTab=t; this._render(); },
 
     _clp: function(v){
         return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);
     },
 
     _render: function(){
-        console.log('_render called, activeTab:', this.d.activeTab);
         var ptEl=document.getElementById('total-pts');
         if(ptEl) ptEl.textContent=this.d.total;
-        
         ['tasks','rewards','history'].forEach(function(t){
             var b=document.getElementById('tab-'+t);
             if(b) b.className='tab-btn'+(App.d.activeTab===t?' active':'');
         });
-        
         var c=document.getElementById('content');
-        if(!c) {
-            console.log('Content element not found!');
-            return;
-        }
-        
-        if(this.d.activeTab==='tasks') {
-            c.innerHTML=this._buildTasks();
-        } else if(this.d.activeTab==='rewards') {
-            c.innerHTML=this._buildRewards();
-        } else if(this.d.activeTab==='history') {
-            c.innerHTML=this._buildHistory();
-        }
-        console.log('_render complete');
+        if(!c) return;
+        if(this.d.activeTab==='tasks') c.innerHTML=this._buildTasks();
+        if(this.d.activeTab==='rewards') c.innerHTML=this._buildRewards();
+        if(this.d.activeTab==='history') c.innerHTML=this._buildHistory();
     },
 
     _buildTasks: function(){
         var html='';
         if(this.d.today.perfectDay){
-            html+='<div style="background:rgba(250,204,21,.15);border:2px solid #facc15;border-radius:20px;padding:16px;text-align:center;margin-bottom:16px; box-shadow: 0 0 20px rgba(250,204,21,0.2);">'+
-                  '<div style="font-weight:700;color:#facc15;font-size:1.1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
-                  '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-top:5px;opacity:.8">+20 Puntos de bonificación</div>'+
+            html+='<div style="background:rgba(250,204,21,.15);border:2px solid #facc15;border-radius:20px;padding:14px;text-align:center;margin-bottom:14px; box-shadow: 0 0 20px rgba(250,204,21,0.2);">'+
+                  '<div style="font-weight:700;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
+                  '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;opacity:.8">+20 Puntos de bonificación</div>'+
                   '</div>';
         }
         var self=this;
@@ -753,21 +811,21 @@ var App = {
             for(var i=0;i<t.limit;i++) segs+='<div class="seg'+(i<count?' on':'')+'"></div>';
             html+='<div class="task-card'+(maxed?' done':'')+'">'+
                   '<div style="display:flex;justify-content:space-between;align-items:center">'+
-                    '<div style="display:flex;align-items:center;gap:12px">'+
-                      '<div style="width:50px;height:50px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">'+t.icon+'</div>'+
+                    '<div style="display:flex;align-items:center;gap:10px">'+
+                      '<div style="width:45px;height:45px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">'+t.icon+'</div>'+
                       '<div>'+
-                        '<div style="font-weight:700;text-transform:uppercase;font-size:.9rem;color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+t.label+'</div>'+
-                        '<div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#facc15;margin-top:2px; background:rgba(0,0,0,0.3); display:inline-block; padding:2px 6px; border-radius:4px;">+'+t.pts+' PTS</div>'+
+                        '<div style="font-weight:700;text-transform:uppercase;font-size:.85rem;color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+t.label+'</div>'+
+                        '<div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#facc15;margin-top:2px; background:rgba(0,0,0,0.3); display:inline-block; padding:2px 5px; border-radius:4px;">+'+t.pts+' PTS</div>'+
                       '</div>'+
                     '</div>'+
                     (maxed
-                      ?'<div style="background:#facc15;color:#000;font-size:10px;font-weight:800;padding:5px 10px;border-radius:8px; box-shadow: 0 0 10px rgba(250,204,21,0.5);">¡LISTO!</div>'
-                      :'<div style="font-weight:700;font-size:14px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);padding:5px 12px;border-radius:10px">'+count+'/'+t.limit+'</div>'
+                      ?'<div style="background:#facc15;color:#000;font-size:9px;font-weight:800;padding:4px 8px;border-radius:6px; box-shadow: 0 0 10px rgba(250,204,21,0.5);">¡LISTO!</div>'
+                      :'<div style="font-weight:700;font-size:13px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);padding:4px 10px;border-radius:8px">'+count+'/'+t.limit+'</div>'
                     )+
                   '</div>'+
-                  '<div style="display:flex;align-items:center;gap:13px">'+
-                    '<div style="flex:1;display:flex;gap:6px">'+segs+'</div>'+
-                    '<div style="display:flex;gap:8px">'+
+                  '<div style="display:flex;align-items:center;gap:12px">'+
+                    '<div style="flex:1;display:flex;gap:5px">'+segs+'</div>'+
+                    '<div style="display:flex;gap:6px">'+
                       '<button class="btn-m" onclick="App.adjust(\''+t.id+'\',-1)">−</button>'+
                       '<button class="btn-p'+(maxed?' off':'')+'" onclick="App.adjust(\''+t.id+'\',1)">+</button>'+
                     '</div>'+
@@ -775,52 +833,77 @@ var App = {
                   '</div>';
         });
 
-        // BOTÓN DE RESET AL FINAL
-        html += '<button class="btn-reset" id="reset-day-btn" onclick="App.resetDay()">🔄 Reiniciar Día</button>';
+        /* CAMBIO 1: Botones de acción dentro del flujo de misiones */
+        html += '<div class="btn-action-group">';
+        html += '<button class="btn-bonus-flow" onclick="App.bonus(10)" style="background:linear-gradient(135deg, #facc15, #ff9900); box-shadow:0 0 15px rgba(250,204,21,.3);">⭐ Bono +10</button>';
+        html += '<button class="btn-bonus-flow" onclick="App.bonus(-5)" style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2);">⚠️ Falta -5</button>';
+        html += '</div>';
+        
+        html += '<button class="btn-reset-flow" onclick="App.resetDay()">🔄 Reiniciar Día</button>';
         
         return html;
     },
 
     _buildRewards: function(){
         var html='',self=this;
-        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px">'+
-              '<div style="font-weight:700;color:#facc15;font-size:13px;text-transform:uppercase;letter-spacing:.15em">Premios Semanales</div>'+
-              '<div style="font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:8px; border:1px solid rgba(255,255,255,0.1);">'+this.d.week.pts+' pts</div>'+
+        var total=this.d.total*this.POINT_VALUE;
+        
+        /* CAMBIO 2: Reordenar Premios */
+        
+        /* 1. Premios Semanales */
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:10px 2px 8px">'+
+              '<div style="font-weight:700;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.15em">🎁 Premios Semanales</div>'+
+              '<div style="font-size:9px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:6px; border:1px solid rgba(255,255,255,0.1);">'+this.d.week.pts+' pts</div>'+
               '</div>';
         this.WEEKLY.forEach(function(g,i){
             html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.week.pts/g.pts*100),self.d.week.claimed.indexOf(i)!==-1,'#facc15');
         });
-        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px">'+
-              '<div style="font-weight:700;color:#00f2fe;font-size:13px;text-transform:uppercase;letter-spacing:.15em">Premios Mensuales</div>'+
-              '<div style="font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:8px; border:1px solid rgba(255,255,255,0.1);">'+this.d.month.pts+' pts</div>'+
+        
+        /* 2. Premios Mensuales */
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:20px 2px 8px">'+
+              '<div style="font-weight:700;color:#00f2fe;font-size:12px;text-transform:uppercase;letter-spacing:.15em">🎁 Premios Mensuales</div>'+
+              '<div style="font-size:9px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:6px; border:1px solid rgba(255,255,255,0.1);">'+this.d.month.pts+' pts</div>'+
               '</div>';
         this.MONTHLY.forEach(function(g,i){
             html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.month.pts/g.pts*100),self.d.month.claimed.indexOf(i)!==-1,'#00f2fe');
         });
-        var total=this.d.total*this.POINT_VALUE;
-        html+='<div style="font-weight:700;color:#ff7eb3;font-size:13px;text-transform:uppercase;letter-spacing:.15em;margin:26px 2px 10px">Ganancias (CLP)</div>'+
-              '<div style="background:rgba(255,0,127,0.15);border:2px solid rgba(255,0,127,0.3);border-radius:20px;padding:24px;text-align:center;margin-bottom:12px; box-shadow: 0 0 20px rgba(255,0,127,0.2);">'+
-                '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;opacity:.6;margin-bottom:8px">Saldo Real Total</div>'+
-                '<div class="neon-text" style="font-size:2.8rem;font-weight:700; line-height:1;">'+this._clp(total)+'</div>'+
+        
+        /* 3. Ganancias (Saldo Total + Distribución) al final */
+        html+='<div style="margin-top:25px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1);">';
+        html+='<div style="background:rgba(255,0,127,0.15);border:2px solid rgba(255,0,127,0.3);border-radius:18px;padding:18px;text-align:center;margin-bottom:18px; box-shadow: 0 0 20px rgba(255,0,127,0.2);">'+
+              '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;opacity:.6;margin-bottom:6px">Saldo Real Total</div>'+
+              '<div class="neon-text" style="font-size:2.4rem;font-weight:700; line-height:1;">'+this._clp(total)+'</div>'+
               '</div>';
+        
+        html+='<div style="font-weight:700;color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:.2em;margin:20px 0 10px; padding:8px; background:linear-gradient(90deg, rgba(255,0,127,0.2), transparent); border-radius:10px; border-left:3px solid #ff007f;">💰 Distribución</div>';
+        
         this.FINANCE.forEach(function(f){
-            html+='<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-left:4px solid '+f.color+';border-radius:16px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
-                  '<div>'+
-                    '<div style="font-weight:700;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
-                    '<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-top:2px">'+f.desc+'</div>'+
+            var cardClass = 'finance-card ' + f.id;
+            var amount = self._clp(total * f.pct);
+            var pctDisplay = (f.pct * 100) + '%';
+            
+            html+='<div class="'+cardClass+'">'+
+                  '<div class="finance-info">'+
+                    '<div class="finance-label" style="color:'+f.color+'">'+
+                      f.label+
+                      '<span class="finance-pct" style="color:'+f.color+'">'+pctDisplay+'</span>'+
+                    '</div>'+
+                    '<div class="finance-desc" style="color:'+f.color+'">'+f.desc+'</div>'+
                   '</div>'+
-                  '<div style="font-weight:700;font-size:1.2rem">'+self._clp(total*f.pct)+'</div>'+
+                  '<div class="finance-amount" style="color:'+f.color+'">'+amount+'</div>'+
                   '</div>';
         });
+        html+='</div>'; /* Cierre contenedor Ganancias */
+        
         return html;
     },
 
     _rewardCard: function(label,pts,pct,done,color){
-        return '<div style="background:'+(done?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.05)')+';border:1px solid rgba(255,255,255,0.1);border-left:4px solid '+(done?'#22c55e':color)+';border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">'+
-               (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:9px;font-weight:800;padding:15px 20px 4px;transform:rotate(45deg); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">LISTO</div>':'')+
-               '<div style="display:flex;justify-content:space-between;margin-bottom:12px">'+
-                 '<span style="font-weight:700;text-transform:uppercase;font-size:13px; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+label+'</span>'+
-                 '<span style="font-weight:800;font-size:14px;color:'+color+'; background:rgba(0,0,0,0.3); padding:2px 8px; border-radius:6px;">'+pts+' PTS</span>'+
+        return '<div style="background:'+(done?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.05)')+';border:1px solid rgba(255,255,255,0.1);border-left:4px solid '+(done?'#22c55e':color)+';border-radius:14px;padding:14px;margin-bottom:10px;position:relative;overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">'+
+               (done?'<div style="position:absolute;top:-8px;right:-12px;background:#22c55e;color:#000;font-size:8px;font-weight:800;padding:12px 18px 3px;transform:rotate(45deg); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">LISTO</div>':'')+
+               '<div style="display:flex;justify-content:space-between;margin-bottom:10px">'+
+                 '<span style="font-weight:700;text-transform:uppercase;font-size:12px; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+label+'</span>'+
+                 '<span style="font-weight:800;font-size:13px;color:'+color+'; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:5px;">'+pts+' PTS</span>'+
                '</div>'+
                '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:linear-gradient(90deg, '+color+', #fff);'+(done?'':'box-shadow:0 0 10px '+color)+'"></div></div>'+
                '</div>';
@@ -828,26 +911,26 @@ var App = {
 
     _buildHistory: function(){
         var hist=this.d.history.slice().reverse();
-        var html='<div style="font-weight:700;color:#ff7eb3;font-size:13px;text-transform:uppercase;letter-spacing:.15em;margin-bottom:15px">Logros Recientes</div>'+
-                 '<div style="background:linear-gradient(90deg,rgba(255,0,127,0.2) 0%,transparent 100%);border:2px solid rgba(255,0,127,0.3);border-radius:18px;padding:18px 20px;margin-bottom:15px;position:relative;overflow:hidden; box-shadow: 0 0 20px rgba(255,0,127,0.1);">'+
-                   (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:10px;font-weight:800;padding:5px 12px;border-radius:0 0 0 15px; box-shadow: -2px 2px 10px rgba(0,0,0,0.3);">DÍA PERFECTO 🌟</div>':'')+
+        var html='<div style="font-weight:700;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.15em;margin-bottom:12px">Logros Recientes</div>'+
+                 '<div style="background:linear-gradient(90deg,rgba(255,0,127,0.2) 0%,transparent 100%);border:2px solid rgba(255,0,127,0.3);border-radius:16px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden; box-shadow: 0 0 20px rgba(255,0,127,0.1);">'+
+                   (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:800;padding:4px 10px;border-radius:0 0 0 12px; box-shadow: -2px 2px 10px rgba(0,0,0,0.3);">DÍA PERFECTO 🌟</div>':'')+
                    '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
                      '<div>'+
-                       '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:6px; box-shadow: 0 2px 8px rgba(255,0,127,0.4);">HOY</div>'+
-                       '<div style="font-weight:700;text-transform:uppercase;font-size:.9rem; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+this.d.today.date+'</div>'+
+                       '<div style="background:#ff007f;display:inline-block;font-size:9px;font-weight:800;padding:3px 8px;border-radius:5px;margin-bottom:5px; box-shadow: 0 2px 8px rgba(255,0,127,0.4);">HOY</div>'+
+                       '<div style="font-weight:700;text-transform:uppercase;font-size:.85rem; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+this.d.today.date+'</div>'+
                      '</div>'+
-                     '<div style="font-size:2.2rem;font-weight:700; color:#fff; text-shadow: 0 0 10px rgba(255,255,255,0.5);">'+this.d.today.totalDay+' <span style="font-size:12px;color:#ff99cc; font-weight:400;">PTS</span></div>'+
+                     '<div style="font-size:2rem;font-weight:700; color:#fff; text-shadow: 0 0 10px rgba(255,255,255,0.5);">'+this.d.today.totalDay+' <span style="font-size:11px;color:#ff99cc; font-weight:400;">PTS</span></div>'+
                    '</div>'+
                  '</div>';
         if(hist.length===0){
-            html+='<div style="text-align:center;padding:36px;opacity:.3;font-style:italic;text-transform:uppercase;font-size:.9rem; background:rgba(0,0,0,0.2); border-radius:16px;">Aún no hay días anteriores</div>';
+            html+='<div style="text-align:center;padding:30px;opacity:.3;font-style:italic;text-transform:uppercase;font-size:.85rem; background:rgba(0,0,0,0.2); border-radius:14px;">Aún no hay días anteriores</div>';
         } else {
             hist.forEach(function(day){
                 html+='<div class="hist-row">'+
-                      '<span style="font-weight:700;text-transform:uppercase;font-size:12px; color:#ddd;">'+day.date+'</span>'+
-                      '<div style="display:flex;align-items:center;gap:10px">'+
-                        (day.perfectDay?'<span style="font-size:1.1rem; filter: drop-shadow(0 0 5px gold);">🌟</span>':'')+
-                        '<span style="font-weight:700;font-size:1.1rem; color:#fff;">'+day.totalDay+' <span style="font-size:11px;opacity:.5; font-weight:400;">PTS</span></span>'+
+                      '<span style="font-weight:700;text-transform:uppercase;font-size:11px; color:#ddd;">'+day.date+'</span>'+
+                      '<div style="display:flex;align-items:center;gap:8px">'+
+                        (day.perfectDay?'<span style="font-size:1rem; filter: drop-shadow(0 0 5px gold);">🌟</span>':'')+
+                        '<span style="font-weight:700;font-size:1rem; color:#fff;">'+day.totalDay+' <span style="font-size:10px;opacity:.5; font-weight:400;">PTS</span></span>'+
                       '</div>'+
                       '</div>';
             });
@@ -856,29 +939,22 @@ var App = {
     },
 
     init: function(){
-        console.log('App.init called');
         var self=this;
         FX.init();
         SFX.unlock();
-
         this._loadLocal();
         this._checkResets();
         this._render();
-        this._initialized = true;
 
-        // Firebase setup
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
             var db = firebase.firestore();
             var auth = firebase.auth();
             this._db = db;
-            console.log('Firebase initialized');
 
             auth.signInAnonymously()
                 .then(function(){
-                    console.log('Auth success');
                     var ref = db.collection('games').doc(GAME_ID);
-
                     ref.get().then(function(snap){
                         if(snap.exists){
                             var cloud = snap.data();
@@ -891,7 +967,6 @@ var App = {
                         self._saveLocal();
                         self._render();
                         syncBar('sb-ok','☁️ Listo');
-
                         self._unsub = ref.onSnapshot(function(snap){
                             if(self._skipSnap){ self._skipSnap=false; return; }
                             if(!snap.exists) return;
@@ -904,30 +979,15 @@ var App = {
                                 self._render();
                             }
                         });
-                    }).catch(function(e){
-                        console.log('Firestore get error:',e);
-                    });
+                    }).catch(function(e){ console.log('Firestore error:',e); });
                 })
-                .catch(function(e){
-                    console.log('Auth error:',e);
-                });
-
-        } catch(e) {
-            console.log('Firebase init error:',e);
-        }
+                .catch(function(e){ console.log('Auth error:',e); });
+        } catch(e) { console.log('Firebase init error:',e); }
     }
 };
 
-// Make sure App is available globally
 window.App = App;
-
-// Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', function(){ 
-    console.log('DOMContentLoaded');
-    App.init(); 
-});
-
-// Also try immediate init in case DOMContentLoaded already fired
+document.addEventListener('DOMContentLoaded', function(){ App.init(); });
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     setTimeout(function(){ App.init(); }, 100);
 }
@@ -935,4 +995,3 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
 </body>
 </html>
-
