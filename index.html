@@ -214,6 +214,24 @@
     </div>
 </div>
 
+<!-- MODAL REINICIAR TODO -->
+<div id="modal-resetall-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);z-index:810;align-items:center;justify-content:center;">
+    <div style="background:rgba(20,0,10,0.97);border:1px solid rgba(255,80,80,.5);border-radius:22px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 0 40px rgba(255,50,50,.2);">
+        <div style="font-size:2.5rem;margin-bottom:12px">⚠️</div>
+        <div class="font-arch" style="font-size:1.1rem;font-style:italic;color:#f87171;margin-bottom:8px">¿Reiniciar TODO?</div>
+        <div style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:6px;line-height:1.5">Se borrarán <strong style="color:#fff">todos los puntos, historial, semana y mes</strong>. Esta acción no se puede deshacer.</div>
+        <div style="font-size:.8rem;color:#f87171;margin-bottom:20px;font-weight:700">¿Estás completamente seguro?</div>
+        <div style="display:flex;gap:12px">
+            <button onclick="App.cancelResetAll()" style="flex:1;padding:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#fff;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer">
+                Cancelar
+            </button>
+            <button onclick="App.confirmResetAll()" style="flex:1;padding:14px;background:#cc2222;border:none;border-bottom:4px solid #880000;border-radius:12px;color:#fff;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;box-shadow:0 0 16px rgba(255,50,50,.3)">
+                Sí, borrar todo
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- MARQUEE -->
 <div class="marquee-wrap">
     <span class="marquee-inner">
@@ -424,6 +442,38 @@ var App={
         this._save();
     },
 
+    /* ── REINICIAR TODO ── */
+    askResetAll:function(){
+        var el=document.getElementById('modal-resetall-overlay');
+        el.style.display='flex';
+    },
+    cancelResetAll:function(){
+        document.getElementById('modal-resetall-overlay').style.display='none';
+    },
+    confirmResetAll:function(){
+        document.getElementById('modal-resetall-overlay').style.display='none';
+        // Reset completo en memoria
+        this.d=emptyData();
+        this.d.today.date=this._hoy();
+        this.d.week.id=this._semana();
+        this.d.month.id=this._mes();
+        // Borrar localStorage
+        try{localStorage.removeItem('eva_kpop_v4');}catch(e){}
+        // Borrar Firebase
+        if(this._db){
+            try{
+                this._skipSnap=true;
+                this._db.collection('games').doc(GAME_ID)
+                    .set(Object.assign({},this.d,{lastSyncMs:Date.now()}))
+                    .then(function(){syncBar('sb-ok','☁️ Reinicio guardado');})
+                    .catch(function(){syncBar('sb-err','❌ Error al guardar reinicio');});
+            }catch(e){}
+        }
+        SFX.coin();
+        showToast('¡Todo Reiniciado! 🔄','Empezando desde cero');
+        this._render();
+    },
+
     _clp:function(v){return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);},
 
     _render:function(){
@@ -542,6 +592,16 @@ var App={
                       '</div></div>';
             });
         }
+
+        /* ── BOTÓN REINICIAR TODO ── */
+        html+=
+            '<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)">'+
+            '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);text-align:center;margin-bottom:12px">Zona de administración</div>'+
+            '<button onclick="App.askResetAll()" style="width:100%;padding:14px;background:rgba(60,0,0,0.75);color:#f87171;border:1px solid rgba(255,80,80,.25);border-radius:14px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;letter-spacing:.08em;backdrop-filter:blur(10px)">'+
+              '⚠️ Reiniciar Todos los Contadores'+
+            '</button>'+
+            '</div>';
+
         return html;
     },
 
