@@ -8,189 +8,311 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Firebase — carga tradicional (más compatible con GitHub Pages) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
-        * { box-sizing: border-box; }
+    <style>
+        :root {
+            --primary: #ff007f;
+            --secondary: #00f2fe;
+            --accent: #facc15;
+            --bg-dark: #1a0b2e;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Archivo', sans-serif;
-            background: #0a0006;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: url('https://image.qwenlm.ai/public_source/9c54a017-96d8-44fa-a48f-957c5a130e87/1c805cb79-8785-4f75-86f8-581423817ee7.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #fff;
             margin: 0;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
         }
 
-        .font-arch { font-family: 'Archivo Black', sans-serif; }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 5, 20, 0.85);
+            z-index: -1;
+        }
 
         .marquee-wrap {
-            background: linear-gradient(90deg, #ff007f, #b30059);
-            overflow: hidden; white-space: nowrap; padding: 9px 0;
-            box-shadow: 0 0 18px rgba(255,0,127,.5);
+            background: linear-gradient(90deg, #ff007f, #9d00ff);
+            overflow: hidden; white-space: nowrap; padding: 8px 0;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.6);
             position: sticky; top: 0; z-index: 50;
+            border-bottom: 2px solid #fff;
         }
         .marquee-inner {
             display: inline-block;
-            animation: marquee 22s linear infinite;
-            font-family: 'Syne', sans-serif; font-weight: 800;
+            animation: marquee 20s linear infinite;
+            font-weight: 700;
             text-transform: uppercase; font-size: 1.1rem; padding-left: 100%;
             letter-spacing: .05em;
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
         }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-250%)} }
 
-        .neon { color: #ff007f; text-shadow: 0 0 10px #ff007f, 0 0 30px #ff007f; }
-        .glass {
-            background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.1);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+        .neon-text { 
+            color: #fff; 
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff007f, 0 0 40px #ff007f; 
+        }
+
+        .glass-panel {
+            background: rgba(40, 20, 60, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         .tab-btn {
-            flex:1; padding:13px 4px; border-radius:11px;
-            font-family:'Archivo Black',sans-serif; font-style:italic;
-            text-transform:uppercase; font-size:11px; cursor:pointer;
-            transition:all .2s; opacity:.5; background:none; border:none; color:#fff;
+            flex:1; padding:12px 8px; border-radius: 50px;
+            font-weight: 700;
+            text-transform:uppercase; font-size:12px; cursor:pointer;
+            transition:all .2s; opacity:.6; background: rgba(0,0,0,0.3); border:none; color:#fff;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .tab-btn.active { background:#fff; color:#000; opacity:1; box-shadow:0 0 14px rgba(255,255,255,.2); }
+        .tab-btn.active { 
+            background: linear-gradient(135deg, #ff007f, #ff5e00); 
+            color:#fff; opacity:1; 
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            transform: scale(1.05);
+            border: 1px solid #fff;
+        }
 
         .task-card {
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.08);
-            border-left: 4px solid rgba(255,255,255,.12);
-            border-radius: 16px; padding: 15px;
-            display: flex; flex-direction: column; gap: 13px;
-            margin-bottom: 11px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px; padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 12px;
             transition: all .3s;
+            position: relative;
+            overflow: hidden;
         }
         .task-card.done {
-            border-left-color: #ff007f;
-            background: linear-gradient(90deg, rgba(255,0,127,.11) 0%, transparent 100%);
-            animation: pulse-glow 2s infinite alternate;
-        }
-        @keyframes pulse-glow {
-            from { box-shadow: inset 0 0 8px rgba(255,0,127,.04); }
-            to   { box-shadow: inset 0 0 22px rgba(255,0,127,.16); }
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.15) 0%, rgba(0,0,0,0.2) 100%);
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
         }
 
         .seg {
-            height: 7px; flex: 1; border-radius: 4px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.09);
+            height: 8px; flex: 1; border-radius: 4px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
             transition: all .3s;
         }
-        .seg.on { background:#ff007f; border-color:#ff007f; box-shadow:0 0 7px #ff007f; }
+        .seg.on { 
+            background: linear-gradient(90deg, #ff007f, #ff5e00); 
+            border-color: #ff99cc; 
+            box-shadow: 0 0 10px #ff007f; 
+        }
 
         .btn-m {
-            width:40px; height:40px; border-radius:10px;
-            background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-            color:rgba(255,255,255,.45); font-size:20px; font-weight:900;
+            width:36px; height:36px; border-radius:12px;
+            background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2);
+            color:#fff; font-size:20px; font-weight:700;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            transition:all .12s; user-select:none; -webkit-user-select:none;
+            transition:all .1s;
         }
         .btn-p {
-            width:40px; height:40px; border-radius:10px;
-            background:#ff007f; border:none; border-bottom:4px solid #a8005a;
+            width:36px; height:36px; border-radius:12px;
+            background:linear-gradient(135deg, #00f2fe, #0099ff); 
+            border:none; 
             color:#fff; font-size:22px; font-weight:900;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            box-shadow:0 0 12px rgba(255,0,127,.35);
-            transition:all .12s; user-select:none; -webkit-user-select:none;
+            box-shadow:0 4px 15px rgba(0, 242, 254, 0.4);
+            transition:all .1s;
         }
-        .btn-p.off { background:#3a3a3a; border-bottom-color:#222; box-shadow:none; opacity:.45; }
-        .btn-m:active, .btn-p:active { transform:scale(.85); }
+        .btn-p.off { background:#444; box-shadow:none; opacity:.5; }
+        .btn-m:active, .btn-p:active { transform:scale(.9); }
 
         .prog-track {
-            width:100%; height:9px;
-            background:rgba(0,0,0,.5); border-radius:999px;
-            overflow:hidden; border:1px solid rgba(255,255,255,.07);
+            width:100%; height:12px;
+            background:rgba(0,0,0,0.5); border-radius:999px;
+            overflow:hidden; border:1px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
-        .prog-fill { height:100%; border-radius:999px; transition:width .9s; }
+        .prog-fill { height:100%; border-radius:999px; transition:width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
         #toasts {
-            position:fixed; top:68px; right:12px; z-index:300;
-            display:flex; flex-direction:column; gap:9px;
+            position:fixed; top:60px; right:12px; z-index:300;
+            display:flex; flex-direction:column; gap:10px;
             pointer-events:none;
-            width: min(290px, calc(100vw - 24px));
+            width: min(300px, calc(100vw - 24px));
         }
         .toast {
-            background:rgba(8,0,8,.88);
-            border:1px solid rgba(255,255,255,.1); border-left:4px solid #ff007f;
-            border-radius:13px; padding:13px 15px;
-            backdrop-filter:blur(18px);
-            animation: tIn .38s cubic-bezier(.17,.89,.32,1.28);
+            background: rgba(20, 10, 30, 0.95);
+            border: 2px solid #ff007f;
+            border-radius: 16px; padding: 12px 16px;
+            backdrop-filter: blur(10px);
+            animation: tIn .4s cubic-bezier(.17,.89,.32,1.28);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 12px;
         }
-        .toast.out     { animation: tOut .3s ease-in forwards; }
-        .toast.perfect { border-left-color:#facc15; }
-        .toast.reward  { border-left-color:#22d3ee; }
-        .toast.bad     { border-left-color:#f87171; }
-        @keyframes tIn  { from{transform:translateX(108%);opacity:0} to{transform:translateX(0);opacity:1} }
-        @keyframes tOut { from{transform:translateX(0);opacity:1} to{transform:translateX(108%);opacity:0} }
-
-        #fx-canvas { position:fixed; inset:0; pointer-events:none; z-index:900; }
+        .toast.out { animation: tOut .3s ease-in forwards; }
+        .toast.perfect { border-color: #facc15; background: rgba(40, 30, 0, 0.95); }
+        .toast.reward { border-color: #00f2fe; background: rgba(0, 30, 40, 0.95); }
+        .toast.bad { border-color: #ff4444; background: rgba(40, 0, 0, 0.95); }
+        .toast.reset { border-color: #ff4444; background: rgba(40, 0, 0, 0.95); }
+        @keyframes tIn  { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes tOut { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
 
         #sync-bar {
-            position:fixed; bottom:88px; left:50%; transform:translateX(-50%);
-            z-index:60; font-size:10px; font-weight:900; text-transform:uppercase;
-            letter-spacing:.12em; padding:5px 14px; border-radius:999px;
+            position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+            z-index:60; font-size:11px; font-weight:700; text-transform:uppercase;
+            letter-spacing:.1em; padding:6px 16px; border-radius:999px;
             transition:all .3s; white-space:nowrap; pointer-events:none;
+            background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            opacity: 0;
         }
-        .sb-ok   { background:rgba(0,220,80,.12);   color:#00dc50; border:1px solid rgba(0,220,80,.3); }
-        .sb-busy { background:rgba(255,200,0,.12);  color:#ffc800; border:1px solid rgba(255,200,0,.3); }
-        .sb-off  { background:rgba(150,150,150,.1); color:#888;    border:1px solid rgba(150,150,150,.2); }
-        .sb-err  { background:rgba(255,80,80,.12);  color:#ff5050; border:1px solid rgba(255,80,80,.3); }
+        #sync-bar.visible { opacity: 1; }
+        .sb-ok   { background:rgba(0,220,80,.2); color:#00dc50; border-color:#00dc50; }
+        .sb-busy { background:rgba(255,200,0,.2); color:#ffc800; border-color:#ffc800; }
+        .sb-err  { background:rgba(255,80,80,.2); color:#ff5050; border-color:#ff5050; }
 
         #footer {
             position:fixed; bottom:0; left:0; width:100%;
-            background:linear-gradient(to top, #000 55%, transparent);
-            padding:14px 16px 22px; z-index:40;
+            background: linear-gradient(to top, #000 80%, transparent);
+            padding:16px 16px 24px; z-index:40;
         }
         .btn-bonus {
-            flex:1; padding:15px; border:none; border-radius:14px;
-            font-family:'Archivo Black',sans-serif; font-style:italic;
-            text-transform:uppercase; font-size:12px; cursor:pointer;
+            flex:1; padding:14px; border:none; border-radius:16px;
+            font-weight:700; text-transform:uppercase; font-size:11px; cursor:pointer;
             transition: transform .12s;
+            color: #000;
         }
-        .btn-bonus:active { transform:scale(.93); }
+        .btn-bonus:active { transform:scale(.95); }
 
         .hist-row {
             display:flex; justify-content:space-between; align-items:center;
-            padding:13px 16px; border-radius:13px; margin-bottom:9px;
-            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+            padding:14px 18px; border-radius:16px; margin-bottom:10px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 0, 0, 0.1));
+            border: 2px solid rgba(255, 68, 68, 0.5);
+            color: #ff6666;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .btn-reset:hover {
+            background: rgba(255, 68, 68, 0.3);
+            border-color: #ff4444;
+            color: #ff4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+        }
+        .btn-reset:active {
+            transform: scale(0.98);
+        }
+
+        #celebration-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        #celebration-overlay.active {
+            display: block;
+        }
+        
+        .celebration-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #facc15;
+            text-shadow: 0 0 20px #facc15, 0 0 40px #ff007f;
+            animation: celebratePop 1.5s ease-out forwards;
+            white-space: nowrap;
+        }
+        
+        @keyframes celebratePop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1) rotate(-3deg); }
+            100% { transform: translate(-50%, -50%) scale(0.8) rotate(0deg); opacity: 0; }
+        }
+
+        @keyframes flash {
+            0% { background: rgba(250, 204, 21, 0.8); }
+            100% { background: transparent; }
+        }
+        .flash-effect {
+            animation: flash 0.5s ease-out;
+        }
+
+        @keyframes flashReset {
+            0% { background: rgba(255, 68, 68, 0.6); }
+            100% { background: transparent; }
+        }
+        .flash-reset {
+            animation: flashReset 0.4s ease-out;
         }
     </style>
 </head>
-<body class="pb-36">
+<body class="pb-40">
 
 <canvas id="fx-canvas"></canvas>
+<div id="celebration-overlay"></div>
 <div id="toasts"></div>
 <div id="sync-bar" class="sb-busy">⏳ Conectando...</div>
 
 <div class="marquee-wrap">
     <span class="marquee-inner">
-        • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
-        GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
+        ★ GANA PUNTOS ★ AHORRA PARA EL FUTURO ★ DISFRUTA TU GIRA ★ DÍA PERFECTO ★ K-POP STAR ★&nbsp;&nbsp;
+        GANA PUNTOS ★ AHORRA PARA EL FUTURO ★ DISFRUTA TU GIRA ★ DÍA PERFECTO ★ K-POP STAR ★
     </span>
 </div>
 
-<header style="text-align:center;padding:32px 24px 28px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.35)">
-    <h1 class="font-arch neon" style="font-size:4.2rem;font-style:italic;letter-spacing:-.05em;line-height:1;margin:0 0 20px">EVA<br>K-POP</h1>
-    <div class="glass" style="display:inline-block;padding:18px 36px;border-radius:24px;border-top:1px solid rgba(255,255,255,.15)">
-        <div id="total-pts" class="font-arch" style="font-size:4.5rem;font-style:italic;color:#fff">0</div>
-        <p style="font-size:10px;font-weight:900;color:#ff4da6;text-transform:uppercase;letter-spacing:.4em;margin:6px 0 0">Puntos Totales</p>
+<header style="text-align:center;padding:20px 24px 20px;">
+    <h1 class="neon-text" style="font-size:3.8rem;font-weight:700;letter-spacing:-.04em;line-height:0.9;margin:0 0 15px; font-family:'Fredoka', sans-serif;">EVA<br>K-POP</h1>
+    
+    <div class="glass-panel" style="display:inline-block;padding:15px 35px;border-radius:30px;transform: rotate(-2deg);">
+        <div id="total-pts" style="font-size:4.5rem;font-weight:700;color:#fff; font-family:'Fredoka', sans-serif; line-height:1;">0</div>
+        <p style="font-size:11px;font-weight:700;color:#ff4da6;text-transform:uppercase;letter-spacing:.2em;margin:6px 0 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Puntos Totales</p>
     </div>
 </header>
 
-<main style="max-width:440px;margin:0 auto;padding:20px 16px 8px">
-    <div class="glass" style="display:flex;gap:6px;padding:6px;border-radius:16px;margin-bottom:20px">
-        <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
-        <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
-        <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Historial</button>
+<main style="max-width:460px;margin:0 auto;padding:10px 16px 8px">
+    <div class="glass-panel" style="display:flex;gap:8px;padding:6px;border-radius:50px;margin-bottom:20px; border: 2px solid rgba(255,255,255,0.1);">
+        <button class="tab-btn active" id="tab-tasks" onclick="App.tab('tasks')">Misiones</button>
+        <button class="tab-btn" id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
+        <button class="tab-btn" id="tab-history" onclick="App.tab('history')">Historial</button>
     </div>
     <div id="content"></div>
 </main>
@@ -198,22 +320,21 @@
 <div id="footer">
     <div style="max-width:440px;margin:0 auto;display:flex;gap:12px">
         <button class="btn-bonus" onclick="App.bonus(10)"
-            style="background:#facc15;color:#000;border-bottom:4px solid #b8960a;box-shadow:0 0 16px rgba(250,204,21,.25)">
-            Bono Extra +10
+            style="background:linear-gradient(135deg, #facc15, #ff9900); box-shadow:0 0 20px rgba(250,204,21,.4); font-weight:800; font-size:13px;">
+            ⭐ Bono +10
         </button>
         <button class="btn-bonus" onclick="App.bonus(-5)"
-            style="background:#27272a;color:#fff;border:1px solid rgba(255,255,255,.1);border-bottom:4px solid #000">
-            Falta Grave &minus;5
+            style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); box-shadow:none; font-weight:800; font-size:13px;">
+            ⚠️ Falta -5
         </button>
     </div>
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════
-   EVA K-POP — v5.0 Firebase Compat (script tags)
+   EVA K-POP — v5.5 Reset Fixed Edition
 ═══════════════════════════════════════════════════ */
 
-// ── Configuración Firebase ──────────────────────────
 var FIREBASE_CONFIG = {
     apiKey: "AIzaSyBE3mn9a-hgJjr3zRI_fftNfI4jfrC1lQc",
     authDomain: "eva-kpop-tour.firebaseapp.com",
@@ -224,12 +345,15 @@ var FIREBASE_CONFIG = {
     measurementId: "G-038YDW4PQS"
 };
 var GAME_ID = "eva-kpop-v4";
-// ───────────────────────────────────────────────────
 
 /* ── AUDIO ── */
 var SFX = (function(){
     var ctx = null;
-    function getCtx(){ if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)(); return ctx; }
+    function getCtx(){ 
+        if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)(); 
+        if(ctx.state === 'suspended') ctx.resume();
+        return ctx; 
+    }
     function play(f,t,d,v,delay){
         delay=delay||0;
         try{
@@ -239,21 +363,31 @@ var SFX = (function(){
             g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+d);
             o.connect(g); g.connect(c.destination);
             o.start(c.currentTime+delay); o.stop(c.currentTime+delay+d);
-        }catch(e){}
+        }catch(e){ console.log('SFX error:', e); }
     }
     return {
-        unlock:  function(){ try{getCtx();}catch(e){} },
-        coin:    function(){ play(900,'sine',.1,.2); play(1200,'sine',.15,.2,.05); },
-        error:   function(){ play(300,'sawtooth',.2,.1); play(200,'sawtooth',.3,.1,.15); },
-        win:     function(){ [400,500,600,800].forEach(function(f,i){ play(f,'square',i===3?.3:.1,.1,i*.1); }); },
-        perfect: function(){ [523,659,784,1047].forEach(function(f,i){ play(f,'sine',.4,.2,i*.1); }); }
+        unlock: function(){ try{getCtx();}catch(e){} },
+        coin: function(){ play(900,'sine',.1,.2); play(1200,'sine',.15,.2,.05); },
+        error: function(){ play(300,'sawtooth',.2,.1); play(200,'sawtooth',.3,.1,.15); },
+        win: function(){ [400,500,600,800].forEach(function(f,i){ play(f,'square',i===3?.3:.1,.1,i*.1); }); },
+        perfect: function(){ 
+            [523,659,784,1047,1318].forEach(function(f,i){ play(f,'sine',.5,.25,i*.12); });
+            setTimeout(function(){ [784,1047,1568].forEach(function(f,i){ play(f,'square',.4,.15,i*.1); }); }, 400);
+        },
+        reward: function(){
+            [659,784,988,1318,1568].forEach(function(f,i){ play(f,'sine',.6,.2,i*.15); });
+            setTimeout(function(){ [1047,1318,1568,1976].forEach(function(f,i){ play(f,'triangle',.5,.15,i*.1); }); }, 300);
+        },
+        reset: function(){
+            [880,660,440,330].forEach(function(f,i){ play(f,'sawtooth',.4,.2,i*.12); });
+        }
     };
 })();
 
 /* ── CONFETI ── */
 var FX = (function(){
     var cv,ctx2d,parts=[];
-    var cols=['#ff007f','#facc15','#00f2fe','#fff','#ff66b2'];
+    var cols=['#ff007f','#facc15','#00f2fe','#fff','#ff66b2','#9d00ff','#00ff88'];
     function loop(){
         ctx2d.clearRect(0,0,cv.width,cv.height);
         for(var i=parts.length-1;i>=0;i--){
@@ -279,26 +413,60 @@ var FX = (function(){
             r(); window.addEventListener('resize',r);
             loop();
         },
-        burst:function(){
-            for(var i=0;i<160;i++) parts.push({
+        burst:function(intensity){
+            intensity = intensity || 160;
+            for(var i=0;i<intensity;i++) parts.push({
                 x:innerWidth/2,y:innerHeight/2,
                 vx:(Math.random()-.5)*26,vy:(Math.random()-1)*26-4,
                 sz:Math.random()*8+4,
                 col:cols[Math.floor(Math.random()*cols.length)],
                 life:1,spin:Math.random()*360,sp:(Math.random()-.5)*10
             });
+        },
+        multiBurst:function(){
+            var points = [
+                {x: innerWidth*0.2, y: innerHeight*0.3},
+                {x: innerWidth*0.8, y: innerHeight*0.3},
+                {x: innerWidth*0.5, y: innerHeight*0.5},
+                {x: innerWidth*0.3, y: innerHeight*0.7},
+                {x: innerWidth*0.7, y: innerHeight*0.7}
+            ];
+            points.forEach(function(pt){
+                for(var i=0;i<80;i++) parts.push({
+                    x:pt.x, y:pt.y,
+                    vx:(Math.random()-.5)*20,vy:(Math.random()-1)*20-3,
+                    sz:Math.random()*6+3,
+                    col:cols[Math.floor(Math.random()*cols.length)],
+                    life:1,spin:Math.random()*360,sp:(Math.random()-.5)*10
+                });
+            });
         }
     };
 })();
+
+/* ── CELEBRATION ── */
+function showCelebration(text){
+    var overlay = document.getElementById('celebration-overlay');
+    overlay.innerHTML = '<div class="celebration-text">'+text+'</div>';
+    overlay.classList.add('active');
+    document.body.classList.add('flash-effect');
+    setTimeout(function(){ document.body.classList.remove('flash-effect'); }, 500);
+    FX.multiBurst();
+    setTimeout(function(){ overlay.classList.remove('active'); }, 2000);
+}
 
 /* ── TOAST ── */
 function showToast(title,msg,type){
     type=type||'normal';
     var box=document.getElementById('toasts');
     var el=document.createElement('div');
-    el.className='toast'+(type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':'');
-    el.innerHTML='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:16px;margin-bottom:3px">'+title+'</div>'+
-                 '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.8">'+msg+'</div>';
+    el.className='toast'+(type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':type==='reset'?' reset':'');
+    var icon = type==='perfect'?'🌟':type==='reward'?'🎁':type==='bad'?'⚠️':type==='reset'?'🔄':'👍';
+    el.innerHTML='<div style="font-size:24px">'+icon+'</div>'+
+                 '<div style="flex:1">'+
+                    '<div style="font-weight:700;font-size:16px;margin-bottom:2px;color:#fff">'+title+'</div>'+
+                    '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:.9;color:#ddd">'+msg+'</div>'+
+                 '</div>';
     box.appendChild(el);
     setTimeout(function(){ el.classList.add('out'); setTimeout(function(){el.remove();},320); },3600);
 }
@@ -306,7 +474,11 @@ function showToast(title,msg,type){
 /* ── SYNC BAR ── */
 function syncBar(cls,txt){
     var b=document.getElementById('sync-bar');
-    b.className=cls; b.id='sync-bar'; b.textContent=txt;
+    b.className=cls+' visible';
+    b.textContent=txt;
+    if(cls === 'sb-ok' || cls === 'sb-busy') {
+        setTimeout(function(){ b.classList.remove('visible'); }, 1500);
+    }
 }
 
 /* ── DATOS VACÍOS ── */
@@ -332,6 +504,7 @@ var App = {
     _saveTimer: null,
     _skipSnap: false,
     POINT_VALUE: 10,
+    _initialized: false,
 
     TASKS: [
         {id:'cama',    label:'Hacer la cama',       pts:1, limit:1, icon:'🛏️'},
@@ -356,8 +529,8 @@ var App = {
         {label:'Compartir',       pct:.10,color:'#aaaaaa',desc:'Ayudar / Regalar'}
     ],
 
-    _hoy:    function(){ return new Date().toISOString().split('T')[0]; },
-    _mes:    function(){ return this._hoy().slice(0,7); },
+    _hoy: function(){ return new Date().toISOString().split('T')[0]; },
+    _mes: function(){ return this._hoy().slice(0,7); },
     _semana: function(){
         var d=new Date();
         d.setDate(d.getDate()-(d.getDay()+1)%7);
@@ -378,34 +551,41 @@ var App = {
 
     _loadLocal: function(){
         try{
-            var raw=localStorage.getItem('eva_kpop_v4');
+            var raw=localStorage.getItem('eva_kpop_v5');
             if(raw) this.d=Object.assign(emptyData(),JSON.parse(raw));
-        }catch(e){}
+        }catch(e){ console.log('Load error:', e); }
     },
+
     _saveLocal: function(){
-        try{localStorage.setItem('eva_kpop_v4',JSON.stringify(this.d));}catch(e){}
+        try{
+            localStorage.setItem('eva_kpop_v5',JSON.stringify(this.d));
+            console.log('Saved to localStorage');
+        }catch(e){ console.log('Save error:', e); }
     },
 
     _save: function(){
+        console.log('App._save called');
         this._saveLocal();
         this._cloudSave();
         this._render();
     },
 
     _cloudSave: function(){
-        if(!this._db) return;
+        if(!this._db) {
+            console.log('No DB connection, saving locally only');
+            return;
+        }
         var self=this;
         clearTimeout(this._saveTimer);
-        syncBar('sb-busy','⏳ Guardando...');
         this._saveTimer=setTimeout(function(){
             try{
                 self._skipSnap=true;
                 self._db.collection('games').doc(GAME_ID)
                     .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
-                    .then(function(){ syncBar('sb-ok','☁️ Guardado'); })
-                    .catch(function(e){ syncBar('sb-err','❌ Error al guardar'); console.error(e); });
-            }catch(e){ syncBar('sb-err','❌ Error al guardar'); }
-        },700);
+                    .then(function(){ console.log('Cloud save success'); })
+                    .catch(function(e){ console.log('Cloud save error:', e); });
+            }catch(e){ console.log('Cloud save exception:', e); }
+        },500);
     },
 
     _checkMilestones: function(){
@@ -414,28 +594,38 @@ var App = {
             this.d.today.perfectDay=true;
             this.d.total+=20; this.d.today.totalDay+=20;
             this.d.week.pts+=20; this.d.month.pts+=20;
-            FX.burst(); SFX.perfect();
+            FX.multiBurst();
+            SFX.perfect();
+            showCelebration('¡DÍA PERFECTO! 🌟');
             showToast('¡DÍA PERFECTO! 🌟','¡Completaste todo! +20 Puntos Extra','perfect');
         }
         var self=this;
         this.WEEKLY.forEach(function(g,i){
             if(self.d.week.pts>=g.pts&&self.d.week.claimed.indexOf(i)===-1){
-                self.d.week.claimed.push(i); FX.burst(); SFX.win();
+                self.d.week.claimed.push(i); 
+                FX.burst(200);
+                SFX.reward();
+                showCelebration('¡PREMIO DESBLOQUEADO!');
                 showToast('¡PREMIO SEMANAL! 🎁','Desbloqueaste: '+g.label,'reward');
             }
         });
         this.MONTHLY.forEach(function(g,i){
             if(self.d.month.pts>=g.pts&&self.d.month.claimed.indexOf(i)===-1){
-                self.d.month.claimed.push(i); FX.burst(); SFX.win();
+                self.d.month.claimed.push(i); 
+                FX.burst(200);
+                SFX.reward();
+                showCelebration('¡PREMIO MENSUAL!');
                 showToast('¡PREMIO MENSUAL! 🎁','Desbloqueaste: '+g.label,'reward');
             }
         });
     },
 
     adjust: function(id,dir){
+        console.log('adjust called:', id, dir);
         SFX.unlock();
         var task=null;
         for(var i=0;i<this.TASKS.length;i++){if(this.TASKS[i].id===id){task=this.TASKS[i];break;}}
+        if(!task) return;
         var cur=this.d.today.points[id]||0;
         if(dir>0&&cur>=task.limit) return;
         if(dir<0&&cur<=0) return;
@@ -461,131 +651,203 @@ var App = {
         this._save();
     },
 
-    tab: function(t){ this.d.activeTab=t; this._render(); },
+    /* ── RESET DAY - FIXED ───────────────────── */
+    resetDay: function(){
+        console.log('resetDay called!');
+        SFX.unlock();
+        
+        var puntosHoy = this.d.today.totalDay || 0;
+        
+        if(!confirm("⚠️ ¿Estás segura de reiniciar el día?\n\nSe perderán " + puntosHoy + " puntos de hoy.")) {
+            console.log('Reset cancelled by user');
+            return;
+        }
+        
+        console.log('Reset confirmed, puntosHoy:', puntosHoy);
+        
+        SFX.reset();
+        
+        // Restar puntos del total
+        this.d.total = Math.max(0, this.d.total - puntosHoy);
+        
+        // Restar puntos de semana y mes
+        this.d.week.pts = Math.max(0, this.d.week.pts - puntosHoy);
+        this.d.month.pts = Math.max(0, this.d.month.pts - puntosHoy);
+        
+        // Reiniciar misiones a 0
+        this.d.today.points = {};
+        
+        // Reiniciar contadores
+        this.d.today.totalDay = 0;
+        this.d.today.basePoints = 0;
+        this.d.today.perfectDay = false;
+        
+        console.log('After reset - total:', this.d.total, 'today:', this.d.today);
+        
+        // Guardar
+        this._saveLocal();
+        this._cloudSave();
+        
+        // Efecto visual de reset
+        document.body.classList.add('flash-reset');
+        setTimeout(function(){ document.body.classList.remove('flash-reset'); }, 400);
+        
+        // Renderizar inmediatamente
+        this._render();
+        
+        // Mostrar toast
+        showToast('Día Reiniciado', '¡Todas las misiones volvieron a 0!', 'reset');
+        
+        console.log('Reset complete!');
+    },
+
+    tab: function(t){ 
+        console.log('tab changed to:', t);
+        this.d.activeTab=t; 
+        this._render(); 
+    },
 
     _clp: function(v){
         return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);
     },
 
     _render: function(){
+        console.log('_render called, activeTab:', this.d.activeTab);
         var ptEl=document.getElementById('total-pts');
         if(ptEl) ptEl.textContent=this.d.total;
+        
         ['tasks','rewards','history'].forEach(function(t){
             var b=document.getElementById('tab-'+t);
             if(b) b.className='tab-btn'+(App.d.activeTab===t?' active':'');
         });
+        
         var c=document.getElementById('content');
-        if(!c) return;
-        if(this.d.activeTab==='tasks')   c.innerHTML=this._buildTasks();
-        if(this.d.activeTab==='rewards') c.innerHTML=this._buildRewards();
-        if(this.d.activeTab==='history') c.innerHTML=this._buildHistory();
+        if(!c) {
+            console.log('Content element not found!');
+            return;
+        }
+        
+        if(this.d.activeTab==='tasks') {
+            c.innerHTML=this._buildTasks();
+        } else if(this.d.activeTab==='rewards') {
+            c.innerHTML=this._buildRewards();
+        } else if(this.d.activeTab==='history') {
+            c.innerHTML=this._buildHistory();
+        }
+        console.log('_render complete');
     },
 
     _buildTasks: function(){
         var html='';
         if(this.d.today.perfectDay){
-            html+='<div style="background:rgba(250,204,21,.14);border:2px solid #facc15;border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:14px">'+
-                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
-                  '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-top:5px;opacity:.75">+20 Puntos de bonificación asignados</div>'+
+            html+='<div style="background:rgba(250,204,21,.15);border:2px solid #facc15;border-radius:20px;padding:16px;text-align:center;margin-bottom:16px; box-shadow: 0 0 20px rgba(250,204,21,0.2);">'+
+                  '<div style="font-weight:700;color:#facc15;font-size:1.1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
+                  '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-top:5px;opacity:.8">+20 Puntos de bonificación</div>'+
                   '</div>';
         }
         var self=this;
         this.TASKS.forEach(function(t){
-            var count=self.d.today.points[t.id]||0,maxed=count>=t.limit,segs='';
+            var count=self.d.today.points[t.id]||0;
+            var maxed=count>=t.limit;
+            var segs='';
             for(var i=0;i<t.limit;i++) segs+='<div class="seg'+(i<count?' on':'')+'"></div>';
             html+='<div class="task-card'+(maxed?' done':'')+'">'+
                   '<div style="display:flex;justify-content:space-between;align-items:center">'+
-                    '<div style="display:flex;align-items:center;gap:11px">'+
-                      '<div style="width:46px;height:46px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">'+t.icon+'</div>'+
+                    '<div style="display:flex;align-items:center;gap:12px">'+
+                      '<div style="width:50px;height:50px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">'+t.icon+'</div>'+
                       '<div>'+
-                        '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.81rem;color:rgba(255,255,255,.88)">'+t.label+'</div>'+
-                        '<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#facc15;margin-top:2px">+'+t.pts+' PTS</div>'+
+                        '<div style="font-weight:700;text-transform:uppercase;font-size:.9rem;color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+t.label+'</div>'+
+                        '<div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#facc15;margin-top:2px; background:rgba(0,0,0,0.3); display:inline-block; padding:2px 6px; border-radius:4px;">+'+t.pts+' PTS</div>'+
                       '</div>'+
                     '</div>'+
                     (maxed
-                      ?'<div style="background:#ff007f;font-size:9px;font-weight:900;padding:4px 9px;border-radius:6px;font-style:italic;font-family:\'Archivo Black\',sans-serif">COMPLETO</div>'
-                      :'<div style="font-weight:900;font-size:13px;color:rgba(255,255,255,.45);background:rgba(0,0,0,.4);padding:4px 11px;border-radius:8px">'+count+'/'+t.limit+'</div>'
+                      ?'<div style="background:#facc15;color:#000;font-size:10px;font-weight:800;padding:5px 10px;border-radius:8px; box-shadow: 0 0 10px rgba(250,204,21,0.5);">¡LISTO!</div>'
+                      :'<div style="font-weight:700;font-size:14px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);padding:5px 12px;border-radius:10px">'+count+'/'+t.limit+'</div>'
                     )+
                   '</div>'+
                   '<div style="display:flex;align-items:center;gap:13px">'+
-                    '<div style="flex:1;display:flex;gap:5px">'+segs+'</div>'+
-                    '<div style="display:flex;gap:6px">'+
+                    '<div style="flex:1;display:flex;gap:6px">'+segs+'</div>'+
+                    '<div style="display:flex;gap:8px">'+
                       '<button class="btn-m" onclick="App.adjust(\''+t.id+'\',-1)">−</button>'+
                       '<button class="btn-p'+(maxed?' off':'')+'" onclick="App.adjust(\''+t.id+'\',1)">+</button>'+
                     '</div>'+
                   '</div>'+
                   '</div>';
         });
+
+        // BOTÓN DE RESET AL FINAL
+        html += '<button class="btn-reset" id="reset-day-btn" onclick="App.resetDay()">🔄 Reiniciar Día</button>';
+        
         return html;
     },
 
     _buildRewards: function(){
         var html='',self=this;
         html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px">'+
-              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Semanales</div>'+
-              '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">'+this.d.week.pts+' pts</div>'+
+              '<div style="font-weight:700;color:#facc15;font-size:13px;text-transform:uppercase;letter-spacing:.15em">Premios Semanales</div>'+
+              '<div style="font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:8px; border:1px solid rgba(255,255,255,0.1);">'+this.d.week.pts+' pts</div>'+
               '</div>';
         this.WEEKLY.forEach(function(g,i){
             html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.week.pts/g.pts*100),self.d.week.claimed.indexOf(i)!==-1,'#facc15');
         });
         html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px">'+
-              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#22d3ee;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Mensuales</div>'+
-              '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">'+this.d.month.pts+' pts</div>'+
+              '<div style="font-weight:700;color:#00f2fe;font-size:13px;text-transform:uppercase;letter-spacing:.15em">Premios Mensuales</div>'+
+              '<div style="font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:8px; border:1px solid rgba(255,255,255,0.1);">'+this.d.month.pts+' pts</div>'+
               '</div>';
         this.MONTHLY.forEach(function(g,i){
-            html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.month.pts/g.pts*100),self.d.month.claimed.indexOf(i)!==-1,'#22d3ee');
+            html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.month.pts/g.pts*100),self.d.month.claimed.indexOf(i)!==-1,'#00f2fe');
         });
         var total=this.d.total*this.POINT_VALUE;
-        html+='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin:26px 2px 10px">Ganancias (CLP)</div>'+
-              '<div style="background:rgba(255,0,127,.1);border:1px solid rgba(255,0,127,.22);border-radius:18px;padding:22px;text-align:center;margin-bottom:12px">'+
-                '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;opacity:.45;margin-bottom:7px">Saldo Real Total</div>'+
-                '<div class="font-arch neon" style="font-size:2.6rem;font-style:italic">'+this._clp(total)+'</div>'+
+        html+='<div style="font-weight:700;color:#ff7eb3;font-size:13px;text-transform:uppercase;letter-spacing:.15em;margin:26px 2px 10px">Ganancias (CLP)</div>'+
+              '<div style="background:rgba(255,0,127,0.15);border:2px solid rgba(255,0,127,0.3);border-radius:20px;padding:24px;text-align:center;margin-bottom:12px; box-shadow: 0 0 20px rgba(255,0,127,0.2);">'+
+                '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;opacity:.6;margin-bottom:8px">Saldo Real Total</div>'+
+                '<div class="neon-text" style="font-size:2.8rem;font-weight:700; line-height:1;">'+this._clp(total)+'</div>'+
               '</div>';
         this.FINANCE.forEach(function(f){
-            html+='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-left:3px solid '+f.color+';border-radius:13px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">'+
+            html+='<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-left:4px solid '+f.color+';border-radius:16px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
                   '<div>'+
-                    '<div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
-                    '<div style="font-size:10px;opacity:.35;text-transform:uppercase;margin-top:2px">'+f.desc+'</div>'+
+                    '<div style="font-weight:700;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
+                    '<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-top:2px">'+f.desc+'</div>'+
                   '</div>'+
-                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.15rem">'+self._clp(total*f.pct)+'</div>'+
+                  '<div style="font-weight:700;font-size:1.2rem">'+self._clp(total*f.pct)+'</div>'+
                   '</div>';
         });
         return html;
     },
 
     _rewardCard: function(label,pts,pct,done,color){
-        return '<div style="background:'+(done?'rgba(34,197,94,.07)':'rgba(255,255,255,.04)')+';border:1px solid rgba(255,255,255,.07);border-left:4px solid '+(done?'#22c55e':color)+';border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden">'+
-               (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:8px;font-weight:900;padding:15px 17px 4px;transform:rotate(45deg)">LISTO</div>':'')+
-               '<div style="display:flex;justify-content:space-between;margin-bottom:11px">'+
-                 '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:12px">'+label+'</span>'+
-                 '<span style="font-weight:900;font-size:13px;color:'+color+'">'+pts+' PTS</span>'+
+        return '<div style="background:'+(done?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.05)')+';border:1px solid rgba(255,255,255,0.1);border-left:4px solid '+(done?'#22c55e':color)+';border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">'+
+               (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:9px;font-weight:800;padding:15px 20px 4px;transform:rotate(45deg); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">LISTO</div>':'')+
+               '<div style="display:flex;justify-content:space-between;margin-bottom:12px">'+
+                 '<span style="font-weight:700;text-transform:uppercase;font-size:13px; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+label+'</span>'+
+                 '<span style="font-weight:800;font-size:14px;color:'+color+'; background:rgba(0,0,0,0.3); padding:2px 8px; border-radius:6px;">'+pts+' PTS</span>'+
                '</div>'+
-               '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+(done?'#22c55e':color)+';'+(done?'':'box-shadow:0 0 7px '+color)+'"></div></div>'+
+               '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:linear-gradient(90deg, '+color+', #fff);'+(done?'':'box-shadow:0 0 10px '+color)+'"></div></div>'+
                '</div>';
     },
 
     _buildHistory: function(){
         var hist=this.d.history.slice().reverse();
-        var html='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:13px">Logros Recientes</div>'+
-                 '<div style="background:linear-gradient(90deg,rgba(255,0,127,.16) 0%,transparent 100%);border:1px solid rgba(255,0,127,.27);border-radius:15px;padding:16px 18px;margin-bottom:13px;position:relative;overflow:hidden">'+
-                   (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:900;padding:4px 10px;border-radius:0 15px 0 11px">DÍA PERFECTO 🌟</div>':'')+
+        var html='<div style="font-weight:700;color:#ff7eb3;font-size:13px;text-transform:uppercase;letter-spacing:.15em;margin-bottom:15px">Logros Recientes</div>'+
+                 '<div style="background:linear-gradient(90deg,rgba(255,0,127,0.2) 0%,transparent 100%);border:2px solid rgba(255,0,127,0.3);border-radius:18px;padding:18px 20px;margin-bottom:15px;position:relative;overflow:hidden; box-shadow: 0 0 20px rgba(255,0,127,0.1);">'+
+                   (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:10px;font-weight:800;padding:5px 12px;border-radius:0 0 0 15px; box-shadow: -2px 2px 10px rgba(0,0,0,0.3);">DÍA PERFECTO 🌟</div>':'')+
                    '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
                      '<div>'+
-                       '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:5px">HOY</div>'+
-                       '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.83rem">'+this.d.today.date+'</div>'+
+                       '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:6px; box-shadow: 0 2px 8px rgba(255,0,127,0.4);">HOY</div>'+
+                       '<div style="font-weight:700;text-transform:uppercase;font-size:.9rem; color:#fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">'+this.d.today.date+'</div>'+
                      '</div>'+
-                     '<div style="font-family:\'Archivo Black\',sans-serif;font-size:2rem;font-style:italic">'+this.d.today.totalDay+' <span style="font-size:11px;color:#ff99cc">PTS</span></div>'+
+                     '<div style="font-size:2.2rem;font-weight:700; color:#fff; text-shadow: 0 0 10px rgba(255,255,255,0.5);">'+this.d.today.totalDay+' <span style="font-size:12px;color:#ff99cc; font-weight:400;">PTS</span></div>'+
                    '</div>'+
                  '</div>';
         if(hist.length===0){
-            html+='<div style="text-align:center;padding:36px;opacity:.28;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
+            html+='<div style="text-align:center;padding:36px;opacity:.3;font-style:italic;text-transform:uppercase;font-size:.9rem; background:rgba(0,0,0,0.2); border-radius:16px;">Aún no hay días anteriores</div>';
         } else {
             hist.forEach(function(day){
                 html+='<div class="hist-row">'+
-                      '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">'+day.date+'</span>'+
-                      '<div style="display:flex;align-items:center;gap:9px">'+
-                        (day.perfectDay?'<span style="font-size:.95rem">🌟</span>':'')+
-                        '<span style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.05rem">'+day.totalDay+' <span style="font-size:10px;opacity:.45">PTS</span></span>'+
+                      '<span style="font-weight:700;text-transform:uppercase;font-size:12px; color:#ddd;">'+day.date+'</span>'+
+                      '<div style="display:flex;align-items:center;gap:10px">'+
+                        (day.perfectDay?'<span style="font-size:1.1rem; filter: drop-shadow(0 0 5px gold);">🌟</span>':'')+
+                        '<span style="font-weight:700;font-size:1.1rem; color:#fff;">'+day.totalDay+' <span style="font-size:11px;opacity:.5; font-weight:400;">PTS</span></span>'+
                       '</div>'+
                       '</div>';
             });
@@ -593,33 +855,34 @@ var App = {
         return html;
     },
 
-    /* ─── INIT ──────────────────────────────────────── */
     init: function(){
+        console.log('App.init called');
         var self=this;
         FX.init();
+        SFX.unlock();
 
-        // 1. Mostrar datos locales de inmediato
         this._loadLocal();
         this._checkResets();
         this._render();
+        this._initialized = true;
 
-        // 2. Conectar Firebase (ya cargado con script tags en el head)
+        // Firebase setup
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
-            var db   = firebase.firestore();
+            var db = firebase.firestore();
             var auth = firebase.auth();
             this._db = db;
+            console.log('Firebase initialized');
 
             auth.signInAnonymously()
                 .then(function(){
+                    console.log('Auth success');
                     var ref = db.collection('games').doc(GAME_ID);
 
-                    // Carga inicial desde la nube
                     ref.get().then(function(snap){
                         if(snap.exists){
                             var cloud = snap.data();
                             if((cloud.lastSyncMs||0) >= (self.d.lastSync||0)){
-                                // Limpiar campo de servidor antes de mezclar
                                 delete cloud.lastSync;
                                 self.d = Object.assign(emptyData(), cloud);
                             }
@@ -627,9 +890,8 @@ var App = {
                         self._checkResets();
                         self._saveLocal();
                         self._render();
-                        syncBar('sb-ok','☁️ Sincronizado');
+                        syncBar('sb-ok','☁️ Listo');
 
-                        // Escuchar cambios en tiempo real (otro dispositivo)
                         self._unsub = ref.onSnapshot(function(snap){
                             if(self._skipSnap){ self._skipSnap=false; return; }
                             if(!snap.exists) return;
@@ -640,30 +902,37 @@ var App = {
                                 self._checkResets();
                                 self._saveLocal();
                                 self._render();
-                                showToast('☁️ Actualizado','Datos sincronizados desde otro dispositivo');
-                                syncBar('sb-ok','☁️ Sincronizado');
                             }
                         });
                     }).catch(function(e){
-                        console.error('Firestore get error:',e);
-                        syncBar('sb-err','❌ Error Firestore');
+                        console.log('Firestore get error:',e);
                     });
                 })
                 .catch(function(e){
-                    console.error('Auth error:',e);
-                    syncBar('sb-err','❌ Error de autenticación');
+                    console.log('Auth error:',e);
                 });
 
         } catch(e) {
-            console.error('Firebase init error:',e);
-            syncBar('sb-err','❌ Error de configuración');
+            console.log('Firebase init error:',e);
         }
     }
 };
 
+// Make sure App is available globally
 window.App = App;
-document.addEventListener('DOMContentLoaded', function(){ App.init(); });
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function(){ 
+    console.log('DOMContentLoaded');
+    App.init(); 
+});
+
+// Also try immediate init in case DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(function(){ App.init(); }, 100);
+}
 </script>
 
 </body>
 </html>
+
