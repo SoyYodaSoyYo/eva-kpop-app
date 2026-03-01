@@ -21,7 +21,6 @@
 
         .font-arch { font-family: 'Archivo Black', sans-serif; }
 
-        /* ── MARQUEE ── */
         .marquee-wrap {
             background: linear-gradient(90deg, #ff007f, #b30059);
             overflow: hidden; white-space: nowrap; padding: 9px 0;
@@ -37,7 +36,6 @@
         }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-250%)} }
 
-        /* ── COLORES / EFECTOS ── */
         .neon { color: #ff007f; text-shadow: 0 0 10px #ff007f, 0 0 30px #ff007f; }
         .glass {
             background: rgba(255,255,255,.05);
@@ -46,7 +44,6 @@
             -webkit-backdrop-filter: blur(18px);
         }
 
-        /* ── TABS ── */
         .tab-btn {
             flex:1; padding:13px 4px; border-radius:11px;
             font-family:'Archivo Black',sans-serif; font-style:italic;
@@ -55,7 +52,6 @@
         }
         .tab-btn.active { background:#fff; color:#000; opacity:1; box-shadow:0 0 14px rgba(255,255,255,.2); }
 
-        /* ── TARJETA DE TAREA ── */
         .task-card {
             background: rgba(255,255,255,.04);
             border: 1px solid rgba(255,255,255,.08);
@@ -75,7 +71,6 @@
             to   { box-shadow: inset 0 0 22px rgba(255,0,127,.16); }
         }
 
-        /* ── SEGMENTOS DE PROGRESO ── */
         .seg {
             height: 7px; flex: 1; border-radius: 4px;
             background: rgba(255,255,255,.06);
@@ -84,7 +79,6 @@
         }
         .seg.on { background:#ff007f; border-color:#ff007f; box-shadow:0 0 7px #ff007f; }
 
-        /* ── BOTONES +/- ── */
         .btn-m {
             width:40px; height:40px; border-radius:10px;
             background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
@@ -103,7 +97,6 @@
         .btn-p.off { background:#3a3a3a; border-bottom-color:#222; box-shadow:none; opacity:.45; }
         .btn-m:active, .btn-p:active { transform:scale(.85); }
 
-        /* ── BARRA DE PROGRESO PREMIOS ── */
         .prog-track {
             width:100%; height:9px;
             background:rgba(0,0,0,.5); border-radius:999px;
@@ -111,7 +104,6 @@
         }
         .prog-fill { height:100%; border-radius:999px; transition:width .9s; }
 
-        /* ── TOAST ── */
         #toasts {
             position:fixed; top:68px; right:12px; z-index:300;
             display:flex; flex-direction:column; gap:9px;
@@ -132,10 +124,19 @@
         @keyframes tIn  { from{transform:translateX(108%);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes tOut { from{transform:translateX(0);opacity:1} to{transform:translateX(108%);opacity:0} }
 
-        /* ── CONFETI ── */
         #fx-canvas { position:fixed; inset:0; pointer-events:none; z-index:900; }
 
-        /* ── FOOTER ── */
+        #sync-bar {
+            position:fixed; bottom:88px; left:50%; transform:translateX(-50%);
+            z-index:60; font-size:10px; font-weight:900; text-transform:uppercase;
+            letter-spacing:.12em; padding:5px 14px; border-radius:999px;
+            transition:all .3s; white-space:nowrap; pointer-events:none;
+        }
+        .sb-ok   { background:rgba(0,220,80,.12);   color:#00dc50; border:1px solid rgba(0,220,80,.3); }
+        .sb-busy { background:rgba(255,200,0,.12);  color:#ffc800; border:1px solid rgba(255,200,0,.3); }
+        .sb-off  { background:rgba(150,150,150,.1); color:#888;    border:1px solid rgba(150,150,150,.2); }
+        .sb-err  { background:rgba(255,80,80,.12);  color:#ff5050; border:1px solid rgba(255,80,80,.3); }
+
         #footer {
             position:fixed; bottom:0; left:0; width:100%;
             background:linear-gradient(to top, #000 55%, transparent);
@@ -149,7 +150,6 @@
         }
         .btn-bonus:active { transform:scale(.93); }
 
-        /* ── HISTORIAL ── */
         .hist-row {
             display:flex; justify-content:space-between; align-items:center;
             padding:13px 16px; border-radius:13px; margin-bottom:9px;
@@ -159,13 +159,10 @@
 </head>
 <body class="pb-36">
 
-<!-- CONFETI -->
 <canvas id="fx-canvas"></canvas>
-
-<!-- NOTIFICACIONES -->
 <div id="toasts"></div>
+<div id="sync-bar" class="sb-busy">⏳ Conectando...</div>
 
-<!-- MARQUEE -->
 <div class="marquee-wrap">
     <span class="marquee-inner">
         • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
@@ -173,7 +170,6 @@
     </span>
 </div>
 
-<!-- HEADER -->
 <header style="text-align:center;padding:32px 24px 28px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.35)">
     <h1 class="font-arch neon" style="font-size:4.2rem;font-style:italic;letter-spacing:-.05em;line-height:1;margin:0 0 20px">EVA<br>K-POP</h1>
     <div class="glass" style="display:inline-block;padding:18px 36px;border-radius:24px;border-top:1px solid rgba(255,255,255,.15)">
@@ -182,20 +178,15 @@
     </div>
 </header>
 
-<!-- CONTENIDO PRINCIPAL -->
 <main style="max-width:440px;margin:0 auto;padding:20px 16px 8px">
-
-    <!-- TABS -->
     <div class="glass" style="display:flex;gap:6px;padding:6px;border-radius:16px;margin-bottom:20px">
         <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
         <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Historial</button>
     </div>
-
     <div id="content"></div>
 </main>
 
-<!-- FOOTER CON BOTONES DE AJUSTE RÁPIDO -->
 <div id="footer">
     <div style="max-width:440px;margin:0 auto;display:flex;gap:12px">
         <button class="btn-bonus" onclick="App.bonus(10)"
@@ -210,62 +201,38 @@
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════════
-   EVA K-POP  —  v4.0
-   Funciona 100% offline con localStorage.
-   Para sincronizar entre dispositivos, configura Firebase más abajo.
-═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   EVA K-POP — Con sincronización Firebase activa
+═══════════════════════════════════════════════════ */
 
-/* ─────────────────────────────────────────────────────────────────
-   CONFIGURACIÓN FIREBASE (OPCIONAL)
-   Si no tienes Firebase, deja estos valores tal cual.
-   La app funciona perfectamente sin ellos.
-
-   Para activar la sincronización multi-dispositivo:
-   1. Ve a https://console.firebase.google.com
-   2. Crea un proyecto → Agrega una app web
-   3. Copia los valores que te entrega y pégalos aquí
-   4. En Firestore → Reglas: allow read, write: if true;
-   5. En Authentication → Habilita "Anónimo"
-───────────────────────────────────────────────────────────────── */
-var FIREBASE_ON = false; // ← Cambia a true cuando tengas los datos
+var FIREBASE_ON = true;
 var FIREBASE_CONFIG = {
-    apiKey:            "",
-    authDomain:        "",
-    projectId:         "",
-    storageBucket:     "",
-    messagingSenderId: "",
-    appId:             ""
+    apiKey:            "AIzaSyBE3mN9a-hgJjr3zRI_fftNFI4jfrC1lQc",
+    authDomain:        "eva-kpop-tour.firebaseapp.com",
+    projectId:         "eva-kpop-tour",
+    storageBucket:     "eva-kpop-tour.firebasestorage.app",
+    messagingSenderId: "49327968177",
+    appId:             "1:49327968177:web:9eed05e9f0854e893c7790"
 };
-var GAME_ID = "eva-kpop-v4"; // No cambiar una vez que hayas guardado datos
-/* ───────────────────────────────────────────────────────────────── */
+var GAME_ID = "eva-kpop-v4";
 
-
-/* ══════════════════════════════
-   AUDIO
-══════════════════════════════ */
+/* ── AUDIO ── */
 var SFX = (function(){
     var ctx = null;
-    function getCtx() {
-        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-        return ctx;
-    }
-    function play(freq, type, dur, vol, delay) {
-        delay = delay || 0;
-        try {
-            var c = getCtx();
-            var osc = c.createOscillator(), g = c.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, c.currentTime + delay);
-            g.gain.setValueAtTime(vol, c.currentTime + delay);
-            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + dur);
-            osc.connect(g); g.connect(c.destination);
-            osc.start(c.currentTime + delay);
-            osc.stop(c.currentTime + delay + dur);
-        } catch(e){}
+    function getCtx(){ if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)(); return ctx; }
+    function play(f,t,d,v,delay){
+        delay=delay||0;
+        try{
+            var c=getCtx(),o=c.createOscillator(),g=c.createGain();
+            o.type=t; o.frequency.setValueAtTime(f,c.currentTime+delay);
+            g.gain.setValueAtTime(v,c.currentTime+delay);
+            g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+d);
+            o.connect(g); g.connect(c.destination);
+            o.start(c.currentTime+delay); o.stop(c.currentTime+delay+d);
+        }catch(e){}
     }
     return {
-        unlock:  function(){ try{ getCtx(); }catch(e){} },
+        unlock:  function(){ try{getCtx();}catch(e){} },
         coin:    function(){ play(900,'sine',.1,.2); play(1200,'sine',.15,.2,.05); },
         error:   function(){ play(300,'sawtooth',.2,.1); play(200,'sawtooth',.3,.1,.15); },
         win:     function(){ [400,500,600,800].forEach(function(f,i){ play(f,'square',i===3?.3:.1,.1,i*.1); }); },
@@ -273,20 +240,17 @@ var SFX = (function(){
     };
 })();
 
-
-/* ══════════════════════════════
-   CONFETI
-══════════════════════════════ */
+/* ── CONFETI ── */
 var FX = (function(){
-    var cv, ctx2d, parts = [];
-    var cols = ['#ff007f','#facc15','#00f2fe','#fff','#ff66b2'];
+    var cv,ctx2d,parts=[];
+    var cols=['#ff007f','#facc15','#00f2fe','#fff','#ff66b2'];
     function loop(){
         ctx2d.clearRect(0,0,cv.width,cv.height);
         for(var i=parts.length-1;i>=0;i--){
             var p=parts[i];
             p.x+=p.vx; p.y+=p.vy; p.vy+=.4;
             p.spin+=p.sp; p.life-=.013;
-            if(p.life<=0){ parts.splice(i,1); continue; }
+            if(p.life<=0){parts.splice(i,1);continue;}
             ctx2d.save();
             ctx2d.globalAlpha=Math.max(0,p.life);
             ctx2d.fillStyle=p.col;
@@ -298,66 +262,60 @@ var FX = (function(){
         requestAnimationFrame(loop);
     }
     return {
-        init: function(){
+        init:function(){
             cv=document.getElementById('fx-canvas');
             ctx2d=cv.getContext('2d');
-            function resize(){ cv.width=innerWidth; cv.height=innerHeight; }
-            resize(); window.addEventListener('resize',resize);
+            function r(){cv.width=innerWidth;cv.height=innerHeight;}
+            r(); window.addEventListener('resize',r);
             loop();
         },
-        burst: function(){
+        burst:function(){
             for(var i=0;i<160;i++) parts.push({
-                x:innerWidth/2, y:innerHeight/2,
-                vx:(Math.random()-.5)*26, vy:(Math.random()-1)*26-4,
+                x:innerWidth/2,y:innerHeight/2,
+                vx:(Math.random()-.5)*26,vy:(Math.random()-1)*26-4,
                 sz:Math.random()*8+4,
                 col:cols[Math.floor(Math.random()*cols.length)],
-                life:1, spin:Math.random()*360, sp:(Math.random()-.5)*10
+                life:1,spin:Math.random()*360,sp:(Math.random()-.5)*10
             });
         }
     };
 })();
 
-
-/* ══════════════════════════════
-   TOAST
-══════════════════════════════ */
-function showToast(title, msg, type){
-    type = type || 'normal';
-    var box = document.getElementById('toasts');
-    var el = document.createElement('div');
-    el.className = 'toast' + (type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':'');
-    el.innerHTML =
-        '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:16px;margin-bottom:3px">' + title + '</div>' +
-        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.8">' + msg + '</div>';
+/* ── TOAST ── */
+function showToast(title,msg,type){
+    type=type||'normal';
+    var box=document.getElementById('toasts');
+    var el=document.createElement('div');
+    el.className='toast'+(type==='perfect'?' perfect':type==='reward'?' reward':type==='bad'?' bad':'');
+    el.innerHTML='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:16px;margin-bottom:3px">'+title+'</div>'+
+                 '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.8">'+msg+'</div>';
     box.appendChild(el);
-    setTimeout(function(){
-        el.classList.add('out');
-        setTimeout(function(){ el.remove(); }, 320);
-    }, 3600);
+    setTimeout(function(){ el.classList.add('out'); setTimeout(function(){el.remove();},320); },3600);
 }
 
+/* ── SYNC BAR ── */
+function syncBar(cls,txt){
+    var b=document.getElementById('sync-bar');
+    b.className=cls; b.id='sync-bar'; b.textContent=txt;
+}
 
-/* ══════════════════════════════
-   DATOS POR DEFECTO
-══════════════════════════════ */
+/* ── DATOS VACÍOS ── */
 function emptyData(){
     return {
-        total: 0,
-        today: { date:'', points:{}, totalDay:0, basePoints:0, perfectDay:false },
-        week:  { id:'', pts:0, claimed:[] },
-        month: { id:'', pts:0, claimed:[] },
-        history: [],
-        activeTab: 'tasks',
-        lastSync: 0
+        total:0,
+        today:{date:'',points:{},totalDay:0,basePoints:0,perfectDay:false},
+        week:{id:'',pts:0,claimed:[]},
+        month:{id:'',pts:0,claimed:[]},
+        history:[],
+        activeTab:'tasks',
+        lastSync:0
     };
 }
 
-
-/* ══════════════════════════════
+/* ═══════════════════════════════════════════════════
    APP
-══════════════════════════════ */
+═══════════════════════════════════════════════════ */
 var App = {
-
     d: emptyData(),
     _fb: null,
     _unsub: null,
@@ -366,134 +324,114 @@ var App = {
     POINT_VALUE: 10,
 
     TASKS: [
-        { id:'cama',     label:'Hacer la cama',       pts:1, limit:1, icon:'🛏️' },
-        { id:'espacio',  label:'Mi espacio ordenado',  pts:1, limit:1, icon:'🧹' },
-        { id:'dientes',  label:'Lavarse los dientes',  pts:1, limit:6, icon:'🦷' },
-        { id:'dormir',   label:'Dormir sola',          pts:1, limit:1, icon:'🌙' },
-        { id:'banarse',  label:'Bañarse Sola',         pts:1, limit:1, icon:'🛁' },
-        { id:'vestirse', label:'Vestirse Sola',        pts:1, limit:1, icon:'👗' },
-        { id:'tarea',    label:'Tareas escolares',     pts:1, limit:1, icon:'📚' },
-        { id:'leer',     label:'Leer',                 pts:1, limit:6, icon:'📖' },
-        { id:'crear',    label:'Crear algo',           pts:1, limit:2, icon:'🎨' },
-        { id:'comida',   label:'Comida balanceada',    pts:1, limit:3, icon:'🥗' },
-        { id:'honesto',  label:'Día honesto',          pts:5, limit:1, icon:'😇' },
-        { id:'gritos',   label:'Día sin gritos',       pts:5, limit:1, icon:'🤫' }
+        {id:'cama',    label:'Hacer la cama',       pts:1, limit:1, icon:'🛏️'},
+        {id:'espacio', label:'Mi espacio ordenado',  pts:1, limit:1, icon:'🧹'},
+        {id:'dientes', label:'Lavarse los dientes',  pts:1, limit:6, icon:'🦷'},
+        {id:'dormir',  label:'Dormir sola',          pts:1, limit:1, icon:'🌙'},
+        {id:'banarse', label:'Bañarse Sola',         pts:1, limit:1, icon:'🛁'},
+        {id:'vestirse',label:'Vestirse Sola',        pts:1, limit:1, icon:'👗'},
+        {id:'tarea',   label:'Tareas escolares',     pts:1, limit:1, icon:'📚'},
+        {id:'leer',    label:'Leer',                 pts:1, limit:6, icon:'📖'},
+        {id:'crear',   label:'Crear algo',           pts:1, limit:2, icon:'🎨'},
+        {id:'comida',  label:'Comida balanceada',    pts:1, limit:3, icon:'🥗'},
+        {id:'honesto', label:'Día honesto',          pts:5, limit:1, icon:'😇'},
+        {id:'gritos',  label:'Día sin gritos',       pts:5, limit:1, icon:'🤫'}
     ],
-
-    WEEKLY:  [ {label:'Película Extra', pts:100}, {label:'Helado Especial', pts:180} ],
-    MONTHLY: [ {label:'Regalo Sorpresa',pts:400}, {label:'Paseo + Regalo',  pts:800} ],
-
+    WEEKLY:  [{label:'Película Extra',pts:100},{label:'Helado Especial',pts:180}],
+    MONTHLY: [{label:'Regalo Sorpresa',pts:400},{label:'Paseo + Regalo',pts:800}],
     FINANCE: [
-        {label:'Libres para usar', pct:.40, color:'#ff7eb3', desc:'Libre disposición'},
-        {label:'Gastos',           pct:.40, color:'#ffaacc', desc:'Necesidades / Extras'},
-        {label:'Ahorro',           pct:.10, color:'#ffffff', desc:'Para el futuro'},
-        {label:'Compartir',        pct:.10, color:'#aaaaaa', desc:'Ayudar / Regalar'}
+        {label:'Libres para usar',pct:.40,color:'#ff7eb3',desc:'Libre disposición'},
+        {label:'Gastos',          pct:.40,color:'#ffaacc',desc:'Necesidades / Extras'},
+        {label:'Ahorro',          pct:.10,color:'#ffffff',desc:'Para el futuro'},
+        {label:'Compartir',       pct:.10,color:'#aaaaaa',desc:'Ayudar / Regalar'}
     ],
 
-    /* ── Fechas ── */
-    _hoy:  function(){ return new Date().toISOString().split('T')[0]; },
-    _mes:  function(){ return this._hoy().slice(0,7); },
+    _hoy:    function(){ return new Date().toISOString().split('T')[0]; },
+    _mes:    function(){ return this._hoy().slice(0,7); },
     _semana: function(){
-        var d = new Date();
-        d.setDate(d.getDate() - (d.getDay()+1)%7);
+        var d=new Date();
+        d.setDate(d.getDate()-(d.getDay()+1)%7);
         return d.toISOString().split('T')[0];
     },
 
-    /* ── Reseteos diario / semanal / mensual ── */
     _checkResets: function(){
-        var h=this._hoy(), s=this._semana(), m=this._mes();
-        var changed=false;
-        if(this.d.today.date !== h){
+        var h=this._hoy(),s=this._semana(),m=this._mes(),changed=false;
+        if(this.d.today.date!==h){
             if(this.d.today.date) this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));
-            this.d.today = {date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
+            this.d.today={date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
             changed=true;
         }
-        if(!this.d.week  || this.d.week.id  !== s){ this.d.week  = {id:s,pts:0,claimed:[]}; changed=true; }
-        if(!this.d.month || this.d.month.id !== m){ this.d.month = {id:m,pts:0,claimed:[]}; changed=true; }
+        if(!this.d.week||this.d.week.id!==s){this.d.week={id:s,pts:0,claimed:[]};changed=true;}
+        if(!this.d.month||this.d.month.id!==m){this.d.month={id:m,pts:0,claimed:[]};changed=true;}
         return changed;
     },
 
-    /* ── Local storage ── */
     _loadLocal: function(){
         try{
-            var raw = localStorage.getItem('eva_kpop_v4');
-            if(raw){
-                var parsed = JSON.parse(raw);
-                this.d = Object.assign(emptyData(), parsed);
-            }
+            var raw=localStorage.getItem('eva_kpop_v4');
+            if(raw) this.d=Object.assign(emptyData(),JSON.parse(raw));
         }catch(e){}
     },
     _saveLocal: function(){
-        try{ localStorage.setItem('eva_kpop_v4', JSON.stringify(this.d)); }catch(e){}
+        try{localStorage.setItem('eva_kpop_v4',JSON.stringify(this.d));}catch(e){}
     },
 
-    /* ── Guardar (local + nube si está activa) ── */
     _save: function(){
         this._saveLocal();
         this._cloudSave();
         this._render();
     },
 
-    /* ── Firebase: guardar con debounce ── */
     _cloudSave: function(){
         if(!this._fb) return;
-        var self = this;
+        var self=this;
         clearTimeout(this._saveTimer);
-        this._saveTimer = setTimeout(function(){
+        this._saveTimer=setTimeout(function(){
             try{
-                self._skipSnap = true;
-                var ref = self._fb.doc(self._fb.db, 'games', GAME_ID);
-                self._fb.setDoc(ref, Object.assign({}, self.d, {lastSync: Date.now()}));
-            }catch(e){}
-        }, 700);
+                self._skipSnap=true;
+                var ref=self._fb.doc(self._fb.db,'games',GAME_ID);
+                self._fb.setDoc(ref,Object.assign({},self.d,{lastSync:Date.now()}));
+            }catch(e){ syncBar('sb-err','❌ Error al guardar'); }
+        },700);
     },
 
-    /* ── Milestones ── */
     _checkMilestones: function(){
-        var maxBase = this.TASKS.reduce(function(s,t){ return s + t.pts*t.limit; }, 0);
-        if(this.d.today.basePoints >= maxBase && !this.d.today.perfectDay){
-            this.d.today.perfectDay = true;
-            this.d.total           += 20;
-            this.d.today.totalDay  += 20;
-            this.d.week.pts        += 20;
-            this.d.month.pts       += 20;
+        var maxBase=this.TASKS.reduce(function(s,t){return s+t.pts*t.limit;},0);
+        if(this.d.today.basePoints>=maxBase&&!this.d.today.perfectDay){
+            this.d.today.perfectDay=true;
+            this.d.total+=20; this.d.today.totalDay+=20;
+            this.d.week.pts+=20; this.d.month.pts+=20;
             FX.burst(); SFX.perfect();
             showToast('¡DÍA PERFECTO! 🌟','¡Completaste todo! +20 Puntos Extra','perfect');
         }
-        var self = this;
+        var self=this;
         this.WEEKLY.forEach(function(g,i){
-            if(self.d.week.pts >= g.pts && self.d.week.claimed.indexOf(i)===-1){
-                self.d.week.claimed.push(i);
-                FX.burst(); SFX.win();
+            if(self.d.week.pts>=g.pts&&self.d.week.claimed.indexOf(i)===-1){
+                self.d.week.claimed.push(i); FX.burst(); SFX.win();
                 showToast('¡PREMIO SEMANAL! 🎁','Desbloqueaste: '+g.label,'reward');
             }
         });
         this.MONTHLY.forEach(function(g,i){
-            if(self.d.month.pts >= g.pts && self.d.month.claimed.indexOf(i)===-1){
-                self.d.month.claimed.push(i);
-                FX.burst(); SFX.win();
+            if(self.d.month.pts>=g.pts&&self.d.month.claimed.indexOf(i)===-1){
+                self.d.month.claimed.push(i); FX.burst(); SFX.win();
                 showToast('¡PREMIO MENSUAL! 🎁','Desbloqueaste: '+g.label,'reward');
             }
         });
     },
 
-    /* ══════════════════════════════════════
-       ACCIONES PÚBLICAS
-    ══════════════════════════════════════ */
-    adjust: function(id, dir){
+    adjust: function(id,dir){
         SFX.unlock();
-        var task = null;
-        for(var i=0;i<this.TASKS.length;i++){ if(this.TASKS[i].id===id){ task=this.TASKS[i]; break; } }
-        var cur = this.d.today.points[id] || 0;
-        if(dir>0 && cur>=task.limit) return;
-        if(dir<0 && cur<=0) return;
-        var delta = dir * task.pts;
-        this.d.today.points[id]  = cur + dir;
-        this.d.today.totalDay   += delta;
-        this.d.today.basePoints += delta;
-        this.d.total            += delta;
-        this.d.week.pts   = Math.max(0, this.d.week.pts  + delta);
-        this.d.month.pts  = Math.max(0, this.d.month.pts + delta);
+        var task=null;
+        for(var i=0;i<this.TASKS.length;i++){if(this.TASKS[i].id===id){task=this.TASKS[i];break;}}
+        var cur=this.d.today.points[id]||0;
+        if(dir>0&&cur>=task.limit) return;
+        if(dir<0&&cur<=0) return;
+        var delta=dir*task.pts;
+        this.d.today.points[id]=cur+dir;
+        this.d.today.totalDay+=delta; this.d.today.basePoints+=delta;
+        this.d.total+=delta;
+        this.d.week.pts=Math.max(0,this.d.week.pts+delta);
+        this.d.month.pts=Math.max(0,this.d.month.pts+delta);
         if(dir>0) SFX.coin(); else SFX.error();
         this._checkMilestones();
         this._save();
@@ -501,250 +439,216 @@ var App = {
 
     bonus: function(pts){
         SFX.unlock();
-        if(pts>0){ SFX.coin(); showToast('¡BONO EXTRA!','+'+pts+' Puntos añadidos'); }
-        else      { SFX.error(); showToast('PENALIZACIÓN',pts+' Puntos restados','bad'); }
-        this.d.total          += pts;
-        this.d.today.totalDay += pts;
-        this.d.week.pts   = Math.max(0, this.d.week.pts  + pts);
-        this.d.month.pts  = Math.max(0, this.d.month.pts + pts);
+        if(pts>0){SFX.coin();showToast('¡BONO EXTRA!','+'+pts+' Puntos añadidos');}
+        else{SFX.error();showToast('PENALIZACIÓN',pts+' Puntos restados','bad');}
+        this.d.total+=pts; this.d.today.totalDay+=pts;
+        this.d.week.pts=Math.max(0,this.d.week.pts+pts);
+        this.d.month.pts=Math.max(0,this.d.month.pts+pts);
         this._checkMilestones();
         this._save();
     },
 
     tab: function(t){ this.d.activeTab=t; this._render(); },
 
-    /* ══════════════════════════════════════
-       RENDER
-    ══════════════════════════════════════ */
     _clp: function(v){
         return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);
     },
 
     _render: function(){
-        var ptEl = document.getElementById('total-pts');
-        if(ptEl) ptEl.textContent = this.d.total;
-
+        var ptEl=document.getElementById('total-pts');
+        if(ptEl) ptEl.textContent=this.d.total;
         ['tasks','rewards','history'].forEach(function(t){
-            var b = document.getElementById('tab-'+t);
-            if(b) b.className = 'tab-btn' + (App.d.activeTab===t?' active':'');
+            var b=document.getElementById('tab-'+t);
+            if(b) b.className='tab-btn'+(App.d.activeTab===t?' active':'');
         });
-
-        var c = document.getElementById('content');
+        var c=document.getElementById('content');
         if(!c) return;
-        if(this.d.activeTab==='tasks')   c.innerHTML = this._buildTasks();
-        if(this.d.activeTab==='rewards') c.innerHTML = this._buildRewards();
-        if(this.d.activeTab==='history') c.innerHTML = this._buildHistory();
+        if(this.d.activeTab==='tasks')   c.innerHTML=this._buildTasks();
+        if(this.d.activeTab==='rewards') c.innerHTML=this._buildRewards();
+        if(this.d.activeTab==='history') c.innerHTML=this._buildHistory();
     },
 
     _buildTasks: function(){
-        var html = '';
+        var html='';
         if(this.d.today.perfectDay){
-            html += '<div style="background:rgba(250,204,21,.14);border:2px solid #facc15;border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:14px">' +
-                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>' +
-                '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-top:5px;opacity:.75">+20 Puntos de bonificación asignados</div>' +
-                '</div>';
+            html+='<div style="background:rgba(250,204,21,.14);border:2px solid #facc15;border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:14px">'+
+                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
+                  '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-top:5px;opacity:.75">+20 Puntos de bonificación asignados</div>'+
+                  '</div>';
         }
-        var self = this;
+        var self=this;
         this.TASKS.forEach(function(t){
-            var count = self.d.today.points[t.id] || 0;
-            var maxed = count >= t.limit;
-            var segs = '';
-            for(var i=0;i<t.limit;i++) segs += '<div class="seg'+(i<count?' on':'')+'"></div>';
-            html +=
-                '<div class="task-card'+(maxed?' done':'')+'">' +
-                  '<div style="display:flex;justify-content:space-between;align-items:center">' +
-                    '<div style="display:flex;align-items:center;gap:11px">' +
-                      '<div style="width:46px;height:46px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">' + t.icon + '</div>' +
-                      '<div>' +
-                        '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.81rem;color:rgba(255,255,255,.88)">' + t.label + '</div>' +
-                        '<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#facc15;margin-top:2px">+' + t.pts + ' PTS</div>' +
-                      '</div>' +
-                    '</div>' +
+            var count=self.d.today.points[t.id]||0,maxed=count>=t.limit,segs='';
+            for(var i=0;i<t.limit;i++) segs+='<div class="seg'+(i<count?' on':'')+'"></div>';
+            html+='<div class="task-card'+(maxed?' done':'')+'">'+
+                  '<div style="display:flex;justify-content:space-between;align-items:center">'+
+                    '<div style="display:flex;align-items:center;gap:11px">'+
+                      '<div style="width:46px;height:46px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">'+t.icon+'</div>'+
+                      '<div>'+
+                        '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.81rem;color:rgba(255,255,255,.88)">'+t.label+'</div>'+
+                        '<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#facc15;margin-top:2px">+'+t.pts+' PTS</div>'+
+                      '</div>'+
+                    '</div>'+
                     (maxed
-                      ? '<div style="background:#ff007f;font-size:9px;font-weight:900;padding:4px 9px;border-radius:6px;font-style:italic;font-family:\'Archivo Black\',sans-serif">COMPLETO</div>'
-                      : '<div style="font-weight:900;font-size:13px;color:rgba(255,255,255,.45);background:rgba(0,0,0,.4);padding:4px 11px;border-radius:8px">' + count + '/' + t.limit + '</div>'
-                    ) +
-                  '</div>' +
-                  '<div style="display:flex;align-items:center;gap:13px">' +
-                    '<div style="flex:1;display:flex;gap:5px">' + segs + '</div>' +
-                    '<div style="display:flex;gap:6px">' +
-                      '<button class="btn-m" onclick="App.adjust(\'' + t.id + '\',-1)">−</button>' +
-                      '<button class="btn-p' + (maxed?' off':'') + '" onclick="App.adjust(\'' + t.id + '\',1)">+</button>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>';
+                      ?'<div style="background:#ff007f;font-size:9px;font-weight:900;padding:4px 9px;border-radius:6px;font-style:italic;font-family:\'Archivo Black\',sans-serif">COMPLETO</div>'
+                      :'<div style="font-weight:900;font-size:13px;color:rgba(255,255,255,.45);background:rgba(0,0,0,.4);padding:4px 11px;border-radius:8px">'+count+'/'+t.limit+'</div>'
+                    )+
+                  '</div>'+
+                  '<div style="display:flex;align-items:center;gap:13px">'+
+                    '<div style="flex:1;display:flex;gap:5px">'+segs+'</div>'+
+                    '<div style="display:flex;gap:6px">'+
+                      '<button class="btn-m" onclick="App.adjust(\''+t.id+'\',-1)">−</button>'+
+                      '<button class="btn-p'+(maxed?' off':'')+'" onclick="App.adjust(\''+t.id+'\',1)">+</button>'+
+                    '</div>'+
+                  '</div>'+
+                  '</div>';
         });
         return html;
     },
 
     _buildRewards: function(){
-        var html = '';
-        var self = this;
-
-        /* Semanales */
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px">' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Semanales</div>' +
-            '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">' + this.d.week.pts + ' pts</div>' +
-            '</div>';
+        var html='',self=this;
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px">'+
+              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Semanales</div>'+
+              '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">'+this.d.week.pts+' pts</div>'+
+              '</div>';
         this.WEEKLY.forEach(function(g,i){
-            var done = self.d.week.claimed.indexOf(i) !== -1;
-            var pct  = Math.min(100, self.d.week.pts/g.pts*100);
-            html += self._rewardCard(g.label, g.pts, pct, done, '#facc15');
+            html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.week.pts/g.pts*100),self.d.week.claimed.indexOf(i)!==-1,'#facc15');
         });
-
-        /* Mensuales */
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px">' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#22d3ee;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Mensuales</div>' +
-            '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">' + this.d.month.pts + ' pts</div>' +
-            '</div>';
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px">'+
+              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#22d3ee;font-size:12px;text-transform:uppercase;letter-spacing:.18em">Premios Mensuales</div>'+
+              '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(255,255,255,.07);padding:3px 9px;border-radius:7px">'+this.d.month.pts+' pts</div>'+
+              '</div>';
         this.MONTHLY.forEach(function(g,i){
-            var done = self.d.month.claimed.indexOf(i) !== -1;
-            var pct  = Math.min(100, self.d.month.pts/g.pts*100);
-            html += self._rewardCard(g.label, g.pts, pct, done, '#22d3ee');
+            html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.month.pts/g.pts*100),self.d.month.claimed.indexOf(i)!==-1,'#22d3ee');
         });
-
-        /* Finanzas */
-        var total = this.d.total * this.POINT_VALUE;
-        html +=
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin:26px 2px 10px">Ganancias (CLP)</div>' +
-            '<div style="background:rgba(255,0,127,.1);border:1px solid rgba(255,0,127,.22);border-radius:18px;padding:22px;text-align:center;margin-bottom:12px">' +
-              '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;opacity:.45;margin-bottom:7px">Saldo Real Total</div>' +
-              '<div class="font-arch neon" style="font-size:2.6rem;font-style:italic">' + this._clp(total) + '</div>' +
-            '</div>';
+        var total=this.d.total*this.POINT_VALUE;
+        html+='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin:26px 2px 10px">Ganancias (CLP)</div>'+
+              '<div style="background:rgba(255,0,127,.1);border:1px solid rgba(255,0,127,.22);border-radius:18px;padding:22px;text-align:center;margin-bottom:12px">'+
+                '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;opacity:.45;margin-bottom:7px">Saldo Real Total</div>'+
+                '<div class="font-arch neon" style="font-size:2.6rem;font-style:italic">'+this._clp(total)+'</div>'+
+              '</div>';
         this.FINANCE.forEach(function(f){
-            html +=
-                '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-left:3px solid '+f.color+';border-radius:13px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">' +
-                  '<div>' +
-                    '<div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">' + f.label + ' (' + (f.pct*100|0) + '%)</div>' +
-                    '<div style="font-size:10px;opacity:.35;text-transform:uppercase;margin-top:2px">' + f.desc + '</div>' +
-                  '</div>' +
-                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.15rem">' + self._clp(total*f.pct) + '</div>' +
-                '</div>';
+            html+='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-left:3px solid '+f.color+';border-radius:13px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">'+
+                  '<div>'+
+                    '<div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
+                    '<div style="font-size:10px;opacity:.35;text-transform:uppercase;margin-top:2px">'+f.desc+'</div>'+
+                  '</div>'+
+                  '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.15rem">'+self._clp(total*f.pct)+'</div>'+
+                  '</div>';
         });
         return html;
     },
 
-    _rewardCard: function(label, pts, pct, done, color){
-        return '<div style="background:' + (done?'rgba(34,197,94,.07)':'rgba(255,255,255,.04)') + ';border:1px solid rgba(255,255,255,.07);border-left:4px solid ' + (done?'#22c55e':color) + ';border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden">' +
-            (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:8px;font-weight:900;padding:15px 17px 4px;transform:rotate(45deg)">LISTO</div>':'') +
-            '<div style="display:flex;justify-content:space-between;margin-bottom:11px">' +
-              '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:12px">' + label + '</span>' +
-              '<span style="font-weight:900;font-size:13px;color:' + color + '">' + pts + ' PTS</span>' +
-            '</div>' +
-            '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+(done?'#22c55e':color)+';'+(done?'':'box-shadow:0 0 7px '+color)+'"></div></div>' +
-            '</div>';
+    _rewardCard: function(label,pts,pct,done,color){
+        return '<div style="background:'+(done?'rgba(34,197,94,.07)':'rgba(255,255,255,.04)')+';border:1px solid rgba(255,255,255,.07);border-left:4px solid '+(done?'#22c55e':color)+';border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden">'+
+               (done?'<div style="position:absolute;top:-9px;right:-15px;background:#22c55e;color:#000;font-size:8px;font-weight:900;padding:15px 17px 4px;transform:rotate(45deg)">LISTO</div>':'')+
+               '<div style="display:flex;justify-content:space-between;margin-bottom:11px">'+
+                 '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:12px">'+label+'</span>'+
+                 '<span style="font-weight:900;font-size:13px;color:'+color+'">'+pts+' PTS</span>'+
+               '</div>'+
+               '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+(done?'#22c55e':color)+';'+(done?'':'box-shadow:0 0 7px '+color)+'"></div></div>'+
+               '</div>';
     },
 
     _buildHistory: function(){
-        var hist = this.d.history.slice().reverse();
-        var html =
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:13px">Logros Recientes</div>' +
-            '<div style="background:linear-gradient(90deg,rgba(255,0,127,.16) 0%,transparent 100%);border:1px solid rgba(255,0,127,.27);border-radius:15px;padding:16px 18px;margin-bottom:13px;position:relative;overflow:hidden">' +
-              (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:900;padding:4px 10px;border-radius:0 15px 0 11px">DÍA PERFECTO 🌟</div>':'') +
-              '<div style="display:flex;justify-content:space-between;align-items:flex-end">' +
-                '<div>' +
-                  '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:5px">HOY</div>' +
-                  '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.83rem">' + this.d.today.date + '</div>' +
-                '</div>' +
-                '<div style="font-family:\'Archivo Black\',sans-serif;font-size:2rem;font-style:italic">' + this.d.today.totalDay + ' <span style="font-size:11px;color:#ff99cc">PTS</span></div>' +
-              '</div>' +
-            '</div>';
-
+        var hist=this.d.history.slice().reverse();
+        var html='<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff7eb3;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:13px">Logros Recientes</div>'+
+                 '<div style="background:linear-gradient(90deg,rgba(255,0,127,.16) 0%,transparent 100%);border:1px solid rgba(255,0,127,.27);border-radius:15px;padding:16px 18px;margin-bottom:13px;position:relative;overflow:hidden">'+
+                   (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:900;padding:4px 10px;border-radius:0 15px 0 11px">DÍA PERFECTO 🌟</div>':'')+
+                   '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
+                     '<div>'+
+                       '<div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:5px">HOY</div>'+
+                       '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.83rem">'+this.d.today.date+'</div>'+
+                     '</div>'+
+                     '<div style="font-family:\'Archivo Black\',sans-serif;font-size:2rem;font-style:italic">'+this.d.today.totalDay+' <span style="font-size:11px;color:#ff99cc">PTS</span></div>'+
+                   '</div>'+
+                 '</div>';
         if(hist.length===0){
-            html += '<div style="text-align:center;padding:36px;opacity:.28;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
+            html+='<div style="text-align:center;padding:36px;opacity:.28;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
         } else {
             hist.forEach(function(day){
-                html += '<div class="hist-row">' +
-                    '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">' + day.date + '</span>' +
-                    '<div style="display:flex;align-items:center;gap:9px">' +
-                      (day.perfectDay?'<span style="font-size:.95rem">🌟</span>':'') +
-                      '<span style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.05rem">' + day.totalDay + ' <span style="font-size:10px;opacity:.45">PTS</span></span>' +
-                    '</div>' +
-                '</div>';
+                html+='<div class="hist-row">'+
+                      '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">'+day.date+'</span>'+
+                      '<div style="display:flex;align-items:center;gap:9px">'+
+                        (day.perfectDay?'<span style="font-size:.95rem">🌟</span>':'')+
+                        '<span style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.05rem">'+day.totalDay+' <span style="font-size:10px;opacity:.45">PTS</span></span>'+
+                      '</div>'+
+                      '</div>';
             });
         }
         return html;
     },
 
-    /* ══════════════════════════════════════════════════
-       INIT  —  arranca la app INMEDIATAMENTE con datos
-       locales, luego conecta Firebase en segundo plano
-    ══════════════════════════════════════════════════ */
     init: function(){
-        var self = this;
+        var self=this;
         FX.init();
 
-        /* 1. Cargar local y mostrar ya */
+        // 1. Mostrar datos locales de inmediato
         this._loadLocal();
         this._checkResets();
         this._render();
 
-        /* 2. Firebase en segundo plano (solo si está activado) */
-        if(!FIREBASE_ON || !FIREBASE_CONFIG.apiKey){ return; }
-
-        /* Carga dinámica de Firebase para no bloquear nada */
+        // 2. Conectar Firebase en segundo plano
         Promise.all([
             import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"),
             import("https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"),
             import("https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js")
-        ]).then(function(modules){
-            var initApp = modules[0].initializeApp;
-            var fs      = modules[1];
-            var initAuth= modules[2].getAuth;
-            var signIn  = modules[2].signInAnonymously;
+        ]).then(function(mods){
+            var initApp=mods[0].initializeApp;
+            var fs=mods[1];
+            var getAuth=mods[2].getAuth, signIn=mods[2].signInAnonymously;
 
-            var app  = initApp(FIREBASE_CONFIG);
-            var db   = fs.getFirestore(app);
-            var auth = initAuth(app);
+            var app=initApp(FIREBASE_CONFIG);
+            var db=fs.getFirestore(app);
+            var auth=getAuth(app);
 
-            self._fb = {
-                db:     db,
-                doc:    fs.doc,
-                getDoc: fs.getDoc,
-                setDoc: fs.setDoc,
-                onSnapshot: fs.onSnapshot
-            };
+            self._fb={db:db,doc:fs.doc,getDoc:fs.getDoc,setDoc:fs.setDoc,onSnapshot:fs.onSnapshot};
 
             signIn(auth).then(function(){
-                var ref = fs.doc(db, 'games', GAME_ID);
+                var ref=fs.doc(db,'games',GAME_ID);
 
-                /* Carga inicial: tomar el más reciente */
+                // Cargar nube y comparar con local
                 fs.getDoc(ref).then(function(snap){
                     if(snap.exists()){
-                        var cloud = snap.data();
-                        if((cloud.lastSync||0) >= (self.d.lastSync||0)){
-                            self.d = Object.assign(emptyData(), cloud);
+                        var cloud=snap.data();
+                        if((cloud.lastSync||0)>=(self.d.lastSync||0)){
+                            self.d=Object.assign(emptyData(),cloud);
                         }
                     }
                     self._checkResets();
                     self._saveLocal();
                     self._render();
+                    syncBar('sb-ok','☁️ Sincronizado');
 
-                    /* Listener en tiempo real */
-                    self._unsub = fs.onSnapshot(ref, function(snap){
-                        if(self._skipSnap){ self._skipSnap=false; return; }
+                    // Escuchar cambios en tiempo real (otro dispositivo)
+                    self._unsub=fs.onSnapshot(ref,function(snap){
+                        if(self._skipSnap){self._skipSnap=false;return;}
                         if(!snap.exists()) return;
-                        var cloud = snap.data();
-                        if((cloud.lastSync||0) > (self.d.lastSync||0)){
-                            self.d = Object.assign(emptyData(), cloud);
+                        var cloud=snap.data();
+                        if((cloud.lastSync||0)>(self.d.lastSync||0)){
+                            self.d=Object.assign(emptyData(),cloud);
                             self._checkResets();
                             self._saveLocal();
                             self._render();
-                            showToast('Sincronizado ☁️','Datos actualizados desde otro dispositivo');
+                            showToast('☁️ Sincronizado','Datos actualizados desde otro dispositivo');
+                            syncBar('sb-ok','☁️ Sincronizado');
                         }
                     });
                 });
+            }).catch(function(e){
+                console.warn('Auth error:',e);
+                syncBar('sb-err','❌ Error de conexión');
             });
         }).catch(function(e){
-            console.warn('Firebase no disponible:', e.message);
+            console.warn('Firebase no disponible:',e);
+            syncBar('sb-err','❌ Sin nube — guardado local');
         });
     }
 };
 
-/* Arrancar */
-window.App = App;
-document.addEventListener('DOMContentLoaded', function(){ App.init(); });
+window.App=App;
+document.addEventListener('DOMContentLoaded',function(){ App.init(); });
 </script>
-
 </body>
 </html>
