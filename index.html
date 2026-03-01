@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Juego de Eva K-POP</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase — carga tradicional (más compatible con GitHub Pages) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
 
@@ -202,10 +210,10 @@
 
 <script>
 /* ═══════════════════════════════════════════════════
-   EVA K-POP — Con sincronización Firebase activa
+   EVA K-POP — v5.0 Firebase Compat (script tags)
 ═══════════════════════════════════════════════════ */
 
-var FIREBASE_ON = true;
+// ── Configuración Firebase ──────────────────────────
 var FIREBASE_CONFIG = {
     apiKey:            "AIzaSyBE3mN9a-hgJjr3zRI_fftNFI4jfrC1lQc",
     authDomain:        "eva-kpop-tour.firebaseapp.com",
@@ -215,6 +223,7 @@ var FIREBASE_CONFIG = {
     appId:             "1:49327968177:web:9eed05e9f0854e893c7790"
 };
 var GAME_ID = "eva-kpop-v4";
+// ───────────────────────────────────────────────────
 
 /* ── AUDIO ── */
 var SFX = (function(){
@@ -317,7 +326,7 @@ function emptyData(){
 ═══════════════════════════════════════════════════ */
 var App = {
     d: emptyData(),
-    _fb: null,
+    _db: null,
     _unsub: null,
     _saveTimer: null,
     _skipSnap: false,
@@ -383,14 +392,17 @@ var App = {
     },
 
     _cloudSave: function(){
-        if(!this._fb) return;
+        if(!this._db) return;
         var self=this;
         clearTimeout(this._saveTimer);
+        syncBar('sb-busy','⏳ Guardando...');
         this._saveTimer=setTimeout(function(){
             try{
                 self._skipSnap=true;
-                var ref=self._fb.doc(self._fb.db,'games',GAME_ID);
-                self._fb.setDoc(ref,Object.assign({},self.d,{lastSync:Date.now()}));
+                self._db.collection('games').doc(GAME_ID)
+                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
+                    .then(function(){ syncBar('sb-ok','☁️ Guardado'); })
+                    .catch(function(e){ syncBar('sb-err','❌ Error al guardar'); console.error(e); });
             }catch(e){ syncBar('sb-err','❌ Error al guardar'); }
         },700);
     },
@@ -580,6 +592,7 @@ var App = {
         return html;
     },
 
+    /* ─── INIT ──────────────────────────────────────── */
     init: function(){
         var self=this;
         FX.init();
@@ -589,66 +602,67 @@ var App = {
         this._checkResets();
         this._render();
 
-        // 2. Conectar Firebase en segundo plano
-        Promise.all([
-            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"),
-            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"),
-            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js")
-        ]).then(function(mods){
-            var initApp=mods[0].initializeApp;
-            var fs=mods[1];
-            var getAuth=mods[2].getAuth, signIn=mods[2].signInAnonymously;
+        // 2. Conectar Firebase (ya cargado con script tags en el head)
+        try {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            var db   = firebase.firestore();
+            var auth = firebase.auth();
+            this._db = db;
 
-            var app=initApp(FIREBASE_CONFIG);
-            var db=fs.getFirestore(app);
-            var auth=getAuth(app);
+            auth.signInAnonymously()
+                .then(function(){
+                    var ref = db.collection('games').doc(GAME_ID);
 
-            self._fb={db:db,doc:fs.doc,getDoc:fs.getDoc,setDoc:fs.setDoc,onSnapshot:fs.onSnapshot};
-
-            signIn(auth).then(function(){
-                var ref=fs.doc(db,'games',GAME_ID);
-
-                // Cargar nube y comparar con local
-                fs.getDoc(ref).then(function(snap){
-                    if(snap.exists()){
-                        var cloud=snap.data();
-                        if((cloud.lastSync||0)>=(self.d.lastSync||0)){
-                            self.d=Object.assign(emptyData(),cloud);
+                    // Carga inicial desde la nube
+                    ref.get().then(function(snap){
+                        if(snap.exists){
+                            var cloud = snap.data();
+                            if((cloud.lastSyncMs||0) >= (self.d.lastSync||0)){
+                                // Limpiar campo de servidor antes de mezclar
+                                delete cloud.lastSync;
+                                self.d = Object.assign(emptyData(), cloud);
+                            }
                         }
-                    }
-                    self._checkResets();
-                    self._saveLocal();
-                    self._render();
-                    syncBar('sb-ok','☁️ Sincronizado');
+                        self._checkResets();
+                        self._saveLocal();
+                        self._render();
+                        syncBar('sb-ok','☁️ Sincronizado');
 
-                    // Escuchar cambios en tiempo real (otro dispositivo)
-                    self._unsub=fs.onSnapshot(ref,function(snap){
-                        if(self._skipSnap){self._skipSnap=false;return;}
-                        if(!snap.exists()) return;
-                        var cloud=snap.data();
-                        if((cloud.lastSync||0)>(self.d.lastSync||0)){
-                            self.d=Object.assign(emptyData(),cloud);
-                            self._checkResets();
-                            self._saveLocal();
-                            self._render();
-                            showToast('☁️ Sincronizado','Datos actualizados desde otro dispositivo');
-                            syncBar('sb-ok','☁️ Sincronizado');
-                        }
+                        // Escuchar cambios en tiempo real (otro dispositivo)
+                        self._unsub = ref.onSnapshot(function(snap){
+                            if(self._skipSnap){ self._skipSnap=false; return; }
+                            if(!snap.exists) return;
+                            var cloud = snap.data();
+                            if((cloud.lastSyncMs||0) > (self.d.lastSync||0)){
+                                delete cloud.lastSync;
+                                self.d = Object.assign(emptyData(), cloud);
+                                self._checkResets();
+                                self._saveLocal();
+                                self._render();
+                                showToast('☁️ Actualizado','Datos sincronizados desde otro dispositivo');
+                                syncBar('sb-ok','☁️ Sincronizado');
+                            }
+                        });
+                    }).catch(function(e){
+                        console.error('Firestore get error:',e);
+                        syncBar('sb-err','❌ Error Firestore');
                     });
+                })
+                .catch(function(e){
+                    console.error('Auth error:',e);
+                    syncBar('sb-err','❌ Error de autenticación');
                 });
-            }).catch(function(e){
-                console.warn('Auth error:',e);
-                syncBar('sb-err','❌ Error de conexión');
-            });
-        }).catch(function(e){
-            console.warn('Firebase no disponible:',e);
-            syncBar('sb-err','❌ Sin nube — guardado local');
-        });
+
+        } catch(e) {
+            console.error('Firebase init error:',e);
+            syncBar('sb-err','❌ Error de configuración');
+        }
     }
 };
 
-window.App=App;
-document.addEventListener('DOMContentLoaded',function(){ App.init(); });
+window.App = App;
+document.addEventListener('DOMContentLoaded', function(){ App.init(); });
 </script>
+
 </body>
 </html>
