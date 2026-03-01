@@ -241,13 +241,56 @@
 </div>
 
 <!-- HEADER -->
-<header style="text-align:center;padding:16px 24px 14px;border-bottom:1px solid rgba(255,0,127,.25);background:rgba(10,0,25,0.70);backdrop-filter:blur(14px)">
-    <h1 class="font-arch neon" style="font-size:2.8rem;font-style:italic;letter-spacing:-.04em;line-height:1;margin:0 0 10px">EVA K-POP</h1>
+<header style="text-align:center;border-bottom:1px solid rgba(255,0,127,.25);background:rgba(10,0,25,0.70);backdrop-filter:blur(14px);overflow:hidden;padding-bottom:16px">
+
+    <!-- BANNER PRINCIPAL -->
+    <div style="position:relative;padding:28px 20px 20px;margin-bottom:0">
+
+        <!-- Destellos decorativos -->
+        <div style="position:absolute;top:12px;left:18px;width:6px;height:6px;background:#ff007f;border-radius:50%;box-shadow:0 0 12px 4px #ff007f;animation:blink 2.1s infinite"></div>
+        <div style="position:absolute;top:22px;right:24px;width:5px;height:5px;background:#facc15;border-radius:50%;box-shadow:0 0 10px 3px #facc15;animation:blink 1.6s infinite .4s"></div>
+        <div style="position:absolute;bottom:28px;left:40px;width:4px;height:4px;background:#22d3ee;border-radius:50%;box-shadow:0 0 8px 3px #22d3ee;animation:blink 2.4s infinite .8s"></div>
+        <div style="position:absolute;bottom:20px;right:40px;width:5px;height:5px;background:#ff007f;border-radius:50%;box-shadow:0 0 10px 3px #ff007f;animation:blink 1.9s infinite .2s"></div>
+
+        <!-- Línea decorativa superior -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
+            <div style="height:1px;flex:1;background:linear-gradient(to right,transparent,#ff007f)"></div>
+            <div style="font-size:.7rem;font-weight:900;letter-spacing:.3em;color:#ff007f;text-transform:uppercase">✦ KPOP UNIVERSE ✦</div>
+            <div style="height:1px;flex:1;background:linear-gradient(to left,transparent,#ff007f)"></div>
+        </div>
+
+        <!-- Nombre principal -->
+        <div class="font-arch" style="font-size:3.2rem;font-style:italic;letter-spacing:-.03em;line-height:.95;text-transform:uppercase;margin-bottom:6px">
+            <span style="color:#fff;text-shadow:0 0 30px rgba(255,255,255,.3)">EVA</span>
+            <span style="color:#ff007f;text-shadow:0 0 20px #ff007f,0 0 50px #ff007f"> Y LAS</span><br>
+            <span style="background:linear-gradient(90deg,#ff007f,#facc15,#ff007f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:shimmer 3s linear infinite">K-POP ★</span>
+        </div>
+
+        <!-- Subtítulo diario -->
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,127,.15);border:1px solid rgba(255,0,127,.35);border-radius:999px;padding:5px 18px;margin-top:8px">
+            <span style="font-size:.85rem">📖</span>
+            <span style="font-size:.72rem;font-weight:900;letter-spacing:.25em;text-transform:uppercase;color:#ffaacc">Mi primer diario</span>
+        </div>
+
+        <!-- Línea decorativa inferior -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px">
+            <div style="height:1px;flex:1;background:linear-gradient(to right,transparent,rgba(255,0,127,.5))"></div>
+            <div style="font-size:.6rem;letter-spacing:.2em;color:rgba(255,255,255,.3)">★ ★ ★</div>
+            <div style="height:1px;flex:1;background:linear-gradient(to left,transparent,rgba(255,0,127,.5))"></div>
+        </div>
+    </div>
+
+    <!-- PUNTOS -->
     <div class="glass" style="display:inline-block;padding:10px 28px;border-radius:20px;border-top:1px solid rgba(255,0,127,.3)">
         <div id="total-pts" class="font-arch" style="font-size:3.2rem;font-style:italic;color:#fff;line-height:1">0</div>
         <p style="font-size:10px;font-weight:900;color:#ff4da6;text-transform:uppercase;letter-spacing:.4em;margin:4px 0 0">Puntos Totales</p>
     </div>
 </header>
+
+<style>
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.6)} }
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+</style>
 
 <!-- MAIN -->
 <main style="max-width:440px;margin:0 auto;padding:14px 16px 40px">
@@ -255,6 +298,7 @@
         <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
         <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Historial</button>
+        <button class="tab-btn"        id="tab-rules"   onclick="App.tab('rules')">Reglas</button>
     </div>
     <div id="content"></div>
 </main>
@@ -478,11 +522,12 @@ var App={
 
     _render:function(){
         var ptEl=document.getElementById('total-pts');if(ptEl)ptEl.textContent=this.d.total;
-        ['tasks','rewards','history'].forEach(function(t){var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(App.d.activeTab===t?' active':'');});
+        ['tasks','rewards','history','rules'].forEach(function(t){var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(App.d.activeTab===t?' active':'');});
         var c=document.getElementById('content');if(!c)return;
         if(this.d.activeTab==='tasks')   c.innerHTML=this._buildTasks();
         if(this.d.activeTab==='rewards') c.innerHTML=this._buildRewards();
         if(this.d.activeTab==='history') c.innerHTML=this._buildHistory();
+        if(this.d.activeTab==='rules')   c.innerHTML=this._buildRules();
     },
 
     _buildTasks:function(){
@@ -602,6 +647,42 @@ var App={
             '</button>'+
             '</div>';
 
+        return html;
+    },
+
+    _buildRules:function(){
+        var reglas = [
+            { num:'1', icon:'🎉', titulo:'Este juego está hecho para divertirse',  texto:'Cada punto ganado es una celebración. ¡Disfruta cada misión completada!' },
+            { num:'2', icon:'🌟', titulo:'Está pensado en mi futuro',              texto:'Lo que hago hoy construye quien seré mañana. Cada hábito cuenta.' },
+            { num:'3', icon:'🧠', titulo:'Me enseñará a tomar decisiones',         texto:'Cada elección tiene un resultado. Pienso antes de actuar.' },
+            { num:'4', icon:'⚖️', titulo:'Me enseñará consecuencias',             texto:'Las acciones buenas suman. Las que dañan restan. Todo tiene efecto.' },
+            { num:'5', icon:'👩‍👧', titulo:'Siempre debo usarlo acompañada',        texto:'Este diario se comparte con alguien de confianza. No estoy sola en el camino.' },
+            { num:'6', icon:'💎', titulo:'La honestidad es la base de todo',      texto:'Solo gano puntos cuando realmente cumplí. La verdad siempre es el camino correcto.' },
+        ];
+        var html =
+            '<div style="text-align:center;margin-bottom:22px">'+
+            '<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,127,.15);border:1px solid rgba(255,0,127,.35);border-radius:999px;padding:6px 20px;margin-bottom:12px">'+
+            '<span style="font-size:.9rem">📜</span>'+
+            '<span style="font-size:.7rem;font-weight:900;letter-spacing:.25em;text-transform:uppercase;color:#ffaacc">Las Reglas del Juego</span>'+
+            '</div><br>'+
+            '<div style="font-size:.8rem;color:rgba(255,255,255,.45);font-style:italic">Léelas con alguien que quieras mucho 💕</div>'+
+            '</div>';
+        reglas.forEach(function(r){
+            html+=
+                '<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(10,0,25,0.82);border:1px solid rgba(255,255,255,.1);border-left:4px solid #ff007f;border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(12px)">'+
+                '<div style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#ff007f,#7b00cc);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 0 14px rgba(255,0,127,.4)">'+r.icon+'</div>'+
+                '<div style="flex:1">'+
+                '<div style="margin-bottom:5px"><span style="background:#ff007f;color:#fff;font-size:9px;font-weight:900;padding:2px 8px;border-radius:999px;font-family:\'Archivo Black\',sans-serif">REGLA '+r.num+'</span></div>'+
+                '<div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:.82rem;color:#fff;margin-bottom:5px">'+r.titulo+'</div>'+
+                '<div style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.5">'+r.texto+'</div>'+
+                '</div></div>';
+        });
+        html+=
+            '<div style="margin-top:8px;padding:20px;background:rgba(80,0,40,0.70);border:1px solid rgba(255,0,127,.3);border-radius:16px;text-align:center;backdrop-filter:blur(12px)">'+
+            '<div style="font-size:1.8rem;margin-bottom:8px">💖</div>'+
+            '<div class="font-arch" style="font-style:italic;font-size:1rem;color:#ff9ecc;margin-bottom:6px">¡Este diario es tuyo!</div>'+
+            '<div style="font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.6">Cada día es una nueva oportunidad para ser la mejor versión de ti misma. ¡Tú puedes!</div>'+
+            '</div>';
         return html;
     },
 
