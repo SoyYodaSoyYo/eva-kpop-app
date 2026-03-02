@@ -940,7 +940,16 @@ var App={
                    },
                    {
                        texto: 'Opcion B: la segunda eleccion',
-                   _buildHistoria: function(){
+                       valor: 'neutro',
+                       feedback: 'Que paso despues. 3-4 oraciones.',
+                       leccion: 'La enseñanza en una sola frase.'
+                   }
+               ]
+           }
+           ===================================================== */
+    ],
+
+    _buildHistoria: function(){
         var h = this._getHistoriaDelDia();
         var hoy = this._hoy();
         var yaLeyo = this.d.historiaLeida === hoy;
