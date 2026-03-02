@@ -514,6 +514,8 @@ var App={
         this.d.today = {date:this._hoy(),points:{},totalDay:0,basePoints:0,perfectDay:false};
         SFX.coin();
         showToast('Día Reiniciado 🔄','Las misiones están listas para empezar');
+        this.d.activeTab = 'tasks';
+        this._render();
         this._save();
     },
 
@@ -949,6 +951,13 @@ var App={
            ===================================================== */
     ],
 
+    _getHistoriaDelDia: function(){
+        var now = new Date();
+        var start = new Date(now.getFullYear(),0,0);
+        var dayOfYear = Math.floor((now - start) / 86400000);
+        return this.HISTORIAS[dayOfYear % this.HISTORIAS.length];
+    },
+
     _buildHistoria: function(){
         var h = this._getHistoriaDelDia();
         var hoy = this._hoy();
@@ -1116,7 +1125,7 @@ var App={
                             delete cloud.lastSync;
                             self.d=Object.assign(emptyData(),cloud);
                             self._checkResets();self._saveLocal();self._render();
-                            showToast('☁️ Actualizado','Datos sincronizados desde otro dispositivo');
+                            /* notificacion de sync desactivada */
                             syncBar('sb-ok','☁️ Sincronizado');
                         }
                     });
