@@ -189,7 +189,45 @@
             display:flex; justify-content:space-between; align-items:center; margin-bottom:9px;
         }
     
-        /* HISTORIA BUTTONS */
+        /* DIARIO */
+        .diario-textarea {
+            width:100%; box-sizing:border-box;
+            min-height:110px; padding:14px;
+            background:rgba(255,255,255,.07);
+            border:2px solid rgba(255,255,255,.15);
+            border-radius:16px; color:#fff;
+            font-family:'Archivo',sans-serif; font-size:.95rem;
+            line-height:1.7; resize:none;
+            transition:border-color .2s;
+        }
+        .diario-textarea:focus {
+            outline:none;
+            border-color:rgba(255,0,127,.6);
+            background:rgba(255,255,255,.1);
+        }
+        .diario-textarea::placeholder { color:rgba(255,255,255,.3); }
+        .btn-guardar-diario {
+            width:100%; padding:14px;
+            background:linear-gradient(135deg,#ff007f,#7b00cc);
+            color:#fff; border:none;
+            border-bottom:4px solid #5a0099;
+            border-radius:14px; font-weight:900;
+            font-style:italic; font-size:.95rem;
+            cursor:pointer; margin-top:10px;
+            transition:transform .15s, box-shadow .15s;
+            box-shadow:0 0 18px rgba(255,0,127,.3);
+        }
+        .btn-guardar-diario:hover { transform:scale(1.02); box-shadow:0 0 26px rgba(255,0,127,.5); }
+        .btn-guardar-diario:active { transform:scale(.97); }
+        .diario-entrada {
+            background:rgba(10,0,25,0.80);
+            border:1px solid rgba(255,255,255,.1);
+            border-left:3px solid #ff007f;
+            border-radius:12px; padding:13px 15px;
+            margin-bottom:10px;
+        }
+
+                /* HISTORIA BUTTONS */
         .btn-historia {
             width:100%; text-align:left;
             background:rgba(255,255,255,.05);
@@ -207,7 +245,21 @@
             transform:scale(1.01);
         }
         .btn-historia:active { transform:scale(.97); }
-</style>
+
+        /* TAB MI ESPACIO - destacado */
+        #tab-historia {
+            background: linear-gradient(135deg, rgba(255,0,127,.25), rgba(123,0,204,.25)) !important;
+            border: 1px solid rgba(255,0,127,.4) !important;
+            color: #ffaacc !important;
+            font-size: 12px !important;
+        }
+        #tab-historia.active, #tab-historia:hover {
+            background: linear-gradient(135deg, #ff007f, #7b00cc) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+            box-shadow: 0 0 14px rgba(255,0,127,.5);
+        }
+                </style>
 </head>
 <body>
 
@@ -319,7 +371,7 @@
     <div class="glass" style="display:flex;gap:6px;padding:6px;border-radius:16px;margin-bottom:16px">
         <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
-        <button class="tab-btn"        id="tab-historia" onclick="App.tab('historia')">Historia</button>
+        <button class="tab-btn"        id="tab-historia" onclick="App.tab('historia')" style="position:relative">🌸 Mi Espacio</button>
         <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Logros</button>
         <button class="tab-btn"        id="tab-rules"   onclick="App.tab('rules')">Reglas</button>
     </div>
@@ -389,7 +441,7 @@ function showToast(title,msg,type){
 function syncBar(cls,txt){var b=document.getElementById('sync-bar');b.className=cls;b.id='sync-bar';b.textContent=txt;}
 
 /* ── DATOS VACÍOS ── */
-function emptyData(){return{total:0,today:{date:'',points:{},totalDay:0,basePoints:0,perfectDay:false},week:{id:'',pts:0,claimed:[]},month:{id:'',pts:0,claimed:[]},history:[],activeTab:'tasks',lastSync:0,historiaLeida:'',historiaEleccion:null};}
+function emptyData(){return{total:0,today:{date:'',points:{},totalDay:0,basePoints:0,perfectDay:false},week:{id:'',pts:0,claimed:[]},month:{id:'',pts:0,claimed:[]},history:[],activeTab:'tasks',lastSync:0,historiaLeida:'',historiaEleccion:null,diario:[]};}
 
 /* ═══════════════════════════════════════════
    APP
@@ -398,8 +450,8 @@ var App={
     d:emptyData(),_db:null,_unsub:null,_saveTimer:null,_skipSnap:false,POINT_VALUE:10,
 
     TASKS:[
-        {id:'cama',    label:'Hacer la cama',       pts:1,limit:1,icon:'🛏️'},
-        {id:'espacio', label:'Mi espacio ordenado',  pts:1,limit:1,icon:'🧹'},
+        {id:'cama',    label:'Hacer la cama',       pts:1,limit:1,icon:'🛌'},
+        {id:'espacio', label:'Mi espacio ordenado',  pts:1,limit:1,icon:'✨'},
         {id:'dientes', label:'Lavarse los dientes',  pts:1,limit:6,icon:'🦷'},
         {id:'dormir',  label:'Dormir sola',          pts:1,limit:1,icon:'🌙'},
         {id:'banarse', label:'Bañarse Sola',         pts:1,limit:1,icon:'🛁'},
@@ -409,7 +461,7 @@ var App={
         {id:'crear',   label:'Crear algo',           pts:1,limit:2,icon:'🎨'},
         {id:'comida',  label:'Comida balanceada',    pts:1,limit:3,icon:'🥗'},
         {id:'honesto', label:'Día honesto',          pts:5,limit:1,icon:'😇'},
-        {id:'gritos',  label:'Día sin gritos',       pts:5,limit:1,icon:'🤫'}
+        {id:'gritos',  label:'Día sin gritar ni manipular con llanto', pts:5,limit:1,icon:'🤍'}
     ],
     WEEKLY:[{label:'Película Extra',pts:100},{label:'Helado Especial',pts:180}],
     MONTHLY:[{label:'Regalo Sorpresa',pts:400},{label:'Paseo + Regalo',pts:800}],
@@ -445,8 +497,8 @@ var App={
         this._saveTimer=setTimeout(function(){
             try{
                 self._skipSnap=true;
-                self._db.collection('games').doc(GAME_ID)
-                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
+                self._db.collection('games').doc(GAME_ID+'_'+(self._uid||localStorage.getItem('eva_uid')||'anon'))
+                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now(),uid:self._uid||localStorage.getItem('eva_uid')||'anon'}))
                     .then(function(){syncBar('sb-ok','☁️ Guardado');})
                     .catch(function(){syncBar('sb-err','❌ Error al guardar');});
             }catch(e){syncBar('sb-err','❌ Error al guardar');}
@@ -964,7 +1016,7 @@ var App={
         var h = this._getHistoriaDelDia();
         var hoy = this._hoy();
         var yaLeyo = this.d.historiaLeida === hoy;
-        var eleccion = this.d.historiaEleccion || null;
+        var eleccion = (this.d.historiaEleccion !== null && this.d.historiaEleccion !== undefined) ? this.d.historiaEleccion : null;
 
         // Banner fondo recortado - zona central con los personajes
         var html =
@@ -1036,16 +1088,79 @@ var App={
 
         if(yaLeyo){
             html +=
-                '<div style="text-align:center;padding:20px;background:rgba(10,0,25,0.70);border:1px solid rgba(255,255,255,.08);border-radius:16px">' +
+                '<div style="text-align:center;padding:20px;background:rgba(10,0,25,0.70);border:1px solid rgba(255,255,255,.08);border-radius:16px;margin-bottom:18px">' +
                 '<div style="font-size:1.5rem;margin-bottom:6px">🌙</div>' +
                 '<div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4)">Vuelve mañana para una nueva historia</div>' +
                 '</div>';
         }
 
+        // ── DIARIO PERSONAL ──
+        var entradaHoy = (this.d.diario||[]).find(function(e){ return e.fecha === hoy; });
+        html +=
+            '<div style="background:rgba(10,0,25,0.88);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;margin-bottom:14px">' +
+            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+            '<div style="font-size:1.5rem">📝</div>' +
+            '<div>' +
+            '<div class="font-arch" style="font-size:.9rem;font-style:italic;color:#ffaacc">Mi diario de hoy</div>' +
+            '<div style="font-size:.72rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em">' + hoy + '</div>' +
+            '</div></div>';
+
+        if(entradaHoy){
+            html +=
+                '<div class="diario-entrada">' +
+                '<div style="font-size:.88rem;color:rgba(255,255,255,.8);line-height:1.7;white-space:pre-wrap">' + this._escapeHtml(entradaHoy.texto) + '</div>' +
+                '</div>' +
+                '<div style="font-size:.72rem;color:rgba(255,255,255,.3);text-align:center;margin-top:6px;font-style:italic">Ya escribiste tu diario hoy 💕</div>';
+        } else {
+            html +=
+                '<div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic">¿Qué fue lo más especial de tu día? 🌟</div>' +
+                '<textarea class="diario-textarea" id="diario-input" placeholder="Escribe aquí... puede ser algo que te hizo feliz, algo que aprendiste, o simplemente cómo te sentiste hoy." maxlength="500"></textarea>' +
+                '<div style="text-align:right;font-size:.7rem;color:rgba(255,255,255,.25);margin-top:4px" id="diario-counter">0 / 500</div>' +
+                '<button class="btn-guardar-diario" onclick="App.guardarDiario()">💾 Guardar mi pensamiento de hoy</button>';
+        }
+
+        html += '</div>';
+
+        // ── ENTRADAS ANTERIORES ──
+        var anteriores = (this.d.diario||[]).filter(function(e){ return e.fecha !== hoy; }).slice(-3).reverse();
+        if(anteriores.length > 0){
+            html += '<div style="margin-top:4px">' +
+                '<div style="font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.3);margin-bottom:10px">📚 Entradas anteriores</div>';
+            anteriores.forEach(function(e){
+                html +=
+                    '<div class="diario-entrada">' +
+                    '<div style="font-size:.68rem;color:#ff9ecc;font-weight:700;margin-bottom:5px">' + e.fecha + '</div>' +
+                    '<div style="font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.6;white-space:pre-wrap">' + App._escapeHtml(e.texto) + '</div>' +
+                    '</div>';
+            });
+            html += '</div>';
+        }
+
         return html;
     },
 
-        elegirOpcion: function(idx){
+    _escapeHtml: function(t){
+        return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    },
+
+    guardarDiario: function(){
+        var input = document.getElementById('diario-input');
+        if(!input) return;
+        var texto = input.value.trim();
+        if(texto.length < 2){ input.focus(); return; }
+        if(!this.d.diario) this.d.diario = [];
+        var hoy = this._hoy();
+        // Remove existing entry for today if any
+        this.d.diario = this.d.diario.filter(function(e){ return e.fecha !== hoy; });
+        this.d.diario.push({ fecha: hoy, texto: texto });
+        // Keep last 90 entries
+        if(this.d.diario.length > 90) this.d.diario = this.d.diario.slice(-90);
+        SFX.coin();
+        showToast('¡Diario guardado! 📝', 'Tu pensamiento de hoy quedó guardado', 'reward');
+        this._save();
+    },
+
+    elegirOpcion: function(idx){
         var hoy = this._hoy();
         this.d.historiaLeida = hoy;
         this.d.historiaEleccion = idx;
@@ -1110,8 +1225,13 @@ var App={
             var auth= firebase.auth(app);
             this._db = db;
 
-            auth.signInAnonymously().then(function(){
-                var ref=db.collection('games').doc(GAME_ID);
+            auth.signInAnonymously().then(function(userCred){
+                var uid = userCred.user.uid;
+                self._uid = uid;
+                // Store uid so Firestore rules can verify ownership
+                localStorage.setItem('eva_uid', uid);
+                var docId = GAME_ID + '_' + uid;
+                var ref=db.collection('games').doc(docId);
                 ref.get().then(function(snap){
                     if(snap.exists){
                         var cloud=snap.data();
