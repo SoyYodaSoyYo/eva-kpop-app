@@ -497,8 +497,8 @@ var App={
         this._saveTimer=setTimeout(function(){
             try{
                 self._skipSnap=true;
-                self._db.collection('games').doc(GAME_ID+'_'+(self._uid||localStorage.getItem('eva_uid')||'anon'))
-                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now(),uid:self._uid||localStorage.getItem('eva_uid')||'anon'}))
+                self._db.collection('games').doc(GAME_ID)
+                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
                     .then(function(){syncBar('sb-ok','☁️ Guardado');})
                     .catch(function(){syncBar('sb-err','❌ Error al guardar');});
             }catch(e){syncBar('sb-err','❌ Error al guardar');}
@@ -1225,20 +1225,21 @@ var App={
             var auth= firebase.auth(app);
             this._db = db;
 
-            auth.signInAnonymously().then(function(userCred){
-                var uid = userCred.user.uid;
-                self._uid = uid;
-                // Store uid so Firestore rules can verify ownership
-                localStorage.setItem('eva_uid', uid);
-                var docId = GAME_ID + '_' + uid;
-                var ref=db.collection('games').doc(docId);
+            auth.signInAnonymously().then(function(){
+                // Documento COMPARTIDO fijo — mismo para todos los dispositivos
+                self._ref = db.collection('games').doc(GAME_ID);
+                var ref = self._ref;
                 ref.get().then(function(snap){
                     if(snap.exists){
                         var cloud=snap.data();
-                        if((cloud.lastSyncMs||0)>=(self.d.lastSync||0)){delete cloud.lastSync;self.d=Object.assign(emptyData(),cloud);}
+                        if((cloud.lastSyncMs||0)>=(self.d.lastSync||0)){
+                            delete cloud.lastSync;
+                            self.d=Object.assign(emptyData(),cloud);
+                        }
                     }
                     self._checkResets();self._saveLocal();self._render();
                     syncBar('sb-ok','☁️ Sincronizado');
+                    // Escucha cambios en tiempo real desde otros dispositivos
                     self._unsub=ref.onSnapshot(function(snap){
                         if(self._skipSnap){self._skipSnap=false;return;}
                         if(!snap.exists)return;
@@ -1247,7 +1248,6 @@ var App={
                             delete cloud.lastSync;
                             self.d=Object.assign(emptyData(),cloud);
                             self._checkResets();self._saveLocal();self._render();
-                            /* notificacion de sync desactivada */
                             syncBar('sb-ok','☁️ Sincronizado');
                         }
                     });
