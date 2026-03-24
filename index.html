@@ -447,7 +447,9 @@ function emptyData(){return{total:0,today:{date:'',points:{},totalDay:0,basePoin
    APP
 ═══════════════════════════════════════════ */
 var App={
-    d:emptyData(),_db:null,_unsub:null,_saveTimer:null,_skipSnap:false,POINT_VALUE:10,
+    d:emptyData(),_db:null,_unsub:null,_saveTimer:null,_skipSnap:false,
+    _resetDone:false,_pendingSaves:0,
+    POINT_VALUE:10,
 
     TASKS:[
         {id:'cama',    label:'Hacer la cama',       pts:1,limit:1,icon:'🛌'},
@@ -477,10 +479,20 @@ var App={
     _semana:function(){var d=new Date();d.setDate(d.getDate()-(d.getDay()+1)%7);return d.toISOString().split('T')[0];},
 
     _checkResets:function(){
+        if(this._resetDone)return false;
         var h=this._hoy(),s=this._semana(),m=this._mes(),changed=false;
-        if(this.d.today.date!==h){if(this.d.today.date)this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));this.d.today={date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};changed=true;}
+        if(this.d.today.date!==h){
+            if(this.d.today.date)this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));
+            this.d.today={date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
+            // Limpiar historia del día anterior
+            if(this.d.historiaLeida!==h){this.d.historiaLeida='';this.d.historiaEleccion=null;}
+            changed=true;
+        }
         if(!this.d.week||this.d.week.id!==s){this.d.week={id:s,pts:0,claimed:[]};changed=true;}
         if(!this.d.month||this.d.month.id!==m){this.d.month={id:m,pts:0,claimed:[]};changed=true;}
+        // Limitar historial a 180 entradas
+        if(this.d.history.length>180)this.d.history=this.d.history.slice(-180);
+        this._resetDone=true;
         return changed;
     },
 
@@ -496,11 +508,18 @@ var App={
         syncBar('sb-busy','⏳ Guardando...');
         this._saveTimer=setTimeout(function(){
             try{
-                self._skipSnap=true;
+                self._pendingSaves++;
+                self.d.lastSync=Date.now();
                 self._db.collection('games').doc(GAME_ID)
-                    .set(Object.assign({},self.d,{lastSync:firebase.firestore.FieldValue.serverTimestamp(),lastSyncMs:Date.now()}))
-                    .then(function(){syncBar('sb-ok','☁️ Guardado');})
-                    .catch(function(){syncBar('sb-err','❌ Error al guardar');});
+                    .set(Object.assign({},self.d,{lastSyncMs:self.d.lastSync}))
+                    .then(function(){
+                        if(self._pendingSaves>0)self._pendingSaves--;
+                        syncBar('sb-ok','☁️ Guardado');
+                    })
+                    .catch(function(){
+                        if(self._pendingSaves>0)self._pendingSaves--;
+                        syncBar('sb-err','❌ Error al guardar');
+                    });
             }catch(e){syncBar('sb-err','❌ Error al guardar');}
         },700);
     },
@@ -566,6 +585,10 @@ var App={
         this.d.month.pts  = Math.max(0, this.d.month.pts  - ptsHoy);
         // Reiniciar el día
         this.d.today = {date:this._hoy(),points:{},totalDay:0,basePoints:0,perfectDay:false};
+        // Limpiar estado de historia del día
+        this.d.historiaLeida = '';
+        this.d.historiaEleccion = null;
+        this._resetDone = false; // Permitir que _checkResets corra de nuevo si hace falta
         SFX.coin();
         showToast('Día Reiniciado 🔄','Las misiones están listas para empezar');
         this.d.activeTab = 'tasks';
@@ -588,16 +611,18 @@ var App={
         this.d.today.date=this._hoy();
         this.d.week.id=this._semana();
         this.d.month.id=this._mes();
+        this._resetDone=false;
+        this._pendingSaves=0;
         // Borrar localStorage
         try{localStorage.removeItem('eva_kpop_v4');}catch(e){}
         // Borrar Firebase
         if(this._db){
             try{
-                this._skipSnap=true;
+                this._pendingSaves++;
                 this._db.collection('games').doc(GAME_ID)
                     .set(Object.assign({},this.d,{lastSyncMs:Date.now()}))
-                    .then(function(){syncBar('sb-ok','☁️ Reinicio guardado');})
-                    .catch(function(){syncBar('sb-err','❌ Error al guardar reinicio');});
+                    .then(function(){if(App._pendingSaves>0)App._pendingSaves--;syncBar('sb-ok','☁️ Reinicio guardado');})
+                    .catch(function(){if(App._pendingSaves>0)App._pendingSaves--;syncBar('sb-err','❌ Error al guardar reinicio');});
             }catch(e){}
         }
         SFX.coin();
@@ -608,6 +633,10 @@ var App={
     _clp:function(v){return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);},
 
     _render:function(){
+        // Preservar borrador del diario antes de re-renderizar
+        var inputEl=document.getElementById('diario-input');
+        var savedDraft=inputEl?inputEl.value:'';
+
         var ptEl=document.getElementById('total-pts');if(ptEl)ptEl.textContent=this.d.total;
         ['tasks','rewards','historia','history','rules'].forEach(function(t){var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(App.d.activeTab===t?' active':'');});
         var c=document.getElementById('content');if(!c)return;
@@ -616,10 +645,72 @@ var App={
         if(this.d.activeTab==='historia') c.innerHTML=this._buildHistoria();
         if(this.d.activeTab==='history')  c.innerHTML=this._buildHistory();
         if(this.d.activeTab==='rules')    c.innerHTML=this._buildRules();
+
+        // Restaurar borrador y activar contador
+        var newInput=document.getElementById('diario-input');
+        var counter=document.getElementById('diario-counter');
+        if(newInput){
+            if(savedDraft)newInput.value=savedDraft;
+            if(counter)counter.textContent=newInput.value.length+' / 500';
+            newInput.addEventListener('input',function(){
+                if(counter)counter.textContent=newInput.value.length+' / 500';
+            });
+        }
+    },
+
+    _buildBanner:function(){
+        var self=this;
+        var maxBase=this.TASKS.reduce(function(s,t){return s+t.pts*t.limit;},0);
+        var hoyPts=this.d.today.basePoints||0;
+        var hoyPct=Math.min(100,maxBase>0?Math.round(hoyPts/maxBase*100):0);
+
+        // Semana: próximo premio no reclamado
+        var semPts=this.d.week.pts||0;
+        var semMeta=null,semLabel='';
+        for(var i=0;i<this.WEEKLY.length;i++){
+            if(this.d.week.claimed.indexOf(i)===-1){semMeta=this.WEEKLY[i].pts;semLabel=this.WEEKLY[i].label;break;}
+        }
+        var semDone=semMeta===null;
+        var semPct=semDone?100:Math.min(100,Math.round(semPts/semMeta*100));
+        var semTexto=semDone?'¡Semana completada! 🏆':(semPts+' / '+semMeta+' pts → '+semLabel);
+
+        // Mes: próximo premio no reclamado
+        var mesPts=this.d.month.pts||0;
+        var mesMeta=null,mesLabel='';
+        for(var j=0;j<this.MONTHLY.length;j++){
+            if(this.d.month.claimed.indexOf(j)===-1){mesMeta=this.MONTHLY[j].pts;mesLabel=this.MONTHLY[j].label;break;}
+        }
+        var mesDone=mesMeta===null;
+        var mesPct=mesDone?100:Math.min(100,Math.round(mesPts/mesMeta*100));
+        var mesTexto=mesDone?'¡Mes completado! 🏆':(mesPts+' / '+mesMeta+' pts → '+mesLabel);
+
+        function bar(pct,color,done){
+            return '<div style="width:100%;height:8px;background:rgba(0,0,0,.5);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08)">'+
+                   '<div style="height:100%;border-radius:999px;width:'+pct+'%;background:'+color+';transition:width 1s;'+(done?'':'box-shadow:0 0 6px '+color)+'">'+'</div></div>';
+        }
+
+        function row(icon,label,texto,pct,color,done){
+            return '<div style="display:flex;align-items:center;gap:10px">'+
+                   '<div style="font-size:1rem;flex-shrink:0">'+icon+'</div>'+
+                   '<div style="flex:1;min-width:0">'+
+                     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
+                       '<span style="font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.5)">'+label+'</span>'+
+                       '<span style="font-size:.7rem;font-weight:900;color:'+(done?'#22c55e':color)+';white-space:nowrap;margin-left:8px">'+texto+'</span>'+
+                     '</div>'+
+                     bar(pct,done?'#22c55e':color,done)+
+                   '</div>'+
+                   '</div>';
+        }
+
+        return '<div style="background:rgba(10,0,25,0.85);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px 16px;margin-bottom:14px;backdrop-filter:blur(14px);display:flex;flex-direction:column;gap:11px">'+
+               row('⭐','Hoy',hoyPts+' / '+maxBase+' pts',hoyPct,'#ff007f',hoyPct===100)+
+               row('📅','Semana',semTexto,semPct,'#facc15',semDone)+
+               row('🗓️','Mes',mesTexto,mesPct,'#22d3ee',mesDone)+
+               '</div>';
     },
 
     _buildTasks:function(){
-        var html='';
+        var html=this._buildBanner();
         if(this.d.today.perfectDay){
             html+='<div style="background:rgba(120,80,0,0.75);border:2px solid #facc15;border-radius:14px;padding:13px 16px;text-align:center;margin-bottom:13px;backdrop-filter:blur(10px)">'+
                   '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:1rem">¡DÍA PERFECTO LOGRADO! 🌟</div>'+
@@ -1215,6 +1306,7 @@ var App={
         var self=this;
         FX.init();
         this._loadLocal();
+        this._resetDone=false;
         this._checkResets();
         this._render();
 
@@ -1237,16 +1329,18 @@ var App={
                             self.d=Object.assign(emptyData(),cloud);
                         }
                     }
+                    self._resetDone=false; // Permitir re-run con datos cloud
                     self._checkResets();self._saveLocal();self._render();
                     syncBar('sb-ok','☁️ Sincronizado');
                     // Escucha cambios en tiempo real desde otros dispositivos
                     self._unsub=ref.onSnapshot(function(snap){
-                        if(self._skipSnap){self._skipSnap=false;return;}
+                        if(self._pendingSaves>0){self._pendingSaves--;return;}
                         if(!snap.exists)return;
                         var cloud=snap.data();
                         if((cloud.lastSyncMs||0)>(self.d.lastSync||0)){
                             delete cloud.lastSync;
                             self.d=Object.assign(emptyData(),cloud);
+                            self._resetDone=false;
                             self._checkResets();self._saveLocal();self._render();
                             syncBar('sb-ok','☁️ Sincronizado');
                         }
