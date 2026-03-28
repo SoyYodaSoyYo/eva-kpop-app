@@ -568,45 +568,62 @@ var App={
 
     /* ══ FIX: ZONA HORARIA SANTIAGO ══ */
     _hoy:function(){
-        // Retorna YYYY-MM-DD en hora de Santiago (no UTC)
         return new Date().toLocaleDateString('en-CA',{timeZone:TZ});
     },
     _mes:function(){
         return this._hoy().slice(0,7); // YYYY-MM
     },
     _mesLabel:function(){
-        // "Mayo de 2025" → capitalizado
         var s=new Date().toLocaleDateString('es-CL',{timeZone:TZ,month:'long',year:'numeric'});
         return s.charAt(0).toUpperCase()+s.slice(1);
     },
     _diasRestantesMes:function(){
-        // Días que faltan para fin de mes (hora Santiago)
         var hoy=new Date().toLocaleDateString('en-CA',{timeZone:TZ});
         var partes=hoy.split('-');
         var y=parseInt(partes[0]),m=parseInt(partes[1]),d=parseInt(partes[2]);
-        var ultimoDia=new Date(y,m,0).getDate(); // último día del mes actual
-        return ultimoDia-d;
+        return new Date(y,m,0).getDate()-d;
+    },
+    // Retorna la fecha YYYY-MM-DD del sábado que inició la semana actual
+    _semanaId:function(){
+        var now=new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
+        var dow=now.getDay(); // 0=Dom,1=Lun,...,6=Sáb
+        // Semana sábado→viernes: retroceder hasta el sábado más reciente
+        var diff=dow===6?0:(dow+1); // cuántos días retroceder
+        var sab=new Date(now);
+        sab.setDate(now.getDate()-diff);
+        return sab.toLocaleDateString('en-CA',{timeZone:TZ});
+    },
+    _esSabado:function(){
+        var now=new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
+        return now.getDay()===6;
+    },
+    _diasRestantesSemana:function(){
+        // Días hasta el próximo viernes (fin de semana)
+        var now=new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
+        var dow=now.getDay();
+        // Viernes = 5. Si hoy es sáb(6)→6 días, dom(0)→5, ..., vie(5)→0
+        var diasHastaVie=dow===6?6:(5-dow);
+        return diasHastaVie;
     },
 
-    /* ══ FIX: RESETS CON LÓGICA CORREGIDA ══
-       - Diario  → reinicia cada día (hora Santiago)
-       - Semanal → acumula TODO el mes, reinicia al cambiar de mes
-       - Mensual → acumula TODO el mes, reinicia al cambiar de mes
+    /* ══ RESETS ══
+       - Diario  → cada día (hora Santiago)
+       - Semanal → cada sábado (week.pts → 0, nueva semana)
+                   los pts siguen sumando al mes durante la semana
+       - Mensual → cada 1ro de mes (month.pts → 0)
     ══════════════════════════════════════════ */
     _checkResets:function(){
         var h=this._hoy();
         var m=this._mes();
+        var s=this._semanaId();
         var changed=false;
 
-        // RESET DIARIO: cada día en hora Santiago
+        // RESET DIARIO
         if(this.d.today.date!==h){
             if(this.d.today.date){
-                // Guardar día en historial
                 this.d.history.push(JSON.parse(JSON.stringify(this.d.today)));
-                // FIX: limitar historial a 180 entradas
                 if(this.d.history.length>180)
                     this.d.history=this.d.history.slice(-180);
-                // RACHA: si el día tuvo puntos, incrementa; si no, reinicia
                 if(this.d.today.totalDay>0){
                     this.d.racha=(this.d.racha||0)+1;
                     if(this.d.racha>(this.d.rachaMax||0))this.d.rachaMax=this.d.racha;
@@ -615,7 +632,6 @@ var App={
                 }
             }
             this.d.today={date:h,points:{},totalDay:0,basePoints:0,perfectDay:false};
-            // FIX: limpiar historia del día cuando cambia el día
             if(this.d.historiaLeida!==h){
                 this.d.historiaLeida='';
                 this.d.historiaEleccion=null;
@@ -623,12 +639,13 @@ var App={
             changed=true;
         }
 
-        // RESET MENSUAL: week Y month se reinician JUNTOS al cambiar de mes
-        // El "semanal" ya NO se reinicia semanalmente — acumula todo el mes
-        if(!this.d.week||this.d.week.id!==m){
-            this.d.week={id:m,pts:0,claimed:[]};
+        // RESET SEMANAL: cada sábado se abre nueva semana (pts → 0)
+        if(!this.d.week||this.d.week.id!==s){
+            this.d.week={id:s,pts:0,claimed:[]};
             changed=true;
         }
+
+        // RESET MENSUAL: cada 1ro de mes
         if(!this.d.month||this.d.month.id!==m){
             this.d.month={id:m,pts:0,claimed:[]};
             changed=true;
@@ -681,11 +698,18 @@ var App={
             showToast('¡DÍA PERFECTO! 🌟','¡Completaste todo! +20 Puntos Extra','perfect');
         }
         var self=this;
+        // Premios semanales: solo notifica al alcanzar, el cobro es el sábado
         this.WEEKLY.forEach(function(g,i){
             if(self.d.week.pts>=g.pts&&self.d.week.claimed.indexOf(i)===-1){
-                self.d.week.claimed.push(i);
-                FX.burst();SFX.win();
-                showToast('¡PREMIO DESBLOQUEADO! 🎁','Ganaste: '+g.label,'reward');
+                // Solo notificar que lo alcanzó (no auto-cobrar)
+                // Si es sábado, auto-cobrar
+                if(self._esSabado()){
+                    self.d.week.claimed.push(i);
+                    FX.burst();SFX.win();
+                    showToast('¡PREMIO DESBLOQUEADO! 🎁','Ganaste: '+g.label,'reward');
+                } else {
+                    showToast('¡META ALCANZADA! 🌟',g.label+' listo para cobrar el sábado','reward');
+                }
             }
         });
         this.MONTHLY.forEach(function(g,i){
@@ -735,6 +759,18 @@ var App={
         this._save();
     },
 
+    cobrarSemana:function(i){
+        if(!this._esSabado())return;
+        var g=this.WEEKLY[i];
+        if(!g)return;
+        if(this.d.week.pts<g.pts)return;
+        if(this.d.week.claimed.indexOf(i)!==-1)return;
+        this.d.week.claimed.push(i);
+        FX.burst();SFX.win();
+        showToast('¡PREMIO COBRADO! 🎉','Ya ganaste: '+g.label,'reward');
+        this._save();
+    },
+
     bonus:function(pts){
         SFX.unlock();
         if(pts>0){SFX.coin();showToast('¡BONO EXTRA!','+'+pts+' Puntos añadidos');}
@@ -781,7 +817,7 @@ var App={
         document.getElementById('modal-resetall-overlay').style.display='none';
         this.d=emptyData();
         this.d.today.date =this._hoy();
-        this.d.week.id    =this._mes();
+        this.d.week.id    =this._semanaId();
         this.d.month.id   =this._mes();
         try{localStorage.removeItem('eva_kpop_v4');}catch(e){}
         if(this._db){
@@ -1223,19 +1259,38 @@ var App={
             '</div>'+
             '</div>';
 
-        // ── Premios del Camino (antes: semanales) ──
+        // ── Premios Semanales (sáb → vie) ──
+        var esSab=this._esSabado();
+        var diasSem=this._diasRestantesSemana();
         html+=
             '<div style="display:flex;justify-content:space-between;align-items:center;margin:4px 2px 9px">'+
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em;text-shadow:0 0 10px rgba(250,204,21,.5)">Premios del Camino</div>'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#facc15;font-size:12px;text-transform:uppercase;letter-spacing:.18em;text-shadow:0 0 10px rgba(250,204,21,.5)">Premios de la Semana</div>'+
             '<div style="font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(0,0,0,.6);padding:3px 9px;border-radius:7px;border:1px solid rgba(250,204,21,.3);color:#facc15">'+this.d.week.pts+' pts</div>'+
             '</div>'+
-            // Nota informativa
-            '<div style="background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.18);border-radius:10px;padding:8px 14px;margin-bottom:12px;font-size:.7rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:8px">'+
-            '<span>📅</span><span>Los puntos se acumulan durante todo el mes. ¡Sin reinicio semanal!</span>'+
-            '</div>';
+            // Info semanal
+            (esSab
+                ? '<div style="background:linear-gradient(135deg,rgba(250,204,21,.2),rgba(255,0,127,.15));border:2px solid rgba(250,204,21,.6);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:#fff;display:flex;align-items:center;gap:10px;box-shadow:0 0 18px rgba(250,204,21,.2)">'+
+                  '<span style="font-size:1.4rem">🎉</span>'+
+                  '<span><strong>¡Es sábado!</strong> Hoy puedes cobrar tu premio semanal si lo alcanzaste.</span>'+
+                  '</div>'
+                : '<div style="background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.15);border-radius:10px;padding:8px 14px;margin-bottom:12px;font-size:.7rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:8px">'+
+                  '<span>📅</span><span>Los premios semanales se cobran cada <strong style="color:rgba(250,204,21,.7)">sábado</strong>. '+
+                  (diasSem===0?'¡Hoy es el día!':('Faltan '+diasSem+' día'+(diasSem===1?'':'s')))+
+                  '.</span></div>'
+            );
 
         this.WEEKLY.forEach(function(g,i){
-            html+=self._rewardCard(g.label,g.pts,Math.min(100,self.d.week.pts/g.pts*100),self.d.week.claimed.indexOf(i)!==-1,'#facc15');
+            var pct=Math.min(100,self.d.week.pts/g.pts*100);
+            var claimed=self.d.week.claimed.indexOf(i)!==-1;
+            var alcanzado=self.d.week.pts>=g.pts;
+            html+=self._rewardCard(g.label,g.pts,pct,claimed,'#facc15');
+            // Botón de cobro: solo sábado, alcanzado, no cobrado aún
+            if(esSab&&alcanzado&&!claimed){
+                html+=
+                    '<button onclick="App.cobrarSemana('+i+')" style="width:100%;margin:-6px 0 14px;padding:13px;background:linear-gradient(135deg,#facc15,#e6a800);color:#000;border:none;border-bottom:4px solid #9a6e00;border-radius:0 0 14px 14px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;box-shadow:0 0 18px rgba(250,204,21,.4);letter-spacing:.06em">'+
+                    '🎁 ¡COBRAR PREMIO: '+g.label+'!'+
+                    '</button>';
+            }
         });
 
         // ── Premios Grandes del Mes ──
