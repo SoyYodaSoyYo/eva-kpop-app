@@ -698,15 +698,26 @@ var App={
                 showToast('¡PREMIO GRANDE DEL MES! 🎁','Ganaste: '+g.label,'reward');
             }
         });
-        // ── MEDALLAS ──
+        // ── MEDALLAS DINÁMICAS ──
+        // Recalcula todas las medallas en cada cambio.
+        // Las que ya no cumplen la condición se retiran silenciosamente.
+        // Las nuevas que se cumplen disparan el toast de celebración.
         var self2=this;
+        var nuevasMedallas=[];
         this.MEDALLAS.forEach(function(m){
-            if(self2.d.medallas.indexOf(m.id)===-1&&m.check(self2.d)){
-                self2.d.medallas.push(m.id);
-                FX.burst();SFX.win();
-                showToast('¡MEDALLA DESBLOQUEADA! '+m.icon,m.label,'reward');
+            var cumple=m.check(self2.d);
+            var tenia=self2.d.medallas.indexOf(m.id)!==-1;
+            if(cumple){
+                nuevasMedallas.push(m.id);
+                if(!tenia){
+                    // Medalla recién ganada → celebrar
+                    FX.burst();SFX.win();
+                    showToast('¡MEDALLA DESBLOQUEADA! '+m.icon,m.label,'reward');
+                }
             }
+            // Si !cumple y tenia → se pierde silenciosamente (sin aviso)
         });
+        this.d.medallas=nuevasMedallas;
     },
 
     adjust:function(id,dir){
@@ -914,9 +925,7 @@ var App={
             '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:2rem;color:#fff;line-height:1">' + hoyPts + ' <span style="font-size:.65rem;color:rgba(255,255,255,.35)">pts</span></div>' +
             '</div>' +
             '<div style="text-align:right">' +
-            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4)">Misiones base</div>' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.5rem;color:' + barColor + ';line-height:1">' + misionesHechas + '<span style="font-size:.8rem;color:rgba(255,255,255,.3)">/' + baseTasks.length + '</span></div>' +
-            (d.today.perfectDay ? '<div style="font-size:.6rem;color:#facc15;font-weight:900;text-transform:uppercase;letter-spacing:.08em">🌟 ¡Día Perfecto!</div>' : '') +
+            (d.today.perfectDay ? '<div style="font-size:.75rem;color:#facc15;font-weight:900;text-transform:uppercase;letter-spacing:.08em">🌟 ¡Día Perfecto!</div>' : '') +
             '</div>' +
             '</div>' +
             '<div style="background:rgba(255,255,255,.08);border-radius:999px;height:6px;overflow:hidden">' +
