@@ -915,40 +915,42 @@ var App={
             '<div style="font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,0,127,.6);margin-top:2px">puntos acumulados</div>' +
             '</div>';
 
-        /* ── B: Puntos del día + progreso ── */
+        /* ── B: Puntos del día + barra hacia día perfecto ── */
         var barColor = pctDia >= 100 ? '#facc15' : pctDia >= 60 ? '#22c55e' : '#ff007f';
+        var barLabel = pctDia >= 100
+            ? '🌟 ¡Día Perfecto!'
+            : pctDia >= 60 ? '¡Vas muy bien!' : 'Sigue sumando';
         html +=
             '<div style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;margin-bottom:10px">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
-            '<div>' +
-            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.4)">Hoy</div>' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:2rem;color:#fff;line-height:1">' + hoyPts + ' <span style="font-size:.65rem;color:rgba(255,255,255,.35)">pts</span></div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:2rem;color:#fff;line-height:1">' + hoyPts + ' <span style="font-size:.65rem;color:rgba(255,255,255,.35)">pts hoy</span></div>' +
+            '<div style="font-size:.62rem;font-weight:900;color:' + barColor + ';text-transform:uppercase;letter-spacing:.06em">' + barLabel + '</div>' +
             '</div>' +
-            '<div style="text-align:right">' +
-            (d.today.perfectDay ? '<div style="font-size:.75rem;color:#facc15;font-weight:900;text-transform:uppercase;letter-spacing:.08em">🌟 ¡Día Perfecto!</div>' : '') +
-            '</div>' +
-            '</div>' +
-            '<div style="background:rgba(255,255,255,.08);border-radius:999px;height:6px;overflow:hidden">' +
+            '<div style="background:rgba(255,255,255,.08);border-radius:999px;height:7px;overflow:hidden">' +
             '<div style="height:100%;border-radius:999px;background:' + barColor + ';width:' + pctDia + '%;transition:width .4s;box-shadow:0 0 8px ' + barColor + '"></div>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;margin-top:4px">' +
+            '<span style="font-size:.55rem;color:rgba(255,255,255,.25)">0</span>' +
+            '<span style="font-size:.55rem;color:rgba(255,255,255,.25)">' + pctDia + '% hacia día perfecto</span>' +
+            '<span style="font-size:.55rem;color:rgba(255,255,255,.25)">' + maxBase + ' pts</span>' +
             '</div>' +
             '</div>';
 
-        /* ── C: Medallas scroll horizontal ── */
-        html += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:10px">';
-        html += '<div style="display:flex;gap:7px;width:max-content;padding:4px 2px 8px">';
+        /* ── C: Medallas — 2 filas, 6 columnas ── */
+        html += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:10px">';
         ganadas.concat(bloqueadas).forEach(function(m){
             var g = (d.medallas||[]).indexOf(m.id) !== -1;
             html +=
-                '<div class="' + (g ? 'medal-earned' : '') + '" style="text-align:center;width:58px;flex-shrink:0;border-radius:12px;padding:8px 4px;' +
+                '<div class="' + (g ? 'medal-earned' : '') + '" style="text-align:center;border-radius:10px;padding:7px 3px;' +
                 (g
                     ? 'background:linear-gradient(135deg,rgba(250,204,21,.32),rgba(255,0,127,.2));border:1px solid rgba(250,204,21,.6);'
                     : 'background:rgba(10,0,25,.65);border:1px solid rgba(255,255,255,.07);filter:grayscale(1);opacity:.35;') +
                 '">' +
-                '<div style="font-size:1.4rem">' + m.icon + '</div>' +
-                '<div style="font-size:.5rem;font-weight:900;color:' + (g ? '#facc15' : 'rgba(255,255,255,.4)') + ';text-transform:uppercase;letter-spacing:.02em;line-height:1.2;margin-top:3px">' + m.label + '</div>' +
+                '<div style="font-size:1.25rem">' + m.icon + '</div>' +
+                '<div style="font-size:.42rem;font-weight:900;color:' + (g ? '#facc15' : 'rgba(255,255,255,.4)') + ';text-transform:uppercase;letter-spacing:.01em;line-height:1.2;margin-top:2px">' + m.label + '</div>' +
                 '</div>';
         });
-        html += '</div></div>';
+        html += '</div>';
 
         /* ── D: Gráfico 7 días ── */
         var bW=30, bG=6, cH=52, svgW=all7.length*(bW+bG)-bG;
@@ -1120,20 +1122,7 @@ var App={
                   '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-top:4px;opacity:.9">+20 Puntos de bonificación asignados</div></div>';
         }
 
-        // Resumen diario compacto
-        var diasRest=this._diasRestantesMes();
-        html+='<div style="display:flex;gap:8px;margin-bottom:14px">'+
-              '<div style="flex:1;background:rgba(10,0,25,0.82);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;text-align:center">'+
-              '<div style="font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:2px">Hoy</div>'+
-              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.4rem;color:#ff007f">'+this.d.today.totalDay+'</div>'+
-              '<div style="font-size:.6rem;color:rgba(255,255,255,.3)">pts del día</div>'+
-              '</div>'+
-              '<div style="flex:1;background:rgba(10,0,25,0.82);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;text-align:center">'+
-              '<div style="font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:2px">Este Mes</div>'+
-              '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.4rem;color:#facc15">'+this.d.month.pts+'</div>'+
-              '<div style="font-size:.6rem;color:rgba(255,255,255,.3)">'+diasRest+' días restantes</div>'+
-              '</div>'+
-              '</div>';
+
 
         var self=this;
         this.TASKS.forEach(function(t){
@@ -1195,6 +1184,21 @@ var App={
         var html='',self=this;
         var mesLabel=this._mesLabel();
         var diasRest=this._diasRestantesMes();
+
+        // ── Tarjetas HOY / ESTE MES (movidas desde Misiones) ──
+        html+=
+            '<div style="display:flex;gap:8px;margin-bottom:18px">'+
+            '<div style="flex:1;background:rgba(10,0,25,0.82);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;text-align:center">'+
+            '<div style="font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:4px">Hoy</div>'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.8rem;color:#ff007f;line-height:1">'+this.d.today.totalDay+'</div>'+
+            '<div style="font-size:.58rem;color:rgba(255,255,255,.3);margin-top:3px">pts del día</div>'+
+            '</div>'+
+            '<div style="flex:1;background:rgba(10,0,25,0.82);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;text-align:center">'+
+            '<div style="font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:4px">Este Mes</div>'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.8rem;color:#facc15;line-height:1">'+this.d.month.pts+'</div>'+
+            '<div style="font-size:.58rem;color:rgba(255,255,255,.3);margin-top:3px">'+diasRest+' días restantes</div>'+
+            '</div>'+
+            '</div>';
 
         // ── Barra de progreso del mes ──
         var maxPts=this.MONTHLY[this.MONTHLY.length-1].pts;
