@@ -698,27 +698,41 @@ var App={
             showToast('¡DÍA PERFECTO! 🌟','¡Completaste todo! +20 Puntos Extra','perfect');
         }
         var self=this;
-        // Premios semanales: solo notifica al alcanzar, el cobro es el sábado
+        // ── PREMIOS DINÁMICOS ──
+        // Semanales: recalcula claimed según pts actuales
+        var nuevosWeekClaimed=[];
         this.WEEKLY.forEach(function(g,i){
-            if(self.d.week.pts>=g.pts&&self.d.week.claimed.indexOf(i)===-1){
-                // Solo notificar que lo alcanzó (no auto-cobrar)
-                // Si es sábado, auto-cobrar
-                if(self._esSabado()){
-                    self.d.week.claimed.push(i);
+            var tenia=self.d.week.claimed.indexOf(i)!==-1;
+            var alcanza=self.d.week.pts>=g.pts;
+            if(alcanza){
+                nuevosWeekClaimed.push(i);
+                if(!tenia){
+                    if(self._esSabado()){
+                        FX.burst();SFX.win();
+                        showToast('¡PREMIO DESBLOQUEADO! 🎁','Ganaste: '+g.label,'reward');
+                    } else {
+                        showToast('¡META ALCANZADA! 🌟',g.label+' listo para cobrar el sábado','reward');
+                    }
+                }
+            }
+            // Si !alcanza y tenia → se retira silenciosamente
+        });
+        self.d.week.claimed=nuevosWeekClaimed;
+
+        // Mensuales: recalcula claimed según pts actuales
+        var nuevosMonthClaimed=[];
+        this.MONTHLY.forEach(function(g,i){
+            var tenia=self.d.month.claimed.indexOf(i)!==-1;
+            var alcanza=self.d.month.pts>=g.pts;
+            if(alcanza){
+                nuevosMonthClaimed.push(i);
+                if(!tenia){
                     FX.burst();SFX.win();
-                    showToast('¡PREMIO DESBLOQUEADO! 🎁','Ganaste: '+g.label,'reward');
-                } else {
-                    showToast('¡META ALCANZADA! 🌟',g.label+' listo para cobrar el sábado','reward');
+                    showToast('¡PREMIO GRANDE DEL MES! 🎁','Ganaste: '+g.label,'reward');
                 }
             }
         });
-        this.MONTHLY.forEach(function(g,i){
-            if(self.d.month.pts>=g.pts&&self.d.month.claimed.indexOf(i)===-1){
-                self.d.month.claimed.push(i);
-                FX.burst();SFX.win();
-                showToast('¡PREMIO GRANDE DEL MES! 🎁','Ganaste: '+g.label,'reward');
-            }
-        });
+        self.d.month.claimed=nuevosMonthClaimed;
         // ── MEDALLAS DINÁMICAS ──
         // Recalcula todas las medallas en cada cambio.
         // Las que ya no cumplen la condición se retiran silenciosamente.
