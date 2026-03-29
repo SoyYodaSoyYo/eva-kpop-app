@@ -388,6 +388,19 @@
     position:relative;
     overflow:hidden;
 }
+.pin-dot {
+    width:14px;height:14px;border-radius:50%;
+    background:rgba(255,255,255,.15);border:2px solid rgba(255,0,127,.4);
+    transition:all .2s;
+}
+.pin-dot.filled { background:#ff007f;border-color:#ff007f;box-shadow:0 0 10px rgba(255,0,127,.6); }
+.pin-btn {
+    padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);color:#fff;
+    font-family:'Archivo Black',sans-serif;font-style:italic;font-size:1.3rem;
+    cursor:pointer;transition:all .15s;backdrop-filter:blur(8px);
+}
+.pin-btn:active { transform:scale(.92);background:rgba(255,0,127,.3); }
 .medal-earned::after {
     content:'';
     position:absolute;
@@ -415,6 +428,37 @@
         • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
         GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
     </span>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,0,25,0.97);z-index:999;align-items:center;justify-content:center;flex-direction:column">
+    <div style="text-align:center;padding:32px 24px;max-width:320px;width:100%">
+        <div style="font-size:3rem;margin-bottom:8px">🔐</div>
+        <div style="font-family:'Archivo Black',sans-serif;font-style:italic;font-size:1.3rem;color:#ff007f;margin-bottom:4px">EVA K-POP</div>
+        <div style="font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.35);margin-bottom:32px">Ingresa tu PIN</div>
+        <div id="pin-dots" style="display:flex;justify-content:center;gap:14px;margin-bottom:28px">
+            <div class="pin-dot"></div><div class="pin-dot"></div>
+            <div class="pin-dot"></div><div class="pin-dot"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto">
+            <button class="pin-btn" onclick="App.pinKey(1)">1</button>
+            <button class="pin-btn" onclick="App.pinKey(2)">2</button>
+            <button class="pin-btn" onclick="App.pinKey(3)">3</button>
+            <button class="pin-btn" onclick="App.pinKey(4)">4</button>
+            <button class="pin-btn" onclick="App.pinKey(5)">5</button>
+            <button class="pin-btn" onclick="App.pinKey(6)">6</button>
+            <button class="pin-btn" onclick="App.pinKey(7)">7</button>
+            <button class="pin-btn" onclick="App.pinKey(8)">8</button>
+            <button class="pin-btn" onclick="App.pinKey(9)">9</button>
+            <button class="pin-btn" onclick="App.pinKey('C')" style="background:rgba(255,0,127,.2);font-size:.8rem">✕</button>
+            <button class="pin-btn" onclick="App.pinKey(0)">0</button>
+            <button class="pin-btn" onclick="App.pinKey('OK')" style="background:linear-gradient(135deg,#ff007f,#7b00cc)">✓</button>
+        </div>
+        <div id="pin-error" style="margin-top:16px;font-size:.7rem;color:#f87171;font-weight:900;text-transform:uppercase;letter-spacing:.1em;opacity:0;transition:opacity .3s">PIN incorrecto</div>
+        <div id="pin-setup" style="margin-top:20px;display:none">
+            <div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-bottom:8px">Primera vez: elige un PIN de 4 dígitos</div>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL EDITAR DÍA PASADO -->
@@ -492,7 +536,67 @@ var FX=(function(){
     var cols=['#ff007f','#facc15','#00f2fe','#fff','#ff66b2'];
     function loop(){ctx2d.clearRect(0,0,cv.width,cv.height);for(var i=parts.length-1;i>=0;i--){var p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.4;p.spin+=p.sp;p.life-=.013;if(p.life<=0){parts.splice(i,1);continue;}ctx2d.save();ctx2d.globalAlpha=Math.max(0,p.life);ctx2d.fillStyle=p.col;ctx2d.translate(p.x,p.y);ctx2d.rotate(p.spin*Math.PI/180);ctx2d.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz);ctx2d.restore();}requestAnimationFrame(loop);}
     return{
-        init:function(){cv=document.getElementById('fx-canvas');ctx2d=cv.getContext('2d');function r(){cv.width=innerWidth;cv.height=innerHeight;}r();window.addEventListener('resize',r);loop();},
+        /* ── PIN LOGIN ── */
+    _pin:'',
+    _pinEntry:'',
+
+    _pinHash:function(p){
+        // Simple hash — XOR + sum for lightweight security
+        var h=0;
+        for(var i=0;i<p.length;i++) h=(h*31+p.charCodeAt(i))&0xFFFFFF;
+        return h.toString(36);
+    },
+
+    _showLogin:function(){
+        var overlay=document.getElementById('login-overlay');
+        if(overlay) overlay.style.display='flex';
+        this._pinEntry='';
+        this._updatePinDots();
+    },
+
+    _hideLogin:function(){
+        var overlay=document.getElementById('login-overlay');
+        if(overlay) overlay.style.display='none';
+    },
+
+    _updatePinDots:function(){
+        var dots=document.querySelectorAll('.pin-dot');
+        dots.forEach(function(d,i){
+            d.classList.toggle('filled', i < App._pinEntry.length);
+        });
+    },
+
+    pinKey:function(k){
+        if(k==='C'){ this._pinEntry=''; this._updatePinDots(); return; }
+        if(k==='OK'){
+            if(this._pinEntry.length<4) return;
+            var hash=this._pinHash(this._pinEntry);
+            // First time: no PIN set → save it
+            if(!this.d.pin){
+                this.d.pin=hash;
+                this._save();
+                this._hideLogin();
+                return;
+            }
+            // Validate
+            if(hash===this.d.pin){
+                this._hideLogin();
+            } else {
+                var err=document.getElementById('pin-error');
+                if(err){ err.style.opacity='1'; setTimeout(function(){err.style.opacity='0';},1800); }
+                this._pinEntry='';
+                this._updatePinDots();
+            }
+            return;
+        }
+        if(this._pinEntry.length>=4) return;
+        this._pinEntry+=String(k);
+        this._updatePinDots();
+        // Auto-submit when 4 digits entered
+        if(this._pinEntry.length===4) setTimeout(function(){App.pinKey('OK');},200);
+    },
+
+    init:function(){cv=document.getElementById('fx-canvas');ctx2d=cv.getContext('2d');function r(){cv.width=innerWidth;cv.height=innerHeight;}r();window.addEventListener('resize',r);loop();},
         burst:function(){for(var i=0;i<160;i++)parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*26,vy:(Math.random()-1)*26-4,sz:Math.random()*8+4,col:cols[Math.floor(Math.random()*cols.length)],life:1,spin:Math.random()*360,sp:(Math.random()-.5)*10});}
     };
 })();
@@ -526,7 +630,8 @@ function emptyData(){
         racha:0,
         rachaMax:0,
         medallas:[],
-        hiddenTasks:[]
+        hiddenTasks:[],
+        pin:''
     };
 }
 
@@ -1752,12 +1857,73 @@ var App={
     /* ══════════════════════════════════════════
        INIT — con todos los fixes aplicados
     ══════════════════════════════════════════ */
+    /* ── PIN LOGIN ── */
+    _pin:'',
+    _pinEntry:'',
+
+    _pinHash:function(p){
+        // Simple hash — XOR + sum for lightweight security
+        var h=0;
+        for(var i=0;i<p.length;i++) h=(h*31+p.charCodeAt(i))&0xFFFFFF;
+        return h.toString(36);
+    },
+
+    _showLogin:function(){
+        var overlay=document.getElementById('login-overlay');
+        if(overlay) overlay.style.display='flex';
+        this._pinEntry='';
+        this._updatePinDots();
+    },
+
+    _hideLogin:function(){
+        var overlay=document.getElementById('login-overlay');
+        if(overlay) overlay.style.display='none';
+    },
+
+    _updatePinDots:function(){
+        var dots=document.querySelectorAll('.pin-dot');
+        dots.forEach(function(d,i){
+            d.classList.toggle('filled', i < App._pinEntry.length);
+        });
+    },
+
+    pinKey:function(k){
+        if(k==='C'){ this._pinEntry=''; this._updatePinDots(); return; }
+        if(k==='OK'){
+            if(this._pinEntry.length<4) return;
+            var hash=this._pinHash(this._pinEntry);
+            // First time: no PIN set → save it
+            if(!this.d.pin){
+                this.d.pin=hash;
+                this._save();
+                this._hideLogin();
+                return;
+            }
+            // Validate
+            if(hash===this.d.pin){
+                this._hideLogin();
+            } else {
+                var err=document.getElementById('pin-error');
+                if(err){ err.style.opacity='1'; setTimeout(function(){err.style.opacity='0';},1800); }
+                this._pinEntry='';
+                this._updatePinDots();
+            }
+            return;
+        }
+        if(this._pinEntry.length>=4) return;
+        this._pinEntry+=String(k);
+        this._updatePinDots();
+        // Auto-submit when 4 digits entered
+        if(this._pinEntry.length===4) setTimeout(function(){App.pinKey('OK');},200);
+    },
+
     init:function(){
         var self=this;
         FX.init();
         this._loadLocal();
         this._checkResets(); // Primera llamada local
         this._render();
+        this._showLogin(); // Pedir PIN al arrancar
 
         try{
             var app=firebase.apps.length?firebase.app():firebase.initializeApp(FIREBASE_CONFIG);
