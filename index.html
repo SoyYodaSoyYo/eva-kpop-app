@@ -84,17 +84,18 @@ data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKC
             min-height: 100vh;
             width: 100%;
         }
-        body::before {
-            content: "";
-            position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100vw; height: 100vh;
-            background-image: var(--kpop-bg);
-            background-size: cover;
-            background-position: center top;
-            background-repeat: no-repeat;
-            background-color: #0a0014;
-            z-index: -2; pointer-events: none;
-        }
+         body::before {
+             content: "";
+             position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0;
+             width: 100vw; height: 100vh;
+             background-image: var(--kpop-bg);
+             background-size: cover;
+             background-position: center top;
+             background-repeat: no-repeat;
+             background-attachment: scroll;
+             background-color: #0a0014;
+             z-index: -2; pointer-events: none;
+         }
         body::after {
             content: "";
             position: fixed; inset: 0;
