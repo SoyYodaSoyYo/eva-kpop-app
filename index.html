@@ -26,18 +26,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
         * { box-sizing: border-box; }
         :root {
-            --historia-banner: url("IMAGEN_HISTORIA_BANNER_B64_AQUI");
-            --kpop-bg: url('IMAGEN_KPOP_BG_B64_AQUI'); }
+            --historia-banner: url('./kpop-bg.png');
+            --kpop-bg: url('./kpop-bg.png'); }
         body {
             font-family: 'Archivo', sans-serif;
             color: #fff; margin: 0;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            background-image: var(--kpop-bg);
+            background-image: url('./kpop-bg.png');
             background-size: cover;
             background-position: center top;
-            background-attachment: fixed;
             background-repeat: no-repeat;
+            background-color: #0a0014;
             min-height: 100vh;
         }
         body::before {
