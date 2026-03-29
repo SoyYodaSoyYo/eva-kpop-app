@@ -403,7 +403,7 @@
         <button class="tab-btn active" id="tab-tasks"   onclick="App.tab('tasks')">Misiones</button>
         <button class="tab-btn"        id="tab-rewards" onclick="App.tab('rewards')">Premios</button>
         <button class="tab-btn"        id="tab-historia" onclick="App.tab('historia')" style="position:relative">🌸 Mi Espacio</button>
-        <button class="tab-btn"        id="tab-history" onclick="App.tab('history')">Logros</button>
+        <button class="tab-btn" id="tab-history" onclick="App.tab('history')" style="display:none">Logros</button>
         <button class="tab-btn"        id="tab-rules"   onclick="App.tab('rules')">Reglas</button>
     </div>
     <div id="content"></div>
@@ -809,6 +809,8 @@ var App={
     },
 
     tab:function(t){this.d.activeTab=t;this._render();},
+    goConfig:function(){this.d.activeTab='history';this._render();},
+    goRules:function(){this.d.activeTab='rules';this._render();},
 
     /* ── REINICIAR DÍA ── */
     askReset:function(){document.getElementById('modal-overlay').classList.add('show');},
@@ -1541,7 +1543,10 @@ var App={
         var limiteStr=limite.toLocaleDateString('en-CA',{timeZone:TZ});
 
         var html=
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff9ecc;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:12px">Logros Recientes</div>'+
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff9ecc;font-size:12px;text-transform:uppercase;letter-spacing:.18em">⚙️ Configuración</div>'+
+            '<button onclick="App.goRules()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:.65rem;cursor:pointer;text-transform:uppercase;letter-spacing:.1em">← Volver</button>'+
+            '</div>'+
             '<div style="background:rgba(80,0,40,0.80);border:1px solid rgba(255,0,127,.3);border-radius:15px;padding:15px 18px;margin-bottom:12px;position:relative;overflow:hidden;backdrop-filter:blur(12px)">'+
             (this.d.today.perfectDay?'<div style="position:absolute;top:0;right:0;background:#facc15;color:#000;font-size:9px;font-weight:900;padding:4px 10px;border-radius:0 15px 0 11px">DÍA PERFECTO 🌟</div>':'')+
             '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
@@ -1574,11 +1579,19 @@ var App={
         }
 
         html+=
-            '<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)">'+
-            '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);text-align:center;margin-bottom:12px">Zona de administración</div>'+
-            '<button onclick="App.askResetAll()" style="width:100%;padding:14px;background:rgba(60,0,0,0.75);color:#f87171;border:1px solid rgba(255,80,80,.25);border-radius:14px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;letter-spacing:.08em;backdrop-filter:blur(10px)">'+
-            '⚠️ Reiniciar Todos los Contadores'+
-            '</button></div>';
+            '<div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06)">'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Misiones</div>'+
+            '<button onclick="App.openEditModal()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
+            '✏️ Personalizar misiones'+
+            '</button>'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Reiniciar</div>'+
+            '<button onclick="App.askReset()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:8px">'+
+            '🔄 Reiniciar día'+
+            '</button>'+
+            '<button onclick="App.askResetAll()" style="width:100%;padding:11px;background:rgba(60,0,0,0.60);color:rgba(248,113,113,.6);border:1px solid rgba(255,80,80,.15);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.08em">'+
+            '⚠️ Reiniciar todo'+
+            '</button>'+
+            '</div>';
 
         return html;
     },
@@ -1703,7 +1716,11 @@ var App={
             '<div style="font-size:1.8rem;margin-bottom:8px">💖</div>'+
             '<div class="font-arch" style="font-style:italic;font-size:1rem;color:#ff9ecc;margin-bottom:6px">¡Este diario es tuyo!</div>'+
             '<div style="font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.6">Cada día es una nueva oportunidad para ser la mejor versión de ti misma. ¡Tú puedes!</div>'+
-            '</div>';
+            '</div>'+
+            '<div style="margin-top:32px;text-align:center">'+
+            '<button onclick="App.goConfig()" style="background:none;border:none;color:rgba(255,255,255,.2);font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;cursor:pointer;padding:8px 16px;border-radius:8px;">'+
+            '⚙️ Configuración'+
+            '</button></div>';
         return html;
     },
 
