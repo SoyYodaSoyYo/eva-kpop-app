@@ -670,18 +670,18 @@ var App={
     ],
 
     MEDALLAS:[
-        {id:'primera',  icon:'⭐',label:'Primera Misión',   check:function(d){return d.total>0;}},
-        {id:'dia_perf', icon:'🌟',label:'Día Perfecto',     check:function(d){return (d.today&&d.today.perfectDay)||(d.history&&d.history.some(function(h){return h.perfectDay;}));}},
-        {id:'racha3',   icon:'🔥',label:'En Llamas',        check:function(d){return (d.racha||0)>=3;}},
-        {id:'racha7',   icon:'💥',label:'Semana Épica',     check:function(d){return (d.racha||0)>=7;}},
-        {id:'racha14',  icon:'👑',label:'Reina Constante',  check:function(d){return (d.racha||0)>=14;}},
-        {id:'pts100',   icon:'💎',label:'Centenaria',       check:function(d){return d.total>=100;}},
-        {id:'pts500',   icon:'🚀',label:'Superstar',        check:function(d){return d.total>=500;}},
-        {id:'pts1000',  icon:'🏆',label:'Leyenda K-Pop',    check:function(d){return d.total>=1000;}},
-        {id:'leer10',   icon:'📚',label:'Ratita Lectora',   check:function(d){var t=d.history?d.history.reduce(function(s,h){return s+(h.points&&h.points.leer||0);},0):0;return t+(d.today&&d.today.points&&d.today.points.leer||0)>=10;}},
-        {id:'hon5',     icon:'😇',label:'Corazón Honesto',  check:function(d){var t=d.history?d.history.filter(function(h){return h.points&&h.points.honesto>0;}).length:0;return t+(d.today&&d.today.points&&d.today.points.honesto?1:0)>=5;}},
-        {id:'mes400',   icon:'🎁',label:'Misionera del Mes',check:function(d){return d.month&&d.month.pts>=400;}},
-        {id:'dien30',   icon:'🦷',label:'Sonrisa Brillante',check:function(d){var t=d.history?d.history.reduce(function(s,h){return s+(h.points&&h.points.dientes||0);},0):0;return t+(d.today&&d.today.points&&d.today.points.dientes||0)>=30;}}
+        {id:'primera',  icon:'⭐',label:'Primera Misión',   desc:'Completaste tu primera misión',        check:function(d){return d.total>0;}},
+        {id:'dia_perf', icon:'🌟',label:'Día Perfecto',     desc:'Completaste todas las misiones en un día', check:function(d){return (d.today&&d.today.perfectDay)||(d.history&&d.history.some(function(h){return h.perfectDay;}));}},
+        {id:'racha3',   icon:'🔥',label:'En Llamas',        desc:'3 días seguidos con puntos',           check:function(d){return (d.racha||0)>=3;}},
+        {id:'racha7',   icon:'💥',label:'Semana Épica',     desc:'7 días seguidos con puntos',           check:function(d){return (d.racha||0)>=7;}},
+        {id:'racha14',  icon:'👑',label:'Reina Constante',  desc:'14 días seguidos con puntos',          check:function(d){return (d.racha||0)>=14;}},
+        {id:'pts100',   icon:'💎',label:'Centenaria',       desc:'Acumulaste 100 puntos en total',       check:function(d){return d.total>=100;}},
+        {id:'pts500',   icon:'🚀',label:'Superstar',        desc:'Acumulaste 500 puntos en total',       check:function(d){return d.total>=500;}},
+        {id:'pts1000',  icon:'🏆',label:'Leyenda K-Pop',    desc:'Acumulaste 1000 puntos en total',      check:function(d){return d.total>=1000;}},
+        {id:'leer10',   icon:'📚',label:'Ratita Lectora',   desc:'Leíste 10 veces en total',             check:function(d){var t=d.history?d.history.reduce(function(s,h){return s+(h.points&&h.points.leer||0);},0):0;return t+(d.today&&d.today.points&&d.today.points.leer||0)>=10;}},
+        {id:'hon5',     icon:'😇',label:'Corazón Honesto',  desc:'5 días honestos registrados',          check:function(d){var t=d.history?d.history.filter(function(h){return h.points&&h.points.honesto>0;}).length:0;return t+(d.today&&d.today.points&&d.today.points.honesto?1:0)>=5;}},
+        {id:'mes400',   icon:'🎁',label:'Misionera del Mes',desc:'400 puntos en un mismo mes',           check:function(d){return d.month&&d.month.pts>=400;}},
+        {id:'dien30',   icon:'🦷',label:'Sonrisa Brillante',desc:'30 veces lavaste los dientes',         check:function(d){var t=d.history?d.history.reduce(function(s,h){return s+(h.points&&h.points.dientes||0);},0):0;return t+(d.today&&d.today.points&&d.today.points.dientes||0)>=30;}}
     ],
 
     /* ══ FIX: ZONA HORARIA SANTIAGO ══ */
@@ -1137,6 +1137,7 @@ var App={
                 '">' +
                 '<div style="font-size:1.25rem">' + m.icon + '</div>' +
                 '<div style="font-size:.42rem;font-weight:900;color:' + (g ? '#facc15' : 'rgba(255,255,255,.4)') + ';text-transform:uppercase;letter-spacing:.01em;line-height:1.2;margin-top:2px">' + m.label + '</div>' +
+                (g ? '<div style="font-size:.38rem;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.2">' + (m.desc||'') + '</div>' : '') +
                 '</div>';
         });
         html += '</div>';
