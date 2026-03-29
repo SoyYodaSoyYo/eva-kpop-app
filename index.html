@@ -26,18 +26,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;700;900&family=Syne:wght@800&display=swap');
         * { box-sizing: border-box; }
         :root {
-            --historia-banner: url('./kpop-bg.png');
-            --kpop-bg: url('./kpop-bg.png'); }
+            --historia-banner: url("IMAGEN_HISTORIA_BANNER_B64_AQUI");
+            --kpop-bg: url('IMAGEN_KPOP_BG_B64_AQUI'); }
         body {
             font-family: 'Archivo', sans-serif;
             color: #fff; margin: 0;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            background-image: url('./kpop-bg.png');
+            background-image: var(--kpop-bg);
             background-size: cover;
             background-position: center top;
+            background-attachment: fixed;
             background-repeat: no-repeat;
-            background-color: #0a0014;
             min-height: 100vh;
         }
         body::before {
@@ -415,6 +415,19 @@
         • GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •&nbsp;&nbsp;
         GANA PUNTOS • AHORRA PARA EL FUTURO • DISFRUTA TU GIRA • DÍA PERFECTO • K-POP STAR •
     </span>
+</div>
+
+<!-- MODAL EDITAR DÍA PASADO -->
+<div id="modal-editday-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
+    <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:22px 18px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px);box-shadow:0 0 40px rgba(255,0,127,.25)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.95rem;color:#ff007f">✏️ Editar Día</div>
+            <button onclick="App.closeEditDay()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 14px;cursor:pointer;font-size:.8rem">✕</button>
+        </div>
+        <input type="hidden" id="edit-day-idx" value="-1">
+        <div id="edit-day-content"></div>
+        <button onclick="App.saveEditDay()" style="width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,#ff007f,#7b00cc);color:#fff;border:none;border-bottom:4px solid #4a007a;border-radius:14px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;box-shadow:0 0 20px rgba(255,0,127,.4);letter-spacing:.08em">Guardar Corrección ✅</button>
+    </div>
 </div>
 
 <!-- MODAL EDITAR MISIONES -->
@@ -878,6 +891,17 @@ var App={
 
         // FIX: conectar listener del contador
         this._attachDiarioCounter();
+        // Conectar clicks en días editables del historial
+        this._attachHistoryClicks();
+    },
+
+    _attachHistoryClicks:function(){
+        var rows=document.querySelectorAll('.hist-row[data-date]');
+        rows.forEach(function(row){
+            row.addEventListener('click',function(){
+                App.openEditDay(this.dataset.date);
+            });
+        });
     },
 
     /* ══ FIX NUEVO: contador de caracteres del diario ══ */
@@ -1510,6 +1534,12 @@ var App={
     ══════════════════════════════════════════ */
     _buildHistory:function(){
         var hist=this.d.history.slice().reverse();
+        var hoy=this._hoy();
+        // Calcular fecha límite: 7 días atrás
+        var limite=new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
+        limite.setDate(limite.getDate()-7);
+        var limiteStr=limite.toLocaleDateString('en-CA',{timeZone:TZ});
+
         var html=
             '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff9ecc;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin-bottom:12px">Logros Recientes</div>'+
             '<div style="background:rgba(80,0,40,0.80);border:1px solid rgba(255,0,127,.3);border-radius:15px;padding:15px 18px;margin-bottom:12px;position:relative;overflow:hidden;backdrop-filter:blur(12px)">'+
@@ -1518,19 +1548,28 @@ var App={
             '<div><div style="background:#ff007f;display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:5px">HOY</div>'+
             '<div style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:.83rem">'+this.d.today.date+'</div></div>'+
             '<div style="font-family:\'Archivo Black\',sans-serif;font-size:1.9rem;font-style:italic">'+this.d.today.totalDay+' <span style="font-size:11px;color:#ff99cc">PTS</span></div>'+
-            '</div></div>';
+            '</div></div>'+
+            '<div style="font-size:.6rem;color:rgba(255,255,255,.3);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">'+
+            '✏️ Toca un día de los últimos 7 para editarlo'+
+            '</div>';
 
         if(hist.length===0){
             html+='<div style="text-align:center;padding:36px;opacity:.4;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
         } else {
             hist.forEach(function(day){
-                html+=
-                    '<div class="hist-row">'+
-                    '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">'+day.date+'</span>'+
-                    '<div style="display:flex;align-items:center;gap:9px">'+
-                    (day.perfectDay?'<span style="font-size:.95rem">🌟</span>':'')+
-                    '<span style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.05rem">'+day.totalDay+' <span style="font-size:10px;opacity:.5">PTS</span></span>'+
-                    '</div></div>';
+                var editable=day.date>=limiteStr;
+                var rowAttr=editable?' data-date="'+day.date+'"':'';
+                var rowStyle=editable?'cursor:pointer;border-left:3px solid rgba(255,0,127,.5);':'';
+                var ptsSpan='<span style="font-size:10px;opacity:.5">PTS</span>';
+                var nameFont='font-family:\"Archivo Black\",sans-serif;font-style:italic;font-size:1.05rem';
+                html+='<div class="hist-row" style="'+rowStyle+'"'+rowAttr+'>';
+                html+='<div style="display:flex;align-items:center;gap:8px">';
+                if(editable)html+='<span style="font-size:.7rem;opacity:.5">✏️</span>';
+                html+='<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">'+day.date+'</span>';
+                html+='</div><div style="display:flex;align-items:center;gap:9px">';
+                if(day.perfectDay)html+='<span style="font-size:.95rem">🌟</span>';
+                html+='<span style="'+nameFont+'">'+day.totalDay+' '+ptsSpan+'</span>';
+                html+='</div></div>';
             });
         }
 
@@ -1542,6 +1581,91 @@ var App={
             '</button></div>';
 
         return html;
+    },
+
+    /* ── EDITAR DÍA PASADO ── */
+    openEditDay:function(date){
+        var self=this;
+        var idx=-1;
+        for(var i=0;i<this.d.history.length;i++){
+            if(this.d.history[i].date===date){idx=i;break;}
+        }
+        if(idx===-1)return;
+        var day=this.d.history[idx];
+        var content=document.getElementById('edit-day-content');
+        if(!content)return;
+
+        var html=
+            '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,0,127,.7);margin-bottom:16px">'+
+            '📅 Editando: '+date+
+            '</div>'+
+            // Total del día
+            '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;margin-bottom:14px">'+
+            '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px">Total del día</div>'+
+            '<input id="edit-day-total" type="number" min="0" max="999" value="'+day.totalDay+'" style="width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,0,127,.4);border-radius:8px;padding:10px 14px;color:#fff;font-size:1.2rem;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-align:center">'+
+            '</div>'+
+            // Misiones individuales
+            '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:10px">Misiones del día</div>';
+
+        self.TASKS.forEach(function(t){
+            var val=day.points&&day.points[t.id]?day.points[t.id]:0;
+            html+=
+                '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
+                '<span style="font-size:1.1rem;flex-shrink:0">'+t.icon+'</span>'+
+                '<div style="flex:1;font-size:.75rem;font-style:italic;text-transform:uppercase;color:#fff">'+t.label+'</div>'+
+                '<input id="edit-day-task-'+t.id+'" type="number" min="0" max="'+t.limit+'" value="'+val+'" style="width:56px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px;color:#fff;font-size:.9rem;text-align:center;font-family:\'Archivo\',sans-serif">'+
+                '<span style="font-size:.6rem;color:rgba(255,255,255,.3)">máx '+t.limit+'</span>'+
+                '</div>';
+        });
+
+        content.innerHTML=html;
+        document.getElementById('edit-day-idx').value=idx;
+        document.getElementById('modal-editday-overlay').style.display='flex';
+    },
+
+    closeEditDay:function(){
+        document.getElementById('modal-editday-overlay').style.display='none';
+    },
+
+    saveEditDay:function(){
+        var self=this;
+        var idx=parseInt(document.getElementById('edit-day-idx').value);
+        if(isNaN(idx)||idx<0||idx>=this.d.history.length)return;
+
+        var day=this.d.history[idx];
+        var oldTotal=day.totalDay||0;
+
+        // Leer nuevo total
+        var newTotal=parseInt(document.getElementById('edit-day-total').value)||0;
+
+        // Leer puntos por misión
+        var newPoints={};
+        var calcTotal=0;
+        this.TASKS.forEach(function(t){
+            var el=document.getElementById('edit-day-task-'+t.id);
+            if(el){
+                var v=Math.min(parseInt(el.value)||0,t.limit);
+                if(v>0)newPoints[t.id]=v;
+                calcTotal+=v*t.pts;
+            }
+        });
+
+        // Usar el total manual si difiere del calculado (permite bonos/penalizaciones)
+        day.points=newPoints;
+        day.totalDay=newTotal;
+        day.basePoints=calcTotal;
+        day.perfectDay=calcTotal>0&&calcTotal>=this.TASKS.reduce(function(s,t){return s+t.pts*t.limit;},0);
+
+        // Ajustar totales globales por la diferencia
+        var diff=newTotal-oldTotal;
+        this.d.total=Math.max(0,this.d.total+diff);
+        this.d.month.pts=Math.max(0,this.d.month.pts+diff);
+        this.d.week.pts=Math.max(0,this.d.week.pts+diff);
+
+        this.closeEditDay();
+        showToast('✅ Día actualizado','Los puntos de '+day.date+' fueron corregidos');
+        this._checkMilestones();
+        this._save();
     },
 
     /* ══════════════════════════════════════════
