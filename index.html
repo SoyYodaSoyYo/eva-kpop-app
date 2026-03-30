@@ -474,6 +474,22 @@
     </div>
 </div>
 
+<!-- MODAL EDITAR FINANZAS -->
+<div id="modal-finanzas-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
+    <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(250,204,21,.35);border-radius:22px;padding:22px 18px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.95rem;color:#facc15">💰 Dinero y Distribución</div>
+            <button onclick="App.closeEditFinanzas()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 14px;cursor:pointer">✕</button>
+        </div>
+        <div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:8px">Valor por punto (CLP)</div>
+        <input id="fin-pointvalue" type="number" min="1" max="10000" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(250,204,21,.4);border-radius:10px;padding:10px 14px;color:#fff;font-size:1.3rem;font-family:'Archivo Black',sans-serif;font-style:italic;text-align:center;margin-bottom:18px">
+        <div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:10px">Distribución (los % deben sumar 100)</div>
+        <div id="fin-finance-fields"></div>
+        <div id="fin-error" style="font-size:.65rem;color:#f87171;font-weight:900;text-align:center;margin-top:8px;display:none">Los porcentajes deben sumar 100%</div>
+        <button onclick="App.saveEditFinanzas()" style="width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,#facc15,#e6a800);color:#000;border:none;border-bottom:4px solid #9a6e00;border-radius:14px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;letter-spacing:.08em">Guardar ✅</button>
+    </div>
+</div>
+
 <!-- MODAL EDITAR MISIONES -->
 <div id="modal-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto">
     <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:24px 20px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px);box-shadow:0 0 40px rgba(255,0,127,.25)">
@@ -999,7 +1015,13 @@ var App={
         this._render();
     },
 
-    _clp:function(v){return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(v);},
+    _round10:function(v){
+        // Redondeo chileno: hasta 5 → baja, 6+ → sube, a la decena más cercana
+        var dec = Math.round(v / 10);
+        var resto = v % 10;
+        return resto <= 5 ? Math.floor(v/10)*10 : Math.ceil(v/10)*10;
+    },
+    _clp:function(v){return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',minimumFractionDigits:0}).format(this._round10(v));},
 
     /* ══ FIX: RENDER con preservación de draft ══ */
     _render:function(){
@@ -1523,8 +1545,15 @@ var App={
         html +=
             '<div style="text-align:center;padding:14px;background:linear-gradient(135deg,rgba(255,0,127,.15),rgba(123,0,204,.1));border:1px solid rgba(255,0,127,.25);border-radius:12px;margin-bottom:14px">' +
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,0,127,.7)">Total ' + añoActual + '</div>' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:2.4rem;color:#fff;line-height:1">' + totalAño + ' <span style="font-size:.7rem;color:rgba(255,255,255,.4)">pts</span></div>' +
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.2rem;color:#facc15;margin-top:4px">' + self._clp(totalDineroAño) + '</div>' +
+            '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0">' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:2.2rem;color:#fff;line-height:1">' + totalAño + '<span style="font-size:.65rem;color:rgba(255,255,255,.35)"> pts</span></div>' +
+            '<div style="font-size:1rem;color:rgba(255,255,255,.3)">×</div>' +
+            '<div style="background:rgba(250,204,21,.2);border:1px solid rgba(250,204,21,.4);border-radius:8px;padding:4px 10px">' +
+            '<div style="font-size:.5rem;color:rgba(250,204,21,.6);font-weight:900;text-transform:uppercase">valor</div>' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem;color:#facc15;line-height:1">$' + self.POINT_VALUE + '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.6rem;color:#facc15">' + self._clp(totalDineroAño) + '</div>' +
             '</div>';
 
         // Desglose por mes
@@ -1538,7 +1567,7 @@ var App={
                 '<div style="font-size:.72rem;font-weight:700;font-style:italic;text-transform:uppercase;color:#fff">' + nombreMes +
                 (hm.esMesActual?' <span style="background:#ff007f;font-size:.5rem;padding:1px 6px;border-radius:999px;vertical-align:middle">HOY</span>':'') +
                 '</div>' +
-                '<div style="font-size:.58rem;color:rgba(255,255,255,.35);margin-top:2px">' + self._clp(dineroMes) + '</div>' +
+                '<div style="font-size:.55rem;color:rgba(255,255,255,.35);margin-top:2px">' + (hm.pts||0) + ' pts × $' + self.POINT_VALUE + ' = ' + self._clp(dineroMes) + '</div>' +
                 '</div>' +
                 '<div style="text-align:right">' +
                 '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem;color:#facc15">' + (hm.pts||0) + '</div>' +
@@ -1564,6 +1593,56 @@ var App={
     },
 
     _resumenOpen: false,
+    openEditFinanzas: function(){
+        var el = document.getElementById('fin-pointvalue');
+        if(el) el.value = this.POINT_VALUE;
+        var fields = document.getElementById('fin-finance-fields');
+        if(fields){
+            var html = '';
+            this.FINANCE.forEach(function(f, i){
+                html +=
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+                    '<div style="flex:1;font-size:.72rem;font-style:italic;color:#fff;text-transform:uppercase">' + f.label + '</div>' +
+                    '<div style="display:flex;align-items:center;gap:4px">' +
+                    '<input id="fin-pct-'+i+'" type="number" min="0" max="100" value="' + Math.round(f.pct*100) + '" style="width:56px;background:rgba(255,255,255,.08);border:1px solid rgba(250,204,21,.3);border-radius:8px;padding:7px;color:#facc15;font-size:.9rem;text-align:center;font-family:Arial">' +
+                    '<span style="font-size:.7rem;color:rgba(255,255,255,.4)">%</span>' +
+                    '</div></div>';
+            });
+            fields.innerHTML = html;
+        }
+        document.getElementById('fin-error').style.display = 'none';
+        document.getElementById('modal-finanzas-overlay').style.display = 'flex';
+    },
+    closeEditFinanzas: function(){
+        document.getElementById('modal-finanzas-overlay').style.display = 'none';
+    },
+    saveEditFinanzas: function(){
+        // Validate %
+        var total = 0;
+        for(var i=0;i<this.FINANCE.length;i++){
+            var el=document.getElementById('fin-pct-'+i);
+            if(el) total += parseInt(el.value)||0;
+        }
+        if(total !== 100){
+            document.getElementById('fin-error').style.display = 'block';
+            return;
+        }
+        // Save POINT_VALUE
+        var pvEl = document.getElementById('fin-pointvalue');
+        if(pvEl){
+            var pv = parseInt(pvEl.value);
+            if(pv >= 1) this.POINT_VALUE = pv;
+        }
+        // Save FINANCE %
+        for(var j=0;j<this.FINANCE.length;j++){
+            var pEl=document.getElementById('fin-pct-'+j);
+            if(pEl) this.FINANCE[j].pct = (parseInt(pEl.value)||0)/100;
+        }
+        this.closeEditFinanzas();
+        showToast('💰 Finanzas actualizadas','Valor y distribución guardados');
+        this._save();
+    },
+
     toggleResumenAnual: function(){
         this._resumenOpen = !this._resumenOpen;
         var panel = document.getElementById('resumen-panel');
@@ -1791,6 +1870,10 @@ var App={
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Misiones</div>'+
             '<button onclick="App.openEditModal()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
             '✏️ Personalizar misiones'+
+            '</button>'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Dinero y Distribución</div>'+
+            '<button onclick="App.openEditFinanzas()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
+            '💰 Editar valor por punto y % distribución'+
             '</button>'+
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Reiniciar</div>'+
             '<button onclick="App.askResetAll()" style="width:100%;padding:11px;background:rgba(60,0,0,0.60);color:rgba(248,113,113,.6);border:1px solid rgba(255,80,80,.15);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.08em">'+
