@@ -915,6 +915,17 @@ var App={
 
     tab:function(t){this.d.activeTab=t;this._render();},
     goConfig:function(){this.d.activeTab='history';this._render();},
+    showMedalla:function(idx){
+        var lista=this.MEDALLAS;
+        // ganadas primero, bloqueadas después — mismo orden que el grid
+        var ganadas=lista.filter(function(m){return (App.d.medallas||[]).indexOf(m.id)!==-1;});
+        var bloqueadas=lista.filter(function(m){return (App.d.medallas||[]).indexOf(m.id)===-1;});
+        var orden=ganadas.concat(bloqueadas);
+        var m=orden[idx];
+        if(!m)return;
+        var ganada=(this.d.medallas||[]).indexOf(m.id)!==-1;
+        showToast(m.icon+' '+m.label, ganada?m.desc:'Aún no la has ganado 💪', ganada?'reward':'normal');
+    },
     goRules:function(){this.d.activeTab='rules';this._render();},
 
     /* ── REINICIAR DÍA ── */
@@ -1127,17 +1138,16 @@ var App={
 
         /* ── C: Medallas — 2 filas, 6 columnas ── */
         html += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:10px">';
-        ganadas.concat(bloqueadas).forEach(function(m){
+        ganadas.concat(bloqueadas).forEach(function(m,idx){
             var g = (d.medallas||[]).indexOf(m.id) !== -1;
             html +=
-                '<div class="' + (g ? 'medal-earned' : '') + '" style="text-align:center;border-radius:10px;padding:7px 3px;' +
+                '<div class="' + (g ? 'medal-earned' : '') + '" onclick="App.showMedalla(' + idx + ')" style="cursor:pointer;text-align:center;border-radius:10px;padding:7px 3px;' +
                 (g
                     ? 'background:linear-gradient(135deg,rgba(250,204,21,.32),rgba(255,0,127,.2));border:1px solid rgba(250,204,21,.6);'
                     : 'background:rgba(10,0,25,.65);border:1px solid rgba(255,255,255,.07);filter:grayscale(1);opacity:.35;') +
                 '">' +
                 '<div style="font-size:1.25rem">' + m.icon + '</div>' +
                 '<div style="font-size:.42rem;font-weight:900;color:' + (g ? '#facc15' : 'rgba(255,255,255,.4)') + ';text-transform:uppercase;letter-spacing:.01em;line-height:1.2;margin-top:2px">' + m.label + '</div>' +
-                (g ? '<div style="font-size:.38rem;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.2">' + (m.desc||'') + '</div>' : '') +
                 '</div>';
         });
         html += '</div>';
@@ -1934,6 +1944,7 @@ var App={
         FX.init();
         this._loadLocal();
         this._checkResets(); // Primera llamada local
+        this.d.activeTab='tasks'; // Siempre arranca en Misiones
         this._render();
         this._showLogin(); // Pedir PIN al arrancar
 
@@ -1958,6 +1969,7 @@ var App={
                     }
                     // FIX: una sola llamada a _checkResets después de cargar cloud
                     self._checkResets();
+                    self.d.activeTab='tasks';
                     self._saveLocal();
                     self._render();
                     syncBar('sb-ok','☁️ Sincronizado');
