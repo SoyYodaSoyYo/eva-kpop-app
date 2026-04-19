@@ -490,6 +490,18 @@
     </div>
 </div>
 
+<!-- MODAL EDITAR PREMIOS -->
+<div id="modal-premios-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
+    <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:22px 18px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.95rem;color:#ff007f">🎁 Editar Premios</div>
+            <button onclick="App.closeEditPremios()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 14px;cursor:pointer">✕</button>
+        </div>
+        <div id="edit-premios-content"></div>
+        <button onclick="App.saveEditPremios()" style="width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,#ff007f,#7b00cc);color:#fff;border:none;border-bottom:4px solid #4a007a;border-radius:14px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;letter-spacing:.08em">Guardar ✅</button>
+    </div>
+</div>
+
 <!-- MODAL EDITAR MISIONES -->
 <div id="modal-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto">
     <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:24px 20px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px);box-shadow:0 0 40px rgba(255,0,127,.25)">
@@ -649,7 +661,8 @@ function emptyData(){
         hiddenTasks:[],
         pin:'',
         historialMeses:[],
-        customTasks:{}
+        customTasks:{},
+        customPremios:{}
     };
 }
 
@@ -817,14 +830,24 @@ var App={
         this._applyCustomTasks();
     },
     _applyCustomTasks:function(){
-        // Aplicar etiquetas y puntos personalizados guardados en this.d.customTasks
         var custom=this.d.customTasks||{};
-        var self=this;
         this.TASKS.forEach(function(t){
             if(custom[t.id]){
                 if(custom[t.id].label) t.label=custom[t.id].label;
                 if(custom[t.id].pts)   t.pts=custom[t.id].pts;
             }
+        });
+        // Aplicar premios personalizados
+        var cp=this.d.customPremios||{};
+        var self=this;
+        ['WEEKLY','MONTHLY'].forEach(function(tipo){
+            self[tipo].forEach(function(g,i){
+                var key=tipo+'-'+i;
+                if(cp[key]){
+                    if(cp[key].label) g.label=cp[key].label;
+                    if(cp[key].pts)   g.pts=cp[key].pts;
+                }
+            });
         });
     },
 
@@ -1645,6 +1668,64 @@ var App={
     },
 
     _resumenOpen: false,
+    openEditPremios: function(){
+        var self=this;
+        var c=document.getElementById('edit-premios-content');
+        if(!c)return;
+        var html='';
+        var secciones=[{key:'WEEKLY',titulo:'Premios Semanales'},{key:'MONTHLY',titulo:'Premios del Mes'}];
+        secciones.forEach(function(s){
+            html+='<div style="font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);margin:12px 0 8px">'+s.titulo+'</div>';
+            self[s.key].forEach(function(g,i){
+                html+=
+                    '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;margin-bottom:8px">'+
+                    '<div style="display:flex;gap:8px">'+
+                    '<div style="flex:2">'+
+                    '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Título</div>'+
+                    '<input id="premio-lbl-'+s.key+'-'+i+'" value="'+g.label.replace(/"/g,'&quot;')+'" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;color:#fff;font-size:.78rem">'+
+                    '</div>'+
+                    '<div style="flex:1">'+
+                    '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Pts</div>'+
+                    '<input id="premio-pts-'+s.key+'-'+i+'" type="number" min="1" value="'+g.pts+'" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px;color:#facc15;font-size:.9rem;text-align:center">'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>';
+            });
+        });
+        c.innerHTML=html;
+        document.getElementById('modal-premios-overlay').style.display='flex';
+    },
+    closeEditPremios: function(){
+        document.getElementById('modal-premios-overlay').style.display='none';
+    },
+    saveEditPremios: function(){
+        var self=this;
+        if(!this.d.customPremios) this.d.customPremios={};
+        var secciones=[{key:'WEEKLY'},{key:'MONTHLY'}];
+        secciones.forEach(function(s){
+            self[s.key].forEach(function(g,i){
+                var lbl=document.getElementById('premio-lbl-'+s.key+'-'+i);
+                var pts=document.getElementById('premio-pts-'+s.key+'-'+i);
+                var key=s.key+'-'+i;
+                if(!self.d.customPremios[key]) self.d.customPremios[key]={};
+                if(lbl&&lbl.value.trim()){
+                    g.label=lbl.value.trim();
+                    self.d.customPremios[key].label=g.label;
+                }
+                if(pts){
+                    var v=parseInt(pts.value);
+                    if(!isNaN(v)&&v>=1){
+                        g.pts=v;
+                        self.d.customPremios[key].pts=v;
+                    }
+                }
+            });
+        });
+        this.closeEditPremios();
+        showToast('🎁 Premios actualizados','Títulos y valores guardados');
+        this._save();
+    },
+
     openEditFinanzas: function(){
         var el = document.getElementById('fin-pointvalue');
         if(el) el.value = this.POINT_VALUE;
@@ -1944,6 +2025,10 @@ var App={
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Misiones</div>'+
             '<button onclick="App.openEditModal()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
             '✏️ Personalizar misiones'+
+            '</button>'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Premios</div>'+
+            '<button onclick="App.openEditPremios()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
+            '🎁 Editar títulos y valores de premios'+
             '</button>'+
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Dinero y Distribución</div>'+
             '<button onclick="App.openEditFinanzas()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
