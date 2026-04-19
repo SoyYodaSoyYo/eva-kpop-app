@@ -1856,7 +1856,7 @@ var App={
             '<div style="font-family:\'Archivo Black\',sans-serif;font-size:1.9rem;font-style:italic">'+this.d.today.totalDay+' <span style="font-size:11px;color:#ff99cc">PTS</span></div>'+
             '</div></div>'+
             '<div style="font-size:.6rem;color:rgba(255,255,255,.3);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">'+
-            '✏️ Toca un día de los últimos 7 para editarlo'+
+            '✏️ Toca cualquier día del mes para editarlo'+
             '</div>';
 
         // Agregar días del mes actual sin registro para poder editarlos
@@ -1928,7 +1928,13 @@ var App={
         for(var i=0;i<this.d.history.length;i++){
             if(this.d.history[i].date===date){idx=i;break;}
         }
-        if(idx===-1)return;
+        // Si el día no existe, crear entrada vacía en historial
+        if(idx===-1){
+            var newDay={date:date,points:{},totalDay:0,basePoints:0,perfectDay:false};
+            this.d.history.push(newDay);
+            this.d.history.sort(function(a,b){return a.date<b.date?-1:1;});
+            idx=this.d.history.findIndex(function(h){return h.date===date;});
+        }
         var day=this.d.history[idx];
         var content=document.getElementById('edit-day-content');
         if(!content)return;
