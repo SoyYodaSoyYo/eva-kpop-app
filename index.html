@@ -648,7 +648,8 @@ function emptyData(){
         medallas:[],
         hiddenTasks:[],
         pin:'',
-        historialMeses:[]
+        historialMeses:[],
+        customTasks:{}
     };
 }
 
@@ -813,6 +814,18 @@ var App={
             var raw=localStorage.getItem('eva_kpop_v4');
             if(raw)this.d=Object.assign(emptyData(),JSON.parse(raw));
         }catch(e){}
+        this._applyCustomTasks();
+    },
+    _applyCustomTasks:function(){
+        // Aplicar etiquetas y puntos personalizados guardados en this.d.customTasks
+        var custom=this.d.customTasks||{};
+        var self=this;
+        this.TASKS.forEach(function(t){
+            if(custom[t.id]){
+                if(custom[t.id].label) t.label=custom[t.id].label;
+                if(custom[t.id].pts)   t.pts=custom[t.id].pts;
+            }
+        });
     },
 
     _saveLocal:function(){
@@ -1339,10 +1352,19 @@ var App={
             if(editable){
                 var lblEl = document.getElementById('edit-lbl-' + t.id);
                 var ptsEl = document.getElementById('edit-pts-' + t.id);
-                if(lblEl && lblEl.value.trim()) t.label = lblEl.value.trim();
+                if(!self.d.customTasks) self.d.customTasks={};
+                if(lblEl && lblEl.value.trim()){
+                    t.label = lblEl.value.trim();
+                    if(!self.d.customTasks[t.id]) self.d.customTasks[t.id]={};
+                    self.d.customTasks[t.id].label = t.label;
+                }
                 if(ptsEl){
                     var newPts = parseInt(ptsEl.value);
-                    if(!isNaN(newPts) && newPts >= 1) t.pts = newPts;
+                    if(!isNaN(newPts) && newPts >= 1){
+                        t.pts = newPts;
+                        if(!self.d.customTasks[t.id]) self.d.customTasks[t.id]={};
+                        self.d.customTasks[t.id].pts = newPts;
+                    }
                 }
             }
         });
@@ -1525,15 +1547,30 @@ var App={
             '</div>'+
             '</div>';
 
-        html+='<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.25);margin-bottom:8px">Distribución del total</div>';
+        // Distribución en dos columnas: Total histórico + Este mes
+        html+=
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:4px">'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.25)">Distribución</div>'+
+            '<div style="display:flex;gap:16px">'+
+            '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,.2)">Total</div>'+
+            '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;color:rgba(255,156,204,.4)">'+App._mesLabel()+'</div>'+
+            '</div>'+
+            '</div>';
         this.FINANCE.forEach(function(f){
             html+=
                 '<div class="finance-card" style="border-left:3px solid '+f.color+'">'+
                 '<div><div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
                 '<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-top:2px">'+f.desc+'</div></div>'+
+                '<div style="display:flex;gap:14px;align-items:center">'+
                 '<div style="text-align:right">'+
-                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem">'+self._clp(total*f.pct)+'</div>'+
-                '<div style="font-size:.58rem;color:rgba(255,255,255,.3)">Mes: '+self._clp(totalMes*f.pct)+'</div>'+
+                '<div style="font-size:.5rem;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:1px">Total</div>'+
+                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1rem;color:#fff">'+self._clp(total*f.pct)+'</div>'+
+                '</div>'+
+                '<div style="width:1px;height:28px;background:rgba(255,255,255,.1)"></div>'+
+                '<div style="text-align:right">'+
+                '<div style="font-size:.5rem;color:rgba(255,156,204,.5);text-transform:uppercase;margin-bottom:1px">Este mes</div>'+
+                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1rem;color:#ff9ecc">'+self._clp(totalMes*f.pct)+'</div>'+
+                '</div>'+
                 '</div></div>';
         });
 
@@ -2186,6 +2223,7 @@ var App={
                     }
                     // FIX: una sola llamada a _checkResets después de cargar cloud
                     self._checkResets();
+                    self._applyCustomTasks();
                     self.d.activeTab='tasks';
                     self._saveLocal();
                     self._render();
