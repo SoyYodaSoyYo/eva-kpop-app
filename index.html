@@ -1437,6 +1437,7 @@ var App={
         // ── Barra de progreso del mes ──
         var maxPts=this.MONTHLY[this.MONTHLY.length-1].pts;
         var pctMes=Math.min(100,Math.round(this.d.month.pts/maxPts*100));
+        var dineroMesActual = this.d.month.pts * this.POINT_VALUE;
         html+=
             '<div style="background:rgba(10,0,25,0.85);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px 18px;margin-bottom:16px;backdrop-filter:blur(12px)">'+
             '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'+
@@ -1445,8 +1446,9 @@ var App={
             '<div style="font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4);margin-top:2px">'+diasRest+' días para fin de mes</div>'+
             '</div>'+
             '<div style="text-align:right">'+
-            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.6rem;color:#facc15;line-height:1">'+this.d.month.pts+'</div>'+
-            '<div style="font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,204,21,.6)">pts acumulados</div>'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.8rem;color:#facc15;line-height:1">'+this.d.month.pts+'<span style="font-size:.65rem;color:rgba(250,204,21,.5)"> pts</span></div>'+
+            '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem;color:#ff9ecc;line-height:1.2">'+this._clp(dineroMesActual)+'</div>'+
+            '<div style="font-size:.55rem;color:rgba(255,255,255,.3)">'+this.d.month.pts+' × $'+this.POINT_VALUE+'</div>'+
             '</div>'+
             '</div>'+
             // Barra progreso global
@@ -1507,19 +1509,32 @@ var App={
 
         // ── Ganancias ──
         var total=this.d.total*this.POINT_VALUE;
+        var totalMes=this.d.month.pts*this.POINT_VALUE;
         html+=
             '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;color:#ff9ecc;font-size:12px;text-transform:uppercase;letter-spacing:.18em;margin:24px 2px 9px">Ganancias (CLP)</div>'+
-            '<div style="background:rgba(80,0,40,0.80);border:1px solid rgba(255,0,127,.35);border-radius:18px;padding:20px;text-align:center;margin-bottom:12px;backdrop-filter:blur(12px)">'+
-            '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;opacity:.6;margin-bottom:6px">Saldo Real Total</div>'+
-            '<div class="font-arch neon" style="font-size:2.4rem;font-style:italic">'+this._clp(total)+'</div>'+
+            '<div style="display:flex;gap:8px;margin-bottom:12px">'+
+            // Total histórico
+            '<div style="flex:1;background:rgba(80,0,40,0.80);border:1px solid rgba(255,0,127,.35);border-radius:18px;padding:16px;text-align:center;backdrop-filter:blur(12px)">'+
+            '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;opacity:.5;margin-bottom:4px">Total acumulado</div>'+
+            '<div class="font-arch neon" style="font-size:1.9rem;font-style:italic">'+this._clp(total)+'</div>'+
+            '</div>'+
+            // Este mes
+            '<div style="flex:1;background:rgba(40,0,60,0.80);border:1px solid rgba(255,0,127,.25);border-radius:18px;padding:16px;text-align:center;backdrop-filter:blur(12px)">'+
+            '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,156,204,.6);margin-bottom:4px">'+this._mesLabel()+'</div>'+
+            '<div class="font-arch" style="font-size:1.9rem;font-style:italic;color:#ff9ecc">'+this._clp(totalMes)+'</div>'+
+            '</div>'+
             '</div>';
 
+        html+='<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.25);margin-bottom:8px">Distribución del total</div>';
         this.FINANCE.forEach(function(f){
             html+=
                 '<div class="finance-card" style="border-left:3px solid '+f.color+'">'+
                 '<div><div style="font-weight:900;font-style:italic;text-transform:uppercase;font-size:12px;color:'+f.color+'">'+f.label+' ('+(f.pct*100|0)+'%)</div>'+
                 '<div style="font-size:10px;opacity:.5;text-transform:uppercase;margin-top:2px">'+f.desc+'</div></div>'+
-                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem">'+self._clp(total*f.pct)+'</div></div>';
+                '<div style="text-align:right">'+
+                '<div style="font-family:\'Archivo Black\',sans-serif;font-style:italic;font-size:1.1rem">'+self._clp(total*f.pct)+'</div>'+
+                '<div style="font-size:.58rem;color:rgba(255,255,255,.3)">Mes: '+self._clp(totalMes*f.pct)+'</div>'+
+                '</div></div>';
         });
 
         // ── Resumen Anual (desplegable) ──
@@ -1825,9 +1840,8 @@ var App={
         var hist=this.d.history.slice().reverse();
         var hoy=this._hoy();
         // Calcular fecha límite: 7 días atrás
-        var limite=new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
-        limite.setDate(limite.getDate()-7);
-        var limiteStr=limite.toLocaleDateString('en-CA',{timeZone:TZ});
+        // Editable: cualquier día del mes actual
+        var limiteStr=this._mes()+'-01';
 
         var html=
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'+
@@ -1844,6 +1858,29 @@ var App={
             '<div style="font-size:.6rem;color:rgba(255,255,255,.3);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">'+
             '✏️ Toca un día de los últimos 7 para editarlo'+
             '</div>';
+
+        // Agregar días del mes actual sin registro para poder editarlos
+        var hoyDate = new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));
+        var mesActualStr = this._mes();
+        var diasConReg = {};
+        hist.forEach(function(d){ diasConReg[d.date]=true; });
+        var diasSinReg = [];
+        for(var dd=1; dd<hoyDate.getDate(); dd++){
+            var dStr = mesActualStr+'-'+(dd<10?'0':'')+dd;
+            if(!diasConReg[dStr]) diasSinReg.push(dStr);
+        }
+        if(diasSinReg.length>0){
+            html += '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);margin:14px 0 6px">Días sin registro este mes</div>';
+            diasSinReg.reverse().forEach(function(dStr){
+                html += '<div class="hist-row" data-date="'+dStr+'" onclick="App.openEditDay(this.dataset.date)" style="cursor:pointer;border-left:3px solid rgba(255,255,255,.15);opacity:.6">' +
+                    '<div style="display:flex;align-items:center;gap:8px">' +
+                    '<span style="font-size:.7rem;opacity:.5">➕</span>' +
+                    '<span style="font-weight:700;font-style:italic;text-transform:uppercase;font-size:11px">'+dStr+'</span>' +
+                    '</div>' +
+                    '<div style="font-size:.65rem;color:rgba(255,255,255,.3)">sin registro</div>' +
+                    '</div>';
+            });
+        }
 
         if(hist.length===0){
             html+='<div style="text-align:center;padding:36px;opacity:.4;font-style:italic;text-transform:uppercase;font-size:.82rem">Aún no hay días anteriores</div>';
@@ -1904,6 +1941,7 @@ var App={
             '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;margin-bottom:14px">'+
             '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px">Total del día</div>'+
             '<input id="edit-day-total" type="number" min="0" max="999" value="'+day.totalDay+'" style="width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,0,127,.4);border-radius:8px;padding:10px 14px;color:#fff;font-size:1.2rem;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-align:center">'+
+            '<div style="font-size:.58rem;color:rgba(255,255,255,.3);text-align:center;margin-top:4px">Calculado desde misiones: <span id="edit-day-calc">0</span> pts</div>'+
             '</div>'+
             // Misiones individuales
             '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:10px">Misiones del día</div>';
@@ -1914,7 +1952,7 @@ var App={
                 '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
                 '<span style="font-size:1.1rem;flex-shrink:0">'+t.icon+'</span>'+
                 '<div style="flex:1;font-size:.75rem;font-style:italic;text-transform:uppercase;color:#fff">'+t.label+'</div>'+
-                '<input id="edit-day-task-'+t.id+'" type="number" min="0" max="'+t.limit+'" value="'+val+'" style="width:56px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px;color:#fff;font-size:.9rem;text-align:center;font-family:\'Archivo\',sans-serif">'+
+                '<input id="edit-day-task-'+t.id+'" type="number" min="0" max="'+t.limit+'" value="'+val+'" style="width:56px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px;color:#fff;font-size:.9rem;text-align:center;font-family:\'Archivo\',sans-serif" oninput="App.updateEditDayTotal()">'+
                 '<span style="font-size:.6rem;color:rgba(255,255,255,.3)">máx '+t.limit+'</span>'+
                 '</div>';
         });
@@ -1924,6 +1962,18 @@ var App={
         document.getElementById('modal-editday-overlay').style.display='flex';
     },
 
+    updateEditDayTotal:function(){
+        var calc=0;
+        this.TASKS.forEach(function(t){
+            var el=document.getElementById('edit-day-task-'+t.id);
+            if(el) calc+=Math.min(parseInt(el.value)||0,t.limit)*t.pts;
+        });
+        var calcEl=document.getElementById('edit-day-calc');
+        if(calcEl) calcEl.textContent=calc;
+        // Auto-update total field
+        var totalEl=document.getElementById('edit-day-total');
+        if(totalEl) totalEl.value=calc;
+    },
     closeEditDay:function(){
         document.getElementById('modal-editday-overlay').style.display='none';
     },
