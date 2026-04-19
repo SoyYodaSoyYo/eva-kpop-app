@@ -1231,50 +1231,51 @@ var App={
         html += '</div>';
 
         /* ── D: Gráfico 7 días ── */
-        var bW=30, bG=6, cH=52, svgW=all7.length*(bW+bG)-bG;
+        var bW=30, bG=6, cH=70, topPad=14, svgW=all7.length*(bW+bG)-bG;
         var svgBars = '';
-        // Calcular colores por cercanía al día perfecto
         all7.forEach(function(dy, i){
             var pts = dy.totalDay || 0;
             var pct = maxP > 0 ? pts/maxP : 0;
-            var bH  = Math.max(pts > 0 ? 4 : 1, Math.round(pct * cH));
-            var x   = i * (bW + bG), y = cH - bH;
+            // Altura mínima visible de 6px para días con puntos, 2px para días en 0
+            var bH = pts > 0 ? Math.max(6, Math.round(pct * cH)) : 2;
+            var x  = i * (bW + bG);
+            var y  = topPad + (cH - bH); // topPad reserva espacio para el número arriba
             var isToday = i === all7.length - 1;
-            // Color por progreso: rojo bajo, naranja medio, verde alto, amarillo perfecto
+
             var fill = dy.perfectDay ? '#facc15'
                      : pct >= .85   ? '#4ade80'
                      : pct >= .55   ? '#f97316'
                      : isToday      ? '#ff007f'
-                     : 'rgba(255,0,127,0.4)';
+                     : pts > 0      ? 'rgba(255,0,127,0.55)'
+                     : 'rgba(255,255,255,0.1)';
 
-            svgBars += '<rect x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="5" fill="'+fill+'"/>';
+            svgBars += '<rect x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="4" fill="'+fill+'"/>';
 
-            // corona en perfectos
+            // Número encima — siempre con espacio suficiente (topPad lo garantiza)
             if(dy.perfectDay){
-                svgBars += '<text x="'+(x+bW/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="10">👑</text>';
+                svgBars += '<text x="'+(x+bW/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="11">👑</text>';
             } else if(pts > 0){
-                svgBars += '<text x="'+(x+bW/2)+'" y="'+(y-3)+'" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.7)" font-family="Arial">'+pts+'</text>';
+                svgBars += '<text x="'+(x+bW/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.85)" font-family="Arial" font-weight="bold">'+pts+'</text>';
             }
 
-            // Fecha: dd/mm
             var lbl = isToday ? 'Hoy' : (dy.date ? dy.date.slice(8)+'/'+dy.date.slice(5,7) : '');
-            // Nombre del día
             var dayName = '';
             if(dy.date){
                 var days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
                 var dt = new Date(dy.date + 'T12:00:00');
                 dayName = days[dt.getDay()];
-            } else {
-                dayName = 'Hoy';
-            }
-            svgBars += '<text x="'+(x+bW/2)+'" y="'+(cH+12)+'" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,.5)" font-family="Arial">'+dayName+'</text>';
-            svgBars += '<text x="'+(x+bW/2)+'" y="'+(cH+21)+'" text-anchor="middle" font-size="6" fill="rgba(255,255,255,.3)" font-family="Arial">'+lbl+'</text>';
+            } else { dayName = 'Hoy'; }
+
+            var labelY = topPad + cH + 13;
+            svgBars += '<text x="'+(x+bW/2)+'" y="'+labelY+'" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.55)" font-family="Arial">'+dayName+'</text>';
+            svgBars += '<text x="'+(x+bW/2)+'" y="'+(labelY+10)+'" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,.3)" font-family="Arial">'+lbl+'</text>';
         });
 
+        var svgH = topPad + cH + 26;
         html +=
             '<div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px 6px;margin-bottom:10px">' +
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.35);margin-bottom:8px">📊 Últimas jornadas</div>' +
-            '<svg width="100%" viewBox="0 0 '+svgW+' '+(cH+26)+'" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">'+svgBars+'</svg>' +
+            '<svg width="100%" viewBox="0 0 '+svgW+' '+svgH+'" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">'+svgBars+'</svg>' +
             '</div>';
 
         /* ── E: Próximo premio (reemplaza racha) ── */
