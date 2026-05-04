@@ -490,6 +490,34 @@
     </div>
 </div>
 
+<!-- MODAL EDITAR HISTORIAS (lista) -->
+<div id="modal-historias-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
+    <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:22px 18px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.95rem;color:#ff007f">📖 Historias del Día</div>
+            <button onclick="App.closeEditHistorias()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 14px;cursor:pointer">✕</button>
+        </div>
+        <div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:14px">Toca una historia para editarla</div>
+        <div id="historias-list"></div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR HISTORIA INDIVIDUAL -->
+<div id="modal-historia-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:210;align-items:flex-start;justify-content:center;padding:12px;overflow-y:auto">
+    <div style="background:rgba(10,0,25,0.98);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:20px 16px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.9rem;color:#ff007f">✏️ Editar Historia</div>
+            <button onclick="App.closeEditHistoriaItem()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 12px;cursor:pointer">✕</button>
+        </div>
+        <input type="hidden" id="historia-edit-idx" value="-1">
+        <div id="historia-edit-content"></div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+            <button onclick="App.closeEditHistoriaItem()" style="flex:1;padding:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);border-radius:12px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer">← Volver</button>
+            <button onclick="App.saveEditHistoriaItem()" style="flex:2;padding:12px;background:linear-gradient(135deg,#ff007f,#7b00cc);color:#fff;border:none;border-bottom:3px solid #4a007a;border-radius:12px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer">Guardar ✅</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL EDITAR PREMIOS -->
 <div id="modal-premios-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
     <div style="background:rgba(10,0,25,0.97);border:1px solid rgba(255,0,127,.35);border-radius:22px;padding:22px 18px;width:100%;max-width:400px;margin:auto;backdrop-filter:blur(24px)">
@@ -509,7 +537,7 @@
             <div style="font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:1rem;color:#ff007f">✏️ Personalizar Misiones</div>
             <button onclick="App.closeEditModal()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:6px 14px;cursor:pointer;font-size:.8rem;font-family:'Archivo Black',sans-serif">✕</button>
         </div>
-        <div style="font-size:.72rem;color:rgba(255,0,127,.7);font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px">Puedes ocultar misiones que no uses 💕</div>
+        <div style="font-size:.72rem;color:rgba(255,0,127,.7);font-weight:700;margin-bottom:18px">Puedes ocultar misiones que no uses 💕</div>
         <div id="edit-modal-content"></div>
         <button onclick="App.saveEditModal()" style="width:100%;margin-top:8px;padding:14px;background:linear-gradient(135deg,#ff007f,#7b00cc);color:#fff;border:none;border-bottom:4px solid #4a007a;border-radius:14px;font-family:'Archivo Black',sans-serif;font-style:italic;text-transform:uppercase;font-size:11px;cursor:pointer;box-shadow:0 0 20px rgba(255,0,127,.4);letter-spacing:.08em">Guardar Cambios ✅</button>
     </div>
@@ -517,20 +545,21 @@
 
 <script>
 /* ═══════════════════════════════════════════
-   EVA K-POP — v7.0
-   FIXES APLICADOS:
-   ✓ Timezone America/Santiago
-   ✓ Reset diario en hora Santiago
-   ✓ Semanal acumula todo el mes (sin reset semanal)
-   ✓ Mensual = total del mes, reinicia al cambiar de mes
-   ✓ Sync lastSync vs lastSyncMs corregido
-   ✓ historiaLeida se limpia al reiniciar día
-   ✓ _checkResets no se ejecuta doble
-   ✓ _pendingSaves contador (reemplaza _skipSnap bool)
-   ✓ Draft del textarea se preserva en re-renders
-   ✓ Contador de caracteres del diario funcional
-   ✓ Historial limitado a 180 entradas
-   ✓ Verificación automática de reset cada 60s
+   EVA K-POP — v8.0 — Checkpoint
+   ✓ Panel de progreso colapsable (mes hero, hoy+semana, medallas, gráfico, próximo premio)
+   ✓ 12 medallas dinámicas con glow y tap para descripción
+   ✓ Premios semanales sáb→vie con botón de cobro
+   ✓ Premios y medallas dinámicos (se recalculan al bajar puntos)
+   ✓ Semana reinicia cada sábado, mes cada 1ro
+   ✓ PIN login 4 dígitos
+   ✓ Ganancias: total + mes + distribución con columnas
+   ✓ Resumen anual desplegable con desglose por mes
+   ✓ Editar misiones, premios, historias, finanzas desde Config
+   ✓ Historial editable: cualquier día del mes actual
+   ✓ Días sin registro agregables
+   ✓ customTasks, customPremios, customHistorias en Firebase
+   ✓ Gráfico barras con altura mínima y topPad
+   ✓ Fondo via kpop-bg.png (externo, no base64)
 ═══════════════════════════════════════════ */
 
 var FIREBASE_CONFIG = {
@@ -662,7 +691,8 @@ function emptyData(){
         pin:'',
         historialMeses:[],
         customTasks:{},
-        customPremios:{}
+        customPremios:{},
+        customHistorias:{}
     };
 }
 
@@ -694,10 +724,11 @@ var App={
     WEEKLY:[{label:'Película Extra',pts:100},{label:'Helado Especial',pts:180}],
     MONTHLY:[{label:'Regalo Sorpresa',pts:400},{label:'Paseo + Regalo',pts:800}],
     FINANCE:[
-        {label:'Libres para usar',pct:.40,color:'#ff9ecc',desc:'Libre disposición'},
-        {label:'Gastos',          pct:.40,color:'#ffccdd',desc:'Necesidades / Extras'},
-        {label:'Ahorro',          pct:.10,color:'#ffffff',desc:'Para el futuro'},
-        {label:'Compartir',       pct:.10,color:'#cccccc',desc:'Ayudar / Regalar'}
+        {label:'Libre uso',  pct:.40,color:'#ff9ecc',desc:'Libre disposición'},
+        {label:'Gastos',     pct:.40,color:'#ffccdd',desc:'Necesidades / Extras'},
+        {label:'Ahorro',     pct:.10,color:'#ffffff',desc:'Para el futuro'},
+        {label:'Invertir',   pct:.08,color:'#facc15',desc:'Hacer crecer el dinero'},
+        {label:'Donar',      pct:.02,color:'#86efac',desc:'Ayudar / Regalar'}
     ],
 
     MEDALLAS:[
@@ -849,6 +880,21 @@ var App={
                 }
             });
         });
+        // Aplicar historias personalizadas
+        var ch=this.d.customHistorias||{};
+        this.HISTORIAS.forEach(function(h,i){
+            if(ch[i]){
+                if(ch[i].titulo)           h.titulo=ch[i].titulo;
+                if(ch[i].emoji)            h.emoji=ch[i].emoji;
+                if(ch[i].intro)            h.intro=ch[i].intro;
+                if(ch[i].op0txt)           h.opciones[0].texto=ch[i].op0txt;
+                if(ch[i].op0feedback)      h.opciones[0].feedback=ch[i].op0feedback;
+                if(ch[i].op0leccion)       h.opciones[0].leccion=ch[i].op0leccion;
+                if(ch[i].op1txt)           h.opciones[1].texto=ch[i].op1txt;
+                if(ch[i].op1feedback)      h.opciones[1].feedback=ch[i].op1feedback;
+                if(ch[i].op1leccion)       h.opciones[1].leccion=ch[i].op1leccion;
+            }
+        });
     },
 
     _saveLocal:function(){
@@ -861,6 +907,14 @@ var App={
 
     _cloudSave:function(){
         if(!this._db)return;
+        // PROTECCIÓN 1: No sobreescribir Firebase con datos vacíos
+        var hayDatos=(this.d.total>0)||
+                     (this.d.history&&this.d.history.some(function(h){return (h.totalDay||0)>0;}));
+        if(!hayDatos){
+            console.warn('⚠️ Cloud save bloqueado: sin datos válidos para guardar');
+            syncBar('sb-ok','☁️ Sincronizado');
+            return;
+        }
         var self=this;
         clearTimeout(this._saveTimer);
         syncBar('sb-busy','⏳ Guardando...');
@@ -1669,6 +1723,98 @@ var App={
     },
 
     _resumenOpen: false,
+    openEditHistorias: function(){
+        var self=this;
+        var list=document.getElementById('historias-list');
+        if(!list)return;
+        var html='';
+        this.HISTORIAS.forEach(function(h,i){
+            html+=
+                '<div onclick="App.openEditHistoriaItem('+i+')" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer">'+
+                '<div style="font-size:1.6rem;flex-shrink:0">'+h.emoji+'</div>'+
+                '<div style="flex:1">'+
+                '<div style="font-size:.78rem;font-weight:700;font-style:italic;text-transform:uppercase;color:#fff">'+h.titulo+'</div>'+
+                '<div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:2px">Historia '+(i+1)+' de '+self.HISTORIAS.length+'</div>'+
+                '</div>'+
+                '<div style="color:rgba(255,0,127,.6);font-size:.8rem">›</div>'+
+                '</div>';
+        });
+        list.innerHTML=html;
+        document.getElementById('modal-historias-overlay').style.display='flex';
+    },
+    closeEditHistorias: function(){
+        document.getElementById('modal-historias-overlay').style.display='none';
+    },
+    openEditHistoriaItem: function(idx){
+        var h=this.HISTORIAS[idx];
+        if(!h)return;
+        var c=document.getElementById('historia-edit-content');
+        if(!c)return;
+        document.getElementById('historia-edit-idx').value=idx;
+
+        function field(id, label, val, big){
+            return '<div style="margin-bottom:10px">'+
+                '<div style="font-size:.55rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:4px">'+label+'</div>'+
+                (big
+                    ? '<textarea id="'+id+'" rows="3" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:8px 10px;color:#fff;font-size:.75rem;font-family:Arial,sans-serif;resize:vertical;line-height:1.5">'+val+'</textarea>'
+                    : '<input id="'+id+'" value="'+val.replace(/"/g,'&quot;')+'" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:8px 10px;color:#fff;font-size:.78rem;font-family:Arial,sans-serif">'
+                )+'</div>';
+        }
+
+        var html=
+            '<div style="display:flex;gap:8px;margin-bottom:10px">'+
+            '<div style="flex:1">'+field('h-emoji','Emoji',h.emoji,false)+'</div>'+
+            '<div style="flex:3">'+field('h-titulo','Título',h.titulo,false)+'</div>'+
+            '</div>'+
+            field('h-intro','Introducción (historia)',h.intro,true)+
+            '<div style="border-top:1px solid rgba(255,0,127,.2);margin:12px 0 10px;padding-top:10px">'+
+            '<div style="font-size:.6rem;font-weight:900;text-transform:uppercase;color:rgba(255,0,127,.6);margin-bottom:8px">Opción A</div>'+
+            '</div>'+
+            field('h-op0txt','Texto de la opción A',h.opciones[0].texto,false)+
+            field('h-op0feedback','Qué pasa al elegir A',h.opciones[0].feedback,true)+
+            field('h-op0leccion','Lección de A',h.opciones[0].leccion,false)+
+            '<div style="border-top:1px solid rgba(255,0,127,.2);margin:12px 0 10px;padding-top:10px">'+
+            '<div style="font-size:.6rem;font-weight:900;text-transform:uppercase;color:rgba(255,0,127,.6);margin-bottom:8px">Opción B</div>'+
+            '</div>'+
+            field('h-op1txt','Texto de la opción B',h.opciones[1].texto,false)+
+            field('h-op1feedback','Qué pasa al elegir B',h.opciones[1].feedback,true)+
+            field('h-op1leccion','Lección de B',h.opciones[1].leccion,false);
+
+        c.innerHTML=html;
+        document.getElementById('modal-historia-edit-overlay').style.display='flex';
+        document.getElementById('modal-historias-overlay').style.display='none';
+    },
+    closeEditHistoriaItem: function(){
+        document.getElementById('modal-historia-edit-overlay').style.display='none';
+        document.getElementById('modal-historias-overlay').style.display='flex';
+    },
+    saveEditHistoriaItem: function(){
+        var idx=parseInt(document.getElementById('historia-edit-idx').value);
+        if(isNaN(idx)||idx<0)return;
+        var h=this.HISTORIAS[idx];
+        if(!h)return;
+        if(!this.d.customHistorias) this.d.customHistorias={};
+        var ch={};
+        function val(id){ var el=document.getElementById(id); return el?el.value.trim():''; }
+        ch.titulo   = val('h-titulo')   || h.titulo;
+        ch.emoji    = val('h-emoji')    || h.emoji;
+        ch.intro    = val('h-intro')    || h.intro;
+        ch.op0txt   = val('h-op0txt')   || h.opciones[0].texto;
+        ch.op0feedback = val('h-op0feedback') || h.opciones[0].feedback;
+        ch.op0leccion  = val('h-op0leccion')  || h.opciones[0].leccion;
+        ch.op1txt   = val('h-op1txt')   || h.opciones[1].texto;
+        ch.op1feedback = val('h-op1feedback') || h.opciones[1].feedback;
+        ch.op1leccion  = val('h-op1leccion')  || h.opciones[1].leccion;
+        this.d.customHistorias[idx]=ch;
+        // Apply immediately
+        h.titulo=ch.titulo; h.emoji=ch.emoji; h.intro=ch.intro;
+        h.opciones[0].texto=ch.op0txt; h.opciones[0].feedback=ch.op0feedback; h.opciones[0].leccion=ch.op0leccion;
+        h.opciones[1].texto=ch.op1txt; h.opciones[1].feedback=ch.op1feedback; h.opciones[1].leccion=ch.op1leccion;
+        this.closeEditHistoriaItem();
+        showToast('📖 Historia actualizada','Los cambios fueron guardados');
+        this._save();
+    },
+
     openEditPremios: function(){
         var self=this;
         var c=document.getElementById('edit-premios-content');
@@ -2027,6 +2173,10 @@ var App={
             '<button onclick="App.openEditModal()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
             '✏️ Personalizar misiones'+
             '</button>'+
+            '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Historias</div>'+
+            '<button onclick="App.openEditHistorias()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
+            '📖 Editar historias del día'+
+            '</button>'+
             '<div style="font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-bottom:10px">Premios</div>'+
             '<button onclick="App.openEditPremios()" style="width:100%;padding:11px;background:rgba(10,0,25,0.60);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-transform:uppercase;font-size:.65rem;cursor:pointer;letter-spacing:.1em;margin-bottom:18px">'+
             '🎁 Editar títulos y valores de premios'+
@@ -2070,7 +2220,7 @@ var App={
             '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;margin-bottom:14px">'+
             '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px">Total del día</div>'+
             '<input id="edit-day-total" type="number" min="0" max="999" value="'+day.totalDay+'" style="width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,0,127,.4);border-radius:8px;padding:10px 14px;color:#fff;font-size:1.2rem;font-family:\'Archivo Black\',sans-serif;font-style:italic;text-align:center">'+
-            '<div style="font-size:.58rem;color:rgba(255,255,255,.3);text-align:center;margin-top:4px">Calculado desde misiones: <span id="edit-day-calc">0</span> pts</div>'+
+            '<div style="font-size:.58rem;color:rgba(255,255,255,.3);text-align:center;margin-top:4px">Se recalcula automáticamente al editar misiones</div>'+
             '</div>'+
             // Misiones individuales
             '<div style="font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:10px">Misiones del día</div>';
@@ -2089,6 +2239,7 @@ var App={
         content.innerHTML=html;
         document.getElementById('edit-day-idx').value=idx;
         document.getElementById('modal-editday-overlay').style.display='flex';
+        this.updateEditDayTotal();
     },
 
     updateEditDayTotal:function(){
@@ -2097,9 +2248,6 @@ var App={
             var el=document.getElementById('edit-day-task-'+t.id);
             if(el) calc+=Math.min(parseInt(el.value)||0,t.limit)*t.pts;
         });
-        var calcEl=document.getElementById('edit-day-calc');
-        if(calcEl) calcEl.textContent=calc;
-        // Auto-update total field
         var totalEl=document.getElementById('edit-day-total');
         if(totalEl) totalEl.value=calc;
     },
@@ -2321,10 +2469,17 @@ var App={
                         if(self._pendingSaves>0){self._pendingSaves--;return;}
                         if(!snap.exists)return;
                         var cloud=snap.data();
-                        if((cloud.lastSyncMs||0)>(self.d.lastSync||0)){
+                        var cloudTotal=cloud.total||0;
+                        var localTotal=self.d.total||0;
+                        // PROTECCIÓN: gana quien tenga más puntos totales
+                        // Solo si cloud tiene igual o más total, o si cloud es más reciente con mismos puntos
+                        var cloudWins=(cloudTotal>localTotal)||
+                                      (cloudTotal===localTotal&&(cloud.lastSyncMs||0)>=(self.d.lastSync||0));
+                        if(cloudWins){
                             delete cloud.lastSync;
                             self.d=Object.assign(emptyData(),cloud);
                             self._checkResets();
+                            self._applyCustomTasks();
                             self._saveLocal();
                             self._render();
                             syncBar('sb-ok','☁️ Sincronizado');
